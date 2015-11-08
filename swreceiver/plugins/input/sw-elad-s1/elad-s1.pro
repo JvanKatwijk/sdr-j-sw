@@ -20,7 +20,7 @@ TARGET      = $$qtLibraryTarget(device_elad-s1sw)
 FORMS	+= ./widget.ui
 
 unix{
-DESTDIR     = ../../../../../linux-bin/input-plugins-sw
+DESTDIR     = ../../../../linux-bin/input-plugins-sw
 LIBS	+= -lusb-1.0 -ldl
 }
 

@@ -122,7 +122,7 @@ TARGET		= $$qtLibraryTarget(drmdecoder)
 FORMS		+= widget.ui
 
 unix {
-DESTDIR     = ../../../../../linux-bin/decoder-plugins
+DESTDIR     = ../../../../linux-bin/decoder-plugins
 INCLUDEPATH	+= /usr/include/qwt
 INCLUDEPATH	+= /usr/local/include
 LIBS	+= -L/usr/local/lib

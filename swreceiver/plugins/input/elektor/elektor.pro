@@ -21,7 +21,7 @@ TARGET      = $$qtLibraryTarget(device_elektor)
 FORMS	+= ./widget.ui
 
 unix {
-DESTDIR     = ../../../../../linux-bin/input-plugins-sw
+DESTDIR     = ../../../../linux-bin/input-plugins-sw
 INCLUDEPATH	+= /usr/include/libftdi1
 LIBS	   += -lftdi 
 }

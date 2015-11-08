@@ -31,7 +31,7 @@ LIBS	+= -lwinmm
 }
 
 unix{
-DESTDIR     = ../../../../../linux-bin/input-plugins-sw
+DESTDIR     = ../../../../linux-bin/input-plugins-sw
 LIBS	+= -lsamplerate -lsndfile
 }
 

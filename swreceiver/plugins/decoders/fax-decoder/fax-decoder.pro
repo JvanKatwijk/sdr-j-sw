@@ -48,6 +48,6 @@ LIBS	+= -lwinmm
 }
 
 unix {
-DESTDIR	= ../../../../../linux-bin/decoder-plugins
+DESTDIR	= ../../../../linux-bin/decoder-plugins
 }
 

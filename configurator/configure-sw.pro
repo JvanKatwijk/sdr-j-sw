@@ -13,7 +13,7 @@ DESTDIR	= ../../../windows-bin-sw
 }
 
 unix	{
-DESTDIR = ../../linux-bin
+DESTDIR = ../linux-bin
 }
 
 # Input
