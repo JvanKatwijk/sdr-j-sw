@@ -1,0 +1,46 @@
+Version 6.0 of the sdr-j sw receiver
+
+There are architectural changes in the software to allow a better
+handling of the various sticks (fast devices).
+The backend program is gone (for now), as is the 32 bits fm receiver.
+The latter is integrated with the 64 bits fm receiver to obtain a single
+fm receiver for fast and slow devices.
+
+For fast devices, one may select an inputrate of 96, 192, 256, 384, 512, 768 Ksamples/second.
+
+For generating an executable: see the instructions in the manual,
+
+
+
+Version 5.0 of the sdr-j sw receiver.
+There is a radical change in the structure of the software compared to
+versions 3 and 4.
+In version 5, the decoders and the hardware drivers are implemented
+as plugins. The location of the plugin directory is now given
+in the ".ini" files for the swradio, swbackend and fmradio.
+To ease setting up, a small program, configure-sw, is available
+with which the paths for the decoders resp. drivers can be set
+in the ini files.
+
+The set is extended with a backend program, a program providing the
+various decoders for use with either recordings of the output of
+a "classic" receiver.
+
+Furthermore, the smallband version of the fmreceiver is included,
+allowing e.g. the pmSDR to be used as fm broadcast receiver.
+
+Please read the manual for generating the executables
+If you build, do support-lib first and ensure that the ".so" file
+is somewhere in the loadpath. After that, take any order you want.
+
+The decoders directory and the input directory have a "create-..." script
+that - when all prerequisites are met - will generate the plugins
+
+Default location for the input plugins is "linux-bin/input",
+default location for the decoder plugins is "linux-bin/decoders"
+
+All three programs will look for ./input-plugins and ./decoder-plugins.
+If you want to run the program swradio, swbackend and fmradio in some
+other environment, please run configure-sw first to record the paths
+in the various ini files.
+

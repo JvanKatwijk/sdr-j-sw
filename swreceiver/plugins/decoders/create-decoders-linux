@@ -1,0 +1,11 @@
+#
+for myDecoder in *-decoder
+do
+	echo $myDecoder
+	cd $myDecoder
+	qmake-qt5
+	make 
+	make clean
+	cd ..
+done
+

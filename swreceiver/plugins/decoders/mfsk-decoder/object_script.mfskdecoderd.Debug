@@ -1,0 +1,14 @@
+INPUT(
+./debug/mfsk-decoder.o
+./debug/fir-filters.o
+./debug/fft-filters.o
+./debug/oscillator.o
+./debug/fft.o
+./debug/utilities.o
+./debug/slidingfft.o
+./debug/interleave.o
+./debug/viterbi.o
+./debug/main.o
+./debug/moc_mfsk-decoder.o
+./debug/moc_decoder-interface.o
+);

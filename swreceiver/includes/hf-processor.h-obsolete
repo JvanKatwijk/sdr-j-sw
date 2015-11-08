@@ -1,0 +1,141 @@
+#
+/*
+ *    Copyright (C) 2010, 2011, 2012
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Programming
+ *
+ *    This file is part of the SDR-J.
+ *    Many of the ideas as implemented in SDR-J are derived from
+ *    other work, made available through the GNU general Public License. 
+ *    All copyrights of the original authors are recognized.
+ *
+ *    SDR-J is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    SDR-J is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with SDR-J; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
+#ifndef	__HF_PROCESSOR
+#define	__HF_PROCESSOR
+
+#include	<QThread>
+#include	<QMutex>
+#include	<QWaitCondition>
+#include	<samplerate.h>
+#include	<sndfile.h>
+#include	"swradio-constants.h"
+#include	"agchandler.h"
+#include	"ringbuffer.h"
+#include	"resampler.h"
+
+class	RadioInterface;
+class	Oscillator;
+class	fftFilter;
+class	rigInterface;
+//
+//	Simple HF processor for the SW receiver
+
+class	hfProcessor : public QThread {
+Q_OBJECT
+public:
+		hfProcessor 		(RadioInterface *,
+	                                 int32_t, 
+	                                 int32_t,
+	                                 RingBuffer<DSPCOMPLEX> *,
+	                                 RingBuffer<DSPCOMPLEX> *,
+	                                 rigInterface *);
+		~hfProcessor		(void);
+	void	pause			(void);
+	void	restart			(void);
+	bool	start_up		(void);
+	void	stop			(void);
+//
+	void	set_bandFilter		(int32_t, int32_t, int32_t);
+	int32_t	getbandHigh		(void);
+	int32_t	getbandLow		(void);
+	void	set_AGCmode		(uint8_t);
+	void	set_AGCthreshold	(int16_t);
+	void	set_hfGain		(int16_t, int16_t);
+	void	set_inputMode		(uint8_t);
+	void	set_symbolLeftshift	(int16_t);
+	void	set_ifRate		(int32_t);
+	void	set_hfRate		(int32_t);
+	void	startDumping		(SNDFILE *);
+	void	stopDumping		(void);
+	void	set_Filters_hf		(int32_t);
+protected:
+	void	run			(void);
+private:
+	int32_t	getSamples		(DSPCOMPLEX *, int16_t, uint8_t);
+	void	set_Filters_if		(int32_t);
+	DSPFLOAT S_Meter		(DSPCOMPLEX);
+	int16_t	fromDBtoS		(float);
+	bool	fitsinDisplay		(int32_t);
+	void	process_ifSamples	(DSPCOMPLEX *, int16_t);
+	void	change_hfRate		(int32_t newRate);
+	void	change_ifRate		(int32_t newRate);
+
+	reSampler	*ifResampler;
+	bool		running;
+	bool		dumping;
+	SNDFILE		*dumpFile;
+	RadioInterface	*myRadioInterface;
+	int32_t		tunedIF;
+	int32_t		hfRate;
+	int32_t		ifRate;
+	int32_t		new_hfRate;
+	int32_t		new_ifRate;
+	rigInterface	*myRig;
+
+	int32_t		bandLow;
+	int32_t		bandHigh;
+	int32_t		new_bandLow;
+	int32_t		new_bandHigh;
+	fftFilter	*hfFilter;
+	fftFilter	*lfFilter;
+	Oscillator	*localOscillator;
+	agcHandler	*agc;
+	RingBuffer<DSPCOMPLEX> *ifBuffer;
+	RingBuffer<DSPCOMPLEX> *hfBuffer;
+	int16_t		next;
+	float		ratio;
+	int16_t		conversionSize;
+	float		*conversionBuffer_in;
+	float		*conversionBuffer_out;
+	int16_t		delayCount;
+	float		S_attack;
+	float		S_decay;
+
+	float		attValueL;
+	float		attValueR;
+	SRC_STATE	*converter;
+	SRC_DATA	*src_data;
+	uint16_t	request;
+	int16_t		symbol_Leftshift;
+	DSPCOMPLEX	*Circular;
+	int16_t		cc;
+	uint8_t		inputMode;
+	QMutex		runLocker;
+	QMutex		dataLocker;
+	QWaitCondition	pauseWaiter;
+	int16_t		agcThreshold;
+	uint8_t		agcMode;
+signals:
+	void	new_frequency		(int, int);
+	void	showPeak		(int, double);
+	void	showAgcGain		(float);
+	void	hfSamples		(int);
+	void	ifSamples		(int);
+};
+
+#endif
+

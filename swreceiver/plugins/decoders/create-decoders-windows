@@ -1,0 +1,11 @@
+#
+for myDecoder in *-decoder
+do
+	echo $myDecoder
+	cd $myDecoder
+	mingw32-qmake-qt5
+	make
+	rm -rf debug release
+	cd ..
+done
+

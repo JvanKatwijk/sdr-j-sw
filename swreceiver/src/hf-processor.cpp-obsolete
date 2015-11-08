@@ -1,0 +1,463 @@
+#
+/*
+ *    Copyright (C) 2010, 2011, 2012
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of the SDR-J.
+ *    Many of the ideas as implemented in SDR-J are derived from
+ *    other work, made available through the GNU general Public License. 
+ *    All copyrights of the original authors are recognized.
+ *
+ *    SDR-J is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    SDR-J is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with SDR-J; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+//
+//	Thread safe HF processor, implemented in a separate thread
+//	Advantage: multicore machines may run different threads
+//	Disadvantage: quite some synchronization/update issues
+//
+#include	"hf-processor.h"
+#include	"rig-interface.h"
+#include	"agchandler.h"
+#include	"fft-filters.h"
+#include	"fir-filters.h"
+#include	"utilities.h"
+#include	"oscillator.h"
+#include	"gui.h"
+//
+//	The GUI issues "requests" for changes in the settings of
+//	the hf processor. In case of a "request", a bit is set in
+//	the variable "request" (in a locked environment), and from time
+//	to time the thread will look for bits up in the request 
+//	variable and handle accordingly. Basically, that is the
+//	main headache when separating the processing unit
+//	from the GUI.
+
+#define	PAUSE_REQUEST		00001
+#define	SET_AGC_MODE		00004
+#define	SET_AGC_THRESHOLD	00010
+#define	FILTER_BOUNDS		00200
+#define	IF_RATE			00400
+
+	hfProcessor::hfProcessor	(RadioInterface	*mr,
+	                                 int32_t	inRate,
+	                                 int32_t	outRate,
+	                                 RingBuffer<DSPCOMPLEX> *hbuf,
+	                                 RingBuffer<DSPCOMPLEX> *ibuf,
+	                                 rigInterface	*theRig) {
+
+	this	-> myRadioInterface	= mr;
+	this	-> hfRate		= inRate;
+	this	-> ifRate		= outRate;
+	this	-> hfBuffer		= hbuf;
+	this	-> ifBuffer		= ibuf;
+	this	-> myRig		= theRig;
+	this	-> ifResampler		= new reSampler (hfRate, 
+	                                                 ifRate, 4096);
+//
+//	defaults, will be overruled:
+	bandLow			= - outRate / 2;
+	bandHigh		= + outRate / 2;
+	tunedIF			= Khz (14070);
+//
+//	The first filter is pretty heavy
+	hfFilter		= new fftFilter (2048, 511);
+	hfFilter	-> setBand (bandLow, bandHigh, hfRate);
+//
+//	The second one is less demanding
+	lfFilter		= new fftFilter (1024, 255);
+	lfFilter	-> setBand (bandLow, bandHigh, ifRate);
+
+	localOscillator		= new Oscillator (hfRate);
+	agc			= new agcHandler (ifRate);
+	agc		-> setMode (agcHandler::AGC_OFF);
+//
+//	for the S meter
+	delayCount			= 0;
+	S_attack			= 0;
+	S_decay				= 0;
+//
+//	for all kind of remaining things:
+	symbol_Leftshift	= 0;
+	Circular		= new DSPCOMPLEX [16];
+	cc			= 0;
+	inputMode		= IandQ;
+	request			= 0;
+	tunedIF			= hfRate / 4;
+	running			= false;	// patient please
+	dumping			= false;
+	dumpFile		= NULL;
+}
+
+		hfProcessor::~hfProcessor	(void) {
+	stop ();
+	delete		hfFilter;
+	delete		lfFilter;
+	delete		agc;
+	delete		ifResampler;
+	delete []	Circular;
+}
+//
+//	The user interface to the hf processor
+//	Since the hf processor is a free running thread,
+//	many of the interface functions do a "request"
+//	for a change, an asynchronous request
+bool	hfProcessor::start_up (void) {
+	if (!myRig	-> restartReader ())
+	   return false;
+	if (!running) 		// which is initially the case
+	   start ();
+	return true;
+}
+//
+//	More a cosmetic function
+void	hfProcessor::stop	(void) {
+	if (!running)		// might just happen
+	   return;
+//	any pause that may be "active" is overruled
+	pauseWaiter. wakeAll ();
+	running		= false;
+	myRig		-> stopReader ();
+	while (!this -> isFinished ())
+	   usleep (100);
+}
+//
+void	hfProcessor::pause	(void) {
+	dataLocker. lock ();
+	request		|= PAUSE_REQUEST;
+	dataLocker. unlock ();
+}
+//
+//	Now restarting is simple, just wake up the thread
+//	(if it was not pauding, no harm done)
+void	hfProcessor::restart	(void) {
+	pauseWaiter. wakeAll ();
+}
+//
+//	Some user action requires recomputing the bandfilter,
+void	hfProcessor::set_bandFilter	(int32_t low,
+	                                 int32_t high, int32_t tunedIF) {
+	if (low >= high)
+	   return;
+	new_bandLow	= low;
+	new_bandHigh	= high;
+	this	-> tunedIF	= tunedIF;
+	dataLocker. lock ();
+	request		|= FILTER_BOUNDS;
+	dataLocker. unlock ();
+}
+//	Both the attenuation and the balace sliders relate to this
+//	Within the loop the values of attV... will be copied into
+//	local copies that will be used in the processing
+void	hfProcessor::set_hfGain		(int16_t balance, int16_t atten) {
+int16_t	Bl, Br;
+	Bl		= 100 - balance;
+	Br		= 100 + balance;
+	dataLocker. lock ();
+	attValueL	= 10 * atten * (float)Bl / 100;
+	attValueR	= 10 * atten * (float)Br / 100;
+	dataLocker. unlock ();
+}
+//
+//	Within the thread, the value will be copied to
+//	a local one (i.e. local to the thread), that will
+//	be used
+void	hfProcessor::set_inputMode (uint8_t Mode) {
+	dataLocker. lock ();
+	inputMode	= Mode;
+	dataLocker. unlock ();
+}
+//
+//	See previous comment
+void	hfProcessor::set_AGCmode	(uint8_t M) {
+	dataLocker. lock ();
+	request		= SET_AGC_MODE;
+	agcMode		= M;
+	dataLocker. unlock ();
+}
+//
+//	Idem
+void	hfProcessor::set_AGCthreshold	(int16_t threshold) {
+	dataLocker. lock ();
+	request		|= SET_AGC_THRESHOLD;
+	agcThreshold	= threshold;
+	dataLocker. unlock ();
+}
+//
+//	and again
+void	hfProcessor::set_symbolLeftshift	(int16_t s) {
+	dataLocker. lock ();
+	symbol_Leftshift = s;
+	dataLocker. unlock ();
+}
+
+void	hfProcessor::set_ifRate	(int32_t newRate) {
+	dataLocker. lock ();
+	new_ifRate	= newRate;
+	request		|= IF_RATE;
+	dataLocker. unlock ();
+}
+//
+//	just asynchronous:
+void	hfProcessor::startDumping	(SNDFILE *f) {
+	if (dumping)
+	   return;		// should not happen
+
+//	do not change the order, someone else might be confused
+	dumpFile	= f;
+	dumping		= true;
+}
+//
+//	The caller has to ensure that the file is properly closed
+void	hfProcessor::stopDumping	(void) {
+	dumping		= false;
+}
+
+#define	SEGMENT_SIZE	(hfRate / 20)
+
+void	hfProcessor::run	(void) {
+int16_t		i;
+DSPCOMPLEX	sample;
+int32_t	amount;
+float	local_attValuel;
+float	local_attValuer;
+int16_t local_leftShift;
+int32_t local_tunedIF;
+uint8_t local_inputMode;
+bool	pauser	= false;
+int32_t		segmentSize	= hfRate < 512000 ? hfRate / 20 : 512000 / 20;
+DSPCOMPLEX	tempBuffer [2048];
+DSPCOMPLEX	buffer [segmentSize];
+	running		= true;
+	while (running) {
+	   int32_t nr_ifSamples;
+//	At the beginning of the loop, we see whether there are pending
+//	requests
+	   dataLocker. lock ();
+	   if (request != 0) {
+	      if (request & PAUSE_REQUEST)
+	         pauser = true;
+
+	      if (request & IF_RATE)
+	         change_ifRate (new_ifRate);
+
+	      if (request & FILTER_BOUNDS) {
+	         bandLow	= new_bandLow;
+	         bandHigh	= new_bandHigh;
+	         set_Filters_hf (tunedIF);
+	         set_Filters_if (tunedIF);
+	      }
+
+	      if (request & SET_AGC_MODE) 
+	         agc	-> setMode	(agcMode);
+
+	      if (request & SET_AGC_THRESHOLD)
+	         agc	-> setThreshold (agcThreshold);
+	   }
+
+	   request		= 0;
+//
+//	Just copy some values of globals that might have got a different
+//	value to some locals
+	   local_attValuel	= attValueL;
+	   local_attValuer	= attValueR;
+	   local_leftShift	= symbol_Leftshift;
+	   local_tunedIF	= tunedIF;
+	   local_inputMode	= inputMode;
+	   dataLocker. unlock ();
+//
+//	step 2:
+//	If someone wants us to pause, "pauser" was set to "true", just wait
+//	until someone releases us
+	   if (pauser) {
+	      runLocker. lock ();
+	      myRig	-> stopReader ();
+	      pauseWaiter. wait (&runLocker);
+	      pauser	= false;
+	      myRig	-> restartReader ();
+	      runLocker. unlock ();
+	   }
+//
+//	Go for the samples. Assume the rig does what it is supposed
+//	to do. If there are few samples, compute what time it should
+//	take to fill the buffer and wait.
+	   amount	= myRig	-> Samples ();
+	   while (amount < segmentSize) {
+	      int32_t waitingTime =
+	            (int64_t(segmentSize - amount) * 1000000) / hfRate;
+	      if (waitingTime < 100)
+	         waitingTime = 100;
+	      usleep (waitingTime);
+//	obviously, someone might have decided to kill us
+	      if (!running)
+	         goto L_End;
+	      amount = myRig -> Samples ();
+	   }
+//
+//	Once here, we know we have (should have) segmentSize,
+//	but never trust anyone
+	   amount =  myRig -> getSamples (buffer,
+	                                  segmentSize, local_inputMode);
+	   if (dumping) {
+	      float dumpBuffer [2 * amount];	
+	      for (i = 0; i < amount; i ++) {
+	         dumpBuffer [2 * i] = real (buffer [i]);
+	         dumpBuffer [2 * i + 1] = imag (buffer [i]);
+	      }
+	      sf_writef_float (dumpFile, dumpBuffer, amount);
+	   }
+//	and the real processing is rather straightforward
+	   for (i = 0; i < amount; i ++) {
+	      buffer [i] = DSPCOMPLEX (real (buffer [i]) * local_attValuel, 
+	                               imag (buffer [i]) * local_attValuer);
+
+//	to accomodate shifting the left (or the right) sample
+//	we store the incoming samples in a small circular buffer
+	      Circular [cc] = buffer [i];
+	      if (local_leftShift == 0)
+	         sample = buffer [i];
+	      else {
+	         DSPFLOAT Re =
+	                 real (Circular [(cc - local_leftShift) & 0xF]);
+	         sample  = DSPCOMPLEX (Re, imag (buffer [i]));
+	      }
+	      cc	= (cc + 1) & 0xF;
+	      buffer [i] = sample;
+//
+//	The actual processing is extremely simple
+	      sample = hfFilter	-> Pass (sample);
+	      sample = localOscillator -> nextValue (local_tunedIF) * sample;
+//	The decimation is done by a real resampler
+	      if (ifResampler	-> doResample (sample,
+	                                       tempBuffer, &nr_ifSamples)) 
+	         process_ifSamples (tempBuffer, nr_ifSamples);
+	   }
+	   hfBuffer	-> putDataIntoBuffer (buffer, amount);
+	   emit hfSamples (amount);
+	}
+
+L_End:
+	fprintf (stderr, "thread is halting\n");
+}
+//
+//	Once we have if samples, we still need to do some
+//	work. Samples are filtered and Agc - if any - is applied
+void	hfProcessor::process_ifSamples (DSPCOMPLEX *v, int16_t amount) {
+int16_t	i;
+float	gain;
+DSPCOMPLEX sample;
+
+	for (i = 0; i < amount; i ++) {
+	   sample	= lfFilter -> Pass (v [i]);
+	   gain		= agc -> doAgc (sample);
+	   sample	= sample * gain;
+	   if (++delayCount > ifRate / 10) {
+	      delayCount = 0;
+	      emit showPeak (0, fromDBtoS (S_Meter (sample)));
+	      emit showAgcGain (gain);
+	   }
+	   else
+	      (void)S_Meter (sample);
+	   ifBuffer -> putDataIntoBuffer (&sample, 1);
+	}
+//
+//	... and if there are sufficient samples, signal the GUI
+//	that a decoder might do something
+	if ((int32_t)(ifBuffer -> GetRingBufferReadAvailable ()) >= ifRate / 20)
+	   emit ifSamples (ifRate / 20);
+}
+//
+//	This function should only be called when we are in
+//	a dataLock area
+void	hfProcessor::change_ifRate	(int32_t newRate) {
+	ifRate		= newRate;
+	set_Filters_if	(0);
+	delete ifResampler;
+	ifResampler		= new reSampler (hfRate, ifRate, 2048);
+	delete	agc;
+	agc			= new agcHandler (ifRate);
+	agc			-> setMode (agcMode);
+}
+//
+//	For filters we need a reasonable "bandLow" and "bandHigh"
+//	relative to the selected frequency
+void	hfProcessor::set_Filters_hf	(int32_t ifFreq) {
+int32_t	filterLow, filterHigh;
+
+	filterLow	= ifFreq + bandLow;
+	filterHigh	= ifFreq + bandHigh;
+	if (filterLow < - hfRate / 2)
+	   filterLow = - hfRate / 2;
+	if (filterHigh > hfRate / 2)
+	   filterHigh = hfRate / 2;
+	hfFilter	-> setBand (filterLow, filterHigh, hfRate);
+	tunedIF		= ifFreq;
+}
+
+void	hfProcessor::set_Filters_if	(int32_t ifFreq) {
+	(void) ifFreq;
+	lfFilter	-> setBand (bandLow, bandHigh, ifRate);
+}
+//
+//	Just a convenience function
+int32_t		hfProcessor::getbandLow (void) {
+	return bandLow;
+}
+
+int32_t		hfProcessor::getbandHigh	(void) {
+	return bandHigh;
+}
+
+	   
+#define	ATTACK	(ifRate / 100)
+#define	DELAY	(ifRate / 2)
+
+DSPFLOAT	hfProcessor::S_Meter (DSPCOMPLEX sample) {
+DSPFLOAT	mag	= 20 * abs (sample);
+DSPFLOAT	S_average;
+
+	S_attack	= decayingAverage (S_attack, mag, ATTACK);
+	S_decay		= decayingAverage (S_decay, mag, DELAY);
+
+	if (S_attack > S_decay) {		//increasing signal strength
+	   S_average	= S_attack;
+	   S_decay	= S_attack;
+	}
+	else 
+	   S_average	= S_decay;
+
+	return get_db (S_average) + 20;
+}
+/*
+ */
+int16_t	hfProcessor::fromDBtoS		(float db) {
+	if (db > -73)
+	   return 9;
+	if (db > -79)
+	   return 8;
+	if (db > -85)
+	   return 7;
+	if (db > -91)
+	   return 6;
+	if (db > -97)
+	   return 5;
+	if (db > -103)
+	   return 4;
+	if (db > -109)
+	   return 3;
+	if (db > -115)
+	   return 2;
+	return 1;
+}

@@ -1,0 +1,13 @@
+#
+for myDecoder in *-decoder
+do
+	echo $myDecoder
+	cd $myDecoder
+	mingw32-qmake-qt5
+	make clean
+	rm -rf debug release Makefile*
+	qmake-qt5
+	make clean
+	cd ..
+done
+

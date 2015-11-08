@@ -1,0 +1,17 @@
+INPUT(
+./release/throb-decoder.o
+./release/throb.o
+./release/fir-filters.o
+./release/fft-filters.o
+./release/fft-scope.o
+./release/scope.o
+./release/utilities.o
+./release/fft.o
+./release/oscillator.o
+./release/main.o
+./release/moc_decoder-interface.o
+./release/moc_throb-decoder.o
+./release/moc_throb.o
+./release/moc_fft-scope.o
+./release/moc_scope.o
+);

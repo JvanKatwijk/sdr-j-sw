@@ -1,0 +1,39 @@
+#
+	echo dabstick
+	cd dabstick
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo extio
+	cd extio
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo mirics-sdrplay
+	cd mirics-sdrplay
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo remote-sdrplay
+	cd remote-sdrplay
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo filereader
+	cd filereader
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo cardreader
+	cd cardreader
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
+	echo "done"
+

@@ -1,0 +1,82 @@
+
+We hebben de volgende modules nodig:
+
+gui: main handler
+hfInput: een thread die de interface vormt naar de devices en
+die keurig signaleert als er data is
+Reageert op
+	restart
+	stop
+	halt
+
+hfFilter: een class die in de gui thread draait en de bandpassfiltering
+voor zijn rekening neemt
+
+mixer:	een class die in de gui thread draait en de mixing voor zijn rekening
+neemt
+
+decimator: een class die in de gui thread draait en de decimation voor zijn
+rekening neemt
+
+lfFilter: een class die in de gui thread draait en de lf filtering voor
+zijn rekening neemt.
+
+De gui heeft een slot dat reageert op het signaal "erisdata" en
+de front end bewerking op de binnenkomende data voor zijn rekening neemt.
+Tenslotte roept dit slot de decoder op de correcte manier aan.
+//
+//	Will be signaled from the deviceInterface
+#define	BUFFERSIZE	1024
+void	radioInterface::sampleHandler (int amount) {
+DSPCOMPLEX buffer [BUFFERSIZE];
+DSPCOMPLEX v2	[BUFFERSIZE];
+DSPCOMPLEX v3	[BUFFERSIZE];
+float	dumpBuffer [2 * BUFFERSIZE];
+int16_t	i, ifCount;
+
+	while (amount >= BUFFERSIZE) {
+	   I_Buffer -> getDataFromBuffer (vector, BUFFERSIZE);
+	   for (i = 0; i < BUFFERSIZE; i ++) {
+	      v2 [i]	= shift_and_attenuate (buffer [i]);
+	      v2 [i]	= my_hfFilter	-> filter (v2 [i]);
+	      v2 [i]	= my_mixer	-> mix	  (v2 [i]);
+	      hfScope	-> addElement (v2 [i]);
+	   }
+	   ifCount	= myDecimator -> decimate (v2, v3, bufferSize);
+	   for (i = 0; i < ifCount; i ++) {
+	      v3 [i]	= lfFilter	-> filter (v3 [i]);
+	      lfScope -> addElement (v3 [i]);
+	      if (theDecoder != NULL)
+	         theDecoder -> doDecode (v3 [i]);
+	   }
+	   if (hf_dumpFile != NULL) {
+	      for (i = 0; i < BUFFERSIZE; i ++) {
+	         dumpBuffer [2 * i] = real (buffer [i]);
+	         dumpBuffer [2 * i + 1] = imag (buffer [i]);
+	      }
+	      sf_writef_float (hf_dumpFile, dumpBuffer, BUFFERSIZE);
+	   }
+	   if (if_dumpFile != NULL) {	// ifCount <= BUFFERSIZE
+	      for (i = 0; i < ifCount; i ++) {
+	         dumpBuffer [2 * i] = real (buffer [i]);
+	         dumpBuffer [2 * i + 1] = imag (buffer [i]);
+	      }
+	      sf_writef_float (lf_dumpFile, dumpBuffer, ifCount);
+	   }
+	   amount -= BUFFERSIZE;
+	}
+}
+
+
+class	deviceInterface: public QThread {
+public:
+		deviceInterface (rigInterface *, RingBuffer<DSPCOMPLEX *);
+		~deviceInterface (void);
+	void	startDevice	(void);
+	void	pauseDevice	(void);
+	void	stop		(void);
+signals:
+	void	dataReady	(int);
+};
+
+

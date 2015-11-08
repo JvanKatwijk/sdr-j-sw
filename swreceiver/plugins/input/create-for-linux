@@ -1,0 +1,51 @@
+#
+	echo dabstick
+	cd dabstick
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo elektor
+	cd elektor
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo pmsdr
+	cd pmsdr
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo mirics-sdrplay
+	cd mirics-sdrplay
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo remote-sdrplay
+	cd remote-sdrplay
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo sw-elad-s1
+	cd sw-elad-s1
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo filereader
+	cd filereader
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo cardReader
+	cd cardreader
+	qmake-qt5
+	make
+	make clean
+	cd ..
+	echo "done"
+
