@@ -99,7 +99,7 @@ LIBS	+= -lwinmm
 #However, the dll handler will not work anymore
 #for 64 bits windows, choose
 #win32 {
-#DESTDIR	= ../../../windows64-bin
+#DESTDIR	= ../../windows64-bin
 ## includes in mingw differ from the includes in fedora linux
 #INCLUDEPATH += /usr/x86-w64-mingw32/sys-root/mingw/include
 #INCLUDEPATH += /usr/x86-w64-mingw32/sys-root/mingw/include/qwt

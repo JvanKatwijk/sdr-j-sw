@@ -10,3 +10,7 @@ c. mirics-server: very simple server for connecting the SDRplay to a remote
 device and using that as input (I am using it on an Raspberry that is close
 to the antenna).
 
+By default generated programs will be placed in "./linux-bin",
+the generated plugins for input handling in "./linux-bin/input-plugins",
+and the generated plugins for the decoders in "./linux-bin/decoder-plugins".
+

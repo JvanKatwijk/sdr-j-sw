@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 2.6 )
 set ( CMAKE_BUILD_TYPE Release )
 set (objectName configure-sw)
-set ( CMAKE_INSTALL_PREFIX ../../../../ )
+set ( CMAKE_INSTALL_PREFIX ../ )
 	add_definitions ( -Wall )
 
 	find_package (Qt5Widgets REQUIRED)
@@ -46,5 +46,5 @@ set ( CMAKE_INSTALL_PREFIX ../../../../ )
 	                       Qt5::Widgets
 	)
 
-	INSTALL(TARGETS ${objectName}  DESTINATION ../../linux-bin)
+	INSTALL(TARGETS ${objectName}  DESTINATION ../linux-bin)
 
