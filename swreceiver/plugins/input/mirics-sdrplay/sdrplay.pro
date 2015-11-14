@@ -3,6 +3,8 @@ TEMPLATE    = lib
 CONFIG      += plugin
 QT          += core gui widgets
 
+DEFINES		+= SDRPLAY_LIBRARY_NEW
+
 INCLUDEPATH += . \
 	       ../ ../.. \
 	       ../../../includes \

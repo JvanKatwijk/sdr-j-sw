@@ -1,0 +1,11 @@
+
+A recent change in the sdrplay installer leads to an incompatible 
+naming of some library.
+
+If you havw the most recent installer used (afaik 14 nov 2015)
+please define
+#define	SDRLAY_LIBRARY_NEW
+in either the configuration file of the sdrplay device or
+in the file .../swreceiver/plugins/input/mirics-sdrplay/sdrplay-loader.cpp
+
+
