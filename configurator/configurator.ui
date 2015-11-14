@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>618</width>
     <height>300</height>
    </rect>
   </property>
@@ -44,9 +44,14 @@
     <rect>
      <x>50</x>
      <y>110</y>
-     <width>331</width>
+     <width>541</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="frameShape">
     <enum>QFrame::Panel</enum>
@@ -60,9 +65,14 @@
     <rect>
      <x>50</x>
      <y>190</y>
-     <width>331</width>
+     <width>541</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="frameShape">
     <enum>QFrame::Panel</enum>
