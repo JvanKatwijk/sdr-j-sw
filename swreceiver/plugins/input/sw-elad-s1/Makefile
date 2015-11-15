@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = device_elad-s1sw1.0.0
-DISTDIR = /home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1/.tmp/device_elad-s1sw1.0.0
+DISTDIR = /usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1/.tmp/device_elad-s1sw1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,relro -shared
 LIBS          = $(SUBLIBS) -lusb-1.0 -ldl -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -375,20 +375,20 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_rig-interface.cpp moc_elad-s1.cpp moc_elad-worker.cpp
 moc_rig-interface.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
 
 moc_elad-s1.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h \
 		../../../includes/various/ringbuffer.h \
 		ui_widget.h \
 		elad-s1.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include elad-s1.h -o moc_elad-s1.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include elad-s1.h -o moc_elad-s1.cpp
 
 moc_elad-worker.cpp: ../../../includes/various/ringbuffer.h \
 		elad-loader.h \
 		../../../includes/swradio-constants.h \
 		elad-worker.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include elad-worker.h -o moc_elad-worker.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/sw-elad-s1 -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include elad-worker.h -o moc_elad-worker.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:

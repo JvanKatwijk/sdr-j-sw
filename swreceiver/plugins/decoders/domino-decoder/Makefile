@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = dominodecoder1.0.0
-DISTDIR = /home/jan/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder/.tmp/dominodecoder1.0.0
+DISTDIR = /usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder/.tmp/dominodecoder1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,relro -shared
 LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -399,7 +399,7 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_decoder-interface.cpp moc_domino-decoder.cpp
 moc_decoder-interface.cpp: ../../../includes/swradio-constants.h \
 		../decoder-interface.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/decoder-utils -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/filters -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../decoder-interface.h -o moc_decoder-interface.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/decoder-utils -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../decoder-interface.h -o moc_decoder-interface.cpp
 
 moc_domino-decoder.cpp: ../../../includes/swradio-constants.h \
 		../decoder-interface.h \
@@ -412,7 +412,7 @@ moc_domino-decoder.cpp: ../../../includes/swradio-constants.h \
 		../../../includes/various/utilities.h \
 		ui_widget.h \
 		domino-decoder.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/plugins/decoders/decoder-utils -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/filters -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include domino-decoder.h -o moc_domino-decoder.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/domino-decoder -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders/decoder-utils -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include domino-decoder.h -o moc_domino-decoder.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:

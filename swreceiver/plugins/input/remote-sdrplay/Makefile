@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = device_remote1.0.0
-DISTDIR = /home/jan/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay/.tmp/device_remote1.0.0
+DISTDIR = /usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay/.tmp/device_remote1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,relro -shared
 LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Network -lQt5Core -lGL -lpthread 
@@ -367,14 +367,14 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_rig-interface.cpp moc_remote.cpp
 moc_rig-interface.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
 
 moc_remote.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h \
 		../../../includes/various/ringbuffer.h \
 		ui_widget.h \
 		remote.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include remote.h -o moc_remote.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/remote-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtNetwork -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include remote.h -o moc_remote.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:

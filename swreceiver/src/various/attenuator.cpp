@@ -53,8 +53,8 @@ int16_t	Bl, Br;
 DSPCOMPLEX	attenuator::shift_and_attenuate (DSPCOMPLEX s) {
 DSPCOMPLEX t;
 	buffer [counter] = (s);
-	int16_t index	= (counter - maxOffset + 2 * maxOffset) % 2 * maxOffset;
-	counter	= (counter + 1) % maxOffset;
+	int16_t index	= counter % (2 * maxOffset);
+	counter	= (counter + 1) % (2 * maxOffset);
 
 	if (symbol_Leftshift != 0) {
 	   int16_t indexL = (index + symbol_Leftshift + 2 * maxOffset) %
@@ -64,8 +64,8 @@ DSPCOMPLEX t;
 	else
 	   t = buffer [index];
 
-	return DSPCOMPLEX (attValueL * real (s),
-	                   attValueR * imag (s));
+	return DSPCOMPLEX (attValueL * real (t),
+	                   attValueR * imag (t));
 }
 
 void	attenuator::setShift	(int16_t s) {

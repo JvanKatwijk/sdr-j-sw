@@ -12,7 +12,7 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_NO_DEBUG -DQT_PLUGIN -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DSDRPLAY_LIBRARY_NEW -DQT_NO_DEBUG -DQT_PLUGIN -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches -m64 -mtune=generic -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I. -I.. -I../.. -I../../../includes -I../../../includes/filters -I../../../includes/various -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++
@@ -33,7 +33,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = device_sdrPlay1.0.0
-DISTDIR = /home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay/.tmp/device_sdrPlay1.0.0
+DISTDIR = /usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay/.tmp/device_sdrPlay1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1 -Wl,-z,relro -shared
 LIBS          = $(SUBLIBS) -lusb-1.0 -ldl -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
@@ -379,14 +379,14 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_rig-interface.cpp moc_sdrplay.cpp moc_sdrplay-worker.cpp
 moc_rig-interface.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/filters -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include ../rig-interface.h -o moc_rig-interface.cpp
 
 moc_sdrplay.cpp: ../../../includes/swradio-constants.h \
 		../rig-interface.h \
 		../../../includes/various/ringbuffer.h \
 		ui_widget.h \
 		sdrplay.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/filters -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include sdrplay.h -o moc_sdrplay.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include sdrplay.h -o moc_sdrplay.cpp
 
 moc_sdrplay-worker.cpp: ../../../includes/various/ringbuffer.h \
 		sdrplay-loader.h \
@@ -394,7 +394,7 @@ moc_sdrplay-worker.cpp: ../../../includes/various/ringbuffer.h \
 		mir_sdr-windows.h \
 		../../../includes/filters/fir-filters.h \
 		sdrplay-worker.h
-	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/home/jan/sdr-j-sw/swreceiver/plugins/input -I/home/jan/sdr-j-sw/swreceiver/plugins -I/home/jan/sdr-j-sw/swreceiver/includes -I/home/jan/sdr-j-sw/swreceiver/includes/filters -I/home/jan/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include sdrplay-worker.h -o moc_sdrplay-worker.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/mirics-sdrplay -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.1.1 -I/usr/include/c++/5.1.1/x86_64-redhat-linux -I/usr/include/c++/5.1.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.1.1/include -I/usr/local/include -I/usr/include sdrplay-worker.h -o moc_sdrplay-worker.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
