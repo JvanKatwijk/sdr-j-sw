@@ -31,7 +31,7 @@
 #include	<QMessageBox>
 #include	<QTcpSocket>
 #include	<QHostAddress>
-#include	"remote.h"
+#include	"remote-sdrplay.h"
 //
 #define	DEFAULT_FREQUENCY	(Khz (14070))
 
@@ -49,8 +49,7 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	theGain		= remoteSettings ->
 	                          value ("remote-gain", 50). toInt ();
 	remoteSettings	-> endGroup ();
-	gainSelector	-> setValue (theGain);
-	rateDisplay	-> display (theRate);
+	gainSlider	-> setValue (theGain);
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(4 * 32768);
 	connected	= false;
@@ -61,7 +60,7 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	         this, SLOT (setDisconnect (void)));
 	connect (hzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (setOffset (int)));
-	connect (gainSelector, SIGNAL (valueChanged (int)),
+	connect (gainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (sendGain (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (setRate (const QString &)));
@@ -179,7 +178,6 @@ int32_t	localRate	= s. toInt ();
 
 //	communicate change in rate to the device
 	theRate	= localRate;
-	rateDisplay -> display (theRate);
     	set_changeRate (theRate);	// signal the main program
 	                                // to alter some settings
 	if (connected)
@@ -308,6 +306,8 @@ QByteArray d;
 }
 
 //	These functions are typical for network use
+//
+//	Transfer is in blocks of 512 * 4 bytes
 void	remote::readData	(void) {
 QByteArray d;
 
@@ -318,9 +318,8 @@ QByteArray d;
 	}
 }
 //
-#define	SCALE_FACTOR_30 2048.0
 static inline
-DSPCOMPLEX	makeSample_31bits (uint8_t *buf) {
+DSPCOMPLEX	makeSample (uint8_t *buf) {
 int16_t ii = 0; int16_t qq = 0;
 int16_t	i = 0;
 
@@ -332,24 +331,24 @@ int16_t	i = 0;
 
 	ii = (i0 << 8) | i1;
 	qq = (q0 << 8) | q1;
-	return  DSPCOMPLEX ((float)ii / SCALE_FACTOR_30,
-	                    (float)qq / SCALE_FACTOR_30);
+
+	return  DSPCOMPLEX ((float (ii)) / 32767.0, (float (qq)) / 32767.0);
 }
 
-//	we get in 16 bits (signed) integers, packed in unsigned bytes.
+//	we get in 16 bits int16_t, packed in unsigned bytes.
 //	so, for one I/Q sample we need 4 bytes
 void	remote::toBuffer (QByteArray d) {
 int32_t	i;
 int32_t j;
 int32_t	length	= d. size ();
-DSPCOMPLEX buffer [length / 4 ];
+DSPCOMPLEX buffer [length / 4];
 int	size	= 0;
 
 	for (i = 0; i < length / 4; i++) {
 	   uint8_t lbuf [4];
 	   for (j = 0; j < 4; j ++)
 	      lbuf [j] = d [4 * i + j];
-	   buffer [i] = makeSample_31bits (&lbuf [0]);
+	   buffer [i] = makeSample (&lbuf [0]);
 	   size ++;
 	}
 	_I_Buffer -> putDataIntoBuffer (buffer, size);
@@ -421,6 +420,7 @@ int16_t	i;
 	datagram [1]	= gain;
 	toServer. write (datagram. data (), datagram. size ());
 	theGain		= gain;
+	gainDisplay	-> display (theGain);
 }
 
 void	remote::setDisconnect (void) {

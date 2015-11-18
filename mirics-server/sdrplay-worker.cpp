@@ -90,8 +90,8 @@ int32_t	ratio;
 	   return;
 	}
 
-	err			= functions -> mir_sdr_SetDcMode (5, 0);
-	err			= functions -> mir_sdr_SetDcTrackTime (63);
+	err			= functions -> mir_sdr_SetDcMode (1, 1);
+//	err			= functions -> mir_sdr_SetDcTrackTime (63);
 //
 //	some defaults:
 	lastFrequency		= defaultFreq;	// the parameter!!!!

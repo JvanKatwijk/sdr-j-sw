@@ -29,6 +29,12 @@
 	make
 	make clean
 	cd ..
+	echo remote-dabstick
+	cd remote-dabstick
+	qmake-qt5
+	make
+	make clean
+	cd ..
 	echo sw-elad-s1
 	cd sw-elad-s1
 	qmake-qt5

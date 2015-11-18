@@ -318,26 +318,26 @@ void	miricsServer::stopReader	(void) {
 //
 //	This slot is called from the worker
 //	on arrival of a new bunch of samples
-#define	SCALE_FACTOR 4096.0
 void	miricsServer::sendSamples (int amount) {
 QByteArray datagram;
-DSPCOMPLEX buffer [4 * 512];
+DSPCOMPLEX buffer [512];
 int16_t	i;
-static int cnt = 0;
-
-	datagram. resize (4 * 4 * 512);
-	while (_I_Buffer -> GetRingBufferReadAvailable () > 4 * 512) {
-	   amount = _I_Buffer -> getDataFromBuffer (buffer, 4 * 512);
+//
+//	we send groups of 512 samples, each sample mapped onto
+//	2 16 bit ints (i.e. 4 bytes)
+	datagram. resize (4 * 512);
+	while (_I_Buffer -> GetRingBufferReadAvailable () > 512) {
+	   int16_t count	= 0;
+	   amount = _I_Buffer -> getDataFromBuffer (buffer, 512);
 	   for (i = 0; i < amount; i ++) {
-	      int16_t re = real (buffer [i]) * SCALE_FACTOR;
-	      int16_t im = imag (buffer [i]) * SCALE_FACTOR;
-	      if (re > 8192 || im > 8192)
-	          fprintf (stderr, "Piep %d %d\n", re, im);
-	      datagram [4 * i + 0] = ((re & 0xFF00) >>  8) & 0xFF;
-	      datagram [4 * i + 1] =  (re & 0x00FF) & 0xFF;
+	      int16_t re = real (buffer [i]) * 32767;
+	      int16_t im = imag (buffer [i]) * 32767;
+	   
+	      datagram [count ++]	= ((re & 0xFF00) >>  8) & 0xFF;
+	      datagram [count ++]	=  (re & 0x00FF) & 0xFF;
 
-	      datagram [4 * i + 2] = ((im & 0xFF00) >>  8) & 0xFF;
-	      datagram [4 * i + 3] =  (im & 0x00FF) & 0xFF;
+	      datagram [count ++]	= ((im & 0xFF00) >>   8) & 0xFF;
+	      datagram [count ++]	=  (im & 0x00FF) & 0xFF;
 	   }
 	   if (streamerAddress -> state () ==
 	                   QAbstractSocket::UnconnectedState) {

@@ -23,6 +23,12 @@
 	make
 	make clean
 	cd ..
+	echo remote-dabstick
+	cd remote-dabstick
+	mingw32-qmake-qt5
+	make
+	make clean
+	cd ..
 	echo filereader
 	cd filereader
 	mingw32-qmake-qt5

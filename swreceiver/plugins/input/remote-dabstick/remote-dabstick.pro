@@ -10,9 +10,9 @@ INCLUDEPATH += . \
 HEADERS     = ../rig-interface.h \
 	      ../../../includes/swradio-constants.h \
 	      ../../../includes/various/ringbuffer.h \
-	      ./remote.h 
-SOURCES     =  ./remote.cpp
-TARGET      = $$qtLibraryTarget(device_remote)
+	      ./remote-dabstick.h 
+SOURCES     =  ./remote-dabstick.cpp
+TARGET      = $$qtLibraryTarget(device_remote-dabstick)
 FORMS	+= ./widget.ui
 
 #for 32 bits windows we use

@@ -110,7 +110,7 @@ QWidget	*dabStick::createPluginWindow (int32_t rate,
 	if (open && libraryLoaded && dabSettings != NULL) {
 	   dabSettings	-> beginGroup ("dabstick");
 	   dabSettings	-> setValue ("dab_externalGain",
-	                                             externalGain -> value ());
+	                                             gainSlider -> value ());
 	   dabSettings	-> setValue ("dab_correction",
 	                                             f_correction -> value ());
 	   dabSettings	-> setValue ("dab_khzOffset", khzOffset -> value ());
@@ -219,9 +219,8 @@ int16_t	i;
 	   fprintf(stderr, "%.1f ", gains [i] / 10.0);
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_tuner_gain (device, gains [gainsCount / 2]);
-	externalGain	-> setMaximum (gainsCount);
-	rateDisplay	-> display (rateIn);
-	externalGain	-> setValue (8);
+	gainSlider	-> setMaximum (gainsCount);
+	gainSlider	-> setValue (8);
 	_I_Buffer	= new RingBuffer<uint8_t>(1024 * 1024);
 	workerHandle	= NULL;
 
@@ -230,7 +229,7 @@ int16_t	i;
 	                                     rateOut / 2,
 	                                     rateIn,
 	                                     rateIn / rateOut);
-	connect (externalGain, SIGNAL (valueChanged (int)),
+	connect (gainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (setExternalGain (int)));
 	connect (f_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (setCorrection (int)));
@@ -240,10 +239,12 @@ int16_t	i;
 	         this, SLOT (setHzOffset (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_rateSelector (const QString &)));
+	connect (checkAgc, SIGNAL (stateChanged (int)),
+	         this, SLOT (setAgc (int)));
 	if (dabSettings != NULL) {
 	   dabSettings	-> beginGroup ("dabStick");
 	   int	k	= dabSettings	-> value ("dab_externalGain", 24). toInt ();
-	   externalGain	-> setValue (k);
+	   gainSlider	-> setValue (k);
 	   k		= dabSettings	-> value ("dab_correction", 0). toInt ();
 	   f_correction	-> setValue (k);
 	   k		= dabSettings	-> value ("dab_khzOffset", 0). toInt ();
@@ -362,7 +363,6 @@ int32_t	r;
 	                                     inputRate,
 	                                     inputRate / outputRate);
 
-	rateDisplay	-> display (inputRate);
 	emit set_changeRate (outputRate);
 }
 
@@ -378,6 +378,7 @@ static int	oldGain	= 0;
 	oldGain	= gain;
 	rtlsdr_set_tuner_gain (device, gains [gain]);
 	(void)rtlsdr_get_tuner_gain (device);
+//	showGain	-> display (gain);
 }
 //
 //	Good old getSamples
@@ -473,6 +474,14 @@ bool	dabStick::load_rtlFunctions (void) {
 	               GETPROCADDRESS (Handle, "rtlsdr_get_sample_rate");
 	if (rtlsdr_get_sample_rate == NULL) {
 	   fprintf (stderr, "Could not find rtlsdr_get_sample_rate\n");
+	   return false;
+	}
+
+	rtlsdr_set_agc_mode	=
+	    (pfnrtlsdr_set_agc_mode)
+	               GETPROCADDRESS (Handle, "rtlsdr_set_agc_mode");
+	if (rtlsdr_set_agc_mode == NULL) {
+	   fprintf (stderr, "Could not find rtlsdr_set_agc_mode\n");
 	   return false;
 	}
 
@@ -585,6 +594,18 @@ int16_t	dabStick::bitDepth	(void) {
 
 void	dabStick::exit		(void) {
 	stopReader ();
+}
+
+void	dabStick::newdataAvailable (int n) {
+	samplesAvailable (n);
+}
+
+void	dabStick::setAgc	(int s) {
+	(void) s;
+	if (checkAgc -> isChecked ())
+	   (void)rtlsdr_set_agc_mode (device, 1);
+	else
+	   (void)rtlsdr_set_agc_mode (device, 0);
 }
 
 #if QT_VERSION < 0x050000

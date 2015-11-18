@@ -1,0 +1,7 @@
+Since I like to listen and develop programs from my lazy chair, I made two
+small and simple servers for the SDRplay resp. DABsticks.
+They are connected to an RPI 2, control the devices and filter and decimate
+the data before sending a stream of samples to a TCP port.
+
+The sw software contains a client for each of these.
+
