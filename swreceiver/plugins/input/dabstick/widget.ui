@@ -183,7 +183,7 @@
      <string>agc</string>
     </property>
    </widget>
-   <widget class="QLCDNumber" name="showGain">
+   <widget class="QLCDNumber" name="gainDisplay">
     <property name="geometry">
      <rect>
       <x>113</x>

@@ -378,7 +378,7 @@ static int	oldGain	= 0;
 	oldGain	= gain;
 	rtlsdr_set_tuner_gain (device, gains [gain]);
 	(void)rtlsdr_get_tuner_gain (device);
-//	showGain	-> display (gain);
+	gainDisplay	-> display (gain);
 }
 //
 //	Good old getSamples
