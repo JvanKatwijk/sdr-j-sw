@@ -34,6 +34,7 @@
 //	In order to handle the A and B levels, we create a
 //	separate processor ("streamer") for the A and B parts of the stream.
 	QAM64_SM_Handler::QAM64_SM_Handler	(mscConfig *msc,
+	                                         int8_t	qam64Roulette,
 	                                         viterbi *v):
 	                                          mscHandler (msc) {
 int16_t	N1, N2;
@@ -42,8 +43,9 @@ float	denom	= 0;
 int32_t	highProtected, lowProtected;
 	myDecoder	= new qam64_metrics ();
 //
-	this	-> msc	= msc;
-	lengthA		= 0;
+	this	-> msc			= msc;
+	this	-> qam64Roulette	= qam64Roulette;
+	lengthA				= 0;
 	for (i = 0; i < msc -> numofStreams; i ++)
 	   lengthA += msc	-> streams [i]. lengthHigh;
 	lengthB		= 0;
@@ -137,7 +139,7 @@ uint8_t	level_0 [2 * msc -> muxSize ()];
 uint8_t	level_1 [2 * msc -> muxSize ()];
 uint8_t	level_2 [2 * msc -> muxSize ()];
 
-	for (i = 0; i < 5; i ++) {
+	for (i = 0; i < qam64Roulette; i ++) {
 	   myDecoder	-> computemetrics (v, msc -> muxSize (),
 	                                   0, Y0,
 	                                   i > 0,

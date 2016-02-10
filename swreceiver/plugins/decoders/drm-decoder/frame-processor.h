@@ -55,14 +55,16 @@ Q_OBJECT
 public:
 			frameProcessor	(drmDecoder *,
 	                                 RingBuffer<DSPCOMPLEX> *,
-	                                 int16_t, int8_t);
+	                                 int16_t,
+	                                 int8_t,	// windowDepth
+	                                 int8_t);	// qam64
 			~frameProcessor (void);
 	void		stop		(void);
 private:
 	drmDecoder	*mr;
 	RingBuffer<DSPCOMPLEX> *buffer;
 	int8_t		windowDepth;
-	int16_t		estimator;
+	int8_t		qam64Roulette;
 
 	bool		taskMayRun;
 	DSPCOMPLEX	facError		(DSPCOMPLEX *,

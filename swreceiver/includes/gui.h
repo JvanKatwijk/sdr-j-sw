@@ -48,6 +48,7 @@ class	decoderLoader;
 class	deviceLoader;
 class	fftFilter;
 class	agcHandler;
+class	notchFilter;
 class	resampler;
 class	S_Meter;
 class	attenuator;
@@ -147,6 +148,8 @@ private:
 	fftFilter	*lfFilter;
 	Oscillator	*myOscillator;
 	agcHandler	*agc;
+	bool		notch;
+	notchFilter	*my_notchFilter;
 	void		set_Filters_hf		(int32_t ifFreq);
 	void		set_Filters_if		(int32_t ifFreq);
 	int32_t		getbandHigh		(void);
@@ -163,8 +166,9 @@ private slots:
 	void		set_mouseIncrement	(int);
 	void		clickPause		(void);
 	void		set_Start		(void);
-	void		AdjustFrequencywithKHz	(int);
+	void		adjustFrequencywithKHz	(int);
 
+	void		set_notchFilter		(void);
 	void		set_HFplotterView	(const QString &);
 	void		set_LFplotterView	(const QString &);
 	void		set_HFspectrumAmplitude	(int);
@@ -218,12 +222,14 @@ private slots:
 	void		set_symbolLeftshift	(int);
 public slots:
 	void		wheelEvent		(QWheelEvent *);
-	void		AdjustFrequency		(int);
+	void		adjustFrequency		(int);
 	void		showPeak		(int, double);
 	void		setDetectorMarker	(int);
 	void		showAgcGain		(float);
 	void		outputSample		(float, float);
 	void		sampleHandler		(int);
+//
+	void		set_notchFrequency	(int);
 //
 //	especially for the Extio:
 	void		set_ExtFrequency	(int);

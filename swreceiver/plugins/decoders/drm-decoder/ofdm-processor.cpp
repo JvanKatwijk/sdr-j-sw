@@ -320,7 +320,7 @@ int16_t	d;
 	}
 	else { 			// apparently tracking mode
 	   sampleclockOffset	= 0.9 * sampleclockOffset + 0.1 * clockOffset;
-	   timedelay		-= 0.6 * offsetFractional;
+	   timedelay		-= 0.8 * offsetFractional;
 	}
 	
 	timeOffsetInteger	= floor (timedelay + 0.5);
@@ -359,7 +359,7 @@ int16_t	d;
 	   theAngle = arg (c);
 	}
 	else
-	   theAngle	= theAngle - 0.05 * angle;
+	   theAngle	= theAngle - 0.1 * angle;
 //	offset in Hz / 100
 	offset		= theAngle * 1200000 / (2 * M_PI * Tu);
 	if (offset == offset)	// precaution to handle undefines

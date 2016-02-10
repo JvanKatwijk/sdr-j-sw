@@ -47,6 +47,7 @@
 #include	"agchandler.h"
 #include	"fft-filters.h"
 #include	"fir-filters.h"
+#include	"notch-filters.h"
 #include	"pa-writer.h"
 #include	"utilities.h"
 #include	"oscillator.h"
@@ -133,7 +134,9 @@ int32_t	k;
 	lfScope			-> setNeedle (0);
 	lfScope			-> setBitDepth	(bitDepth - 1);
 	connect (lfScope, SIGNAL (clickedwithLeft (int)),
-	         this, SLOT (AdjustFrequency (int)));
+	         this, SLOT (adjustFrequency (int)));
+	connect (lfScope, SIGNAL (clickedwithRight (int)),
+	         this, SLOT (set_notchFrequency (int)));
 //
 //	hfScope setup
 	hfScope		= new fft_scope (hfscope,
@@ -151,7 +154,7 @@ int32_t	k;
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (AdjustFrequencywithKHz (int)));
+	         SLOT (adjustFrequencywithKHz (int)));
 //
 	QString Version		= QString ("sdrJ-SW-V");
 	Version. append (QString(CURRENT_VERSION));
@@ -208,6 +211,8 @@ int32_t	k;
 	theAttenuator		= new attenuator;
 	delayCount		= 0;
 //
+	notch			= false;
+	my_notchFilter		= new notchFilter (workingRate, 0.2 * workingRate);
 	hf_dumpFile		= NULL;
 	if_dumpFile		= NULL;
 	lf_dumpFile		= NULL;
@@ -245,6 +250,7 @@ int32_t	k;
 	delete		displayTimer;
 	delete		ifResampler;
 	delete		agc;
+	delete		my_notchFilter;
 	delete		theMeter;
 	delete		theAttenuator;
 }
@@ -390,6 +396,8 @@ void	RadioInterface::TerminateProcess (void) {
 	runMode		= IDLE;		// this will ensure that
 	                                // signals on incoming data
 	                                // will be ignored
+	displayTimer	-> stop ();
+	lcdTimer	-> stop	();
 //	ensure that the device processing software is closed
 	if (theDevice != NULL) 
 	   theDevice		-> exit ();
@@ -460,7 +468,7 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (AdjustFrequencywithKHz (int)));
+	         SLOT (adjustFrequencywithKHz (int)));
 	hfScope		-> setNeedle (inputRate / 4);
 	hfScope			-> setBitDepth	(bitDepth - 1);
 	set_HFplotterView	(HFplotterView	-> currentText ());
@@ -508,7 +516,11 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	connect (lfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (AdjustFrequency (int)));
+	         SLOT (adjustFrequency (int)));
+	connect (lfScope,
+	         SIGNAL (clickedwithRight (int)),
+	         this,
+	         SLOT (set_notchFrequency (int)));
 	lfScope			-> setNeedle (0);
 	lfScope			-> setBitDepth	(bitDepth - 1);
 	set_LFplotterView	(LFplotterView	-> currentText ());
@@ -678,38 +690,38 @@ int32_t	RadioInterface::getPanel (void) {
 }
 
 void RadioInterface::decT5 (void) {
-	AdjustFrequency (-1);
+	adjustFrequency (-1);
 }
 
 void RadioInterface::decT50 (void) {
-	AdjustFrequency (-10);
+	adjustFrequency (-10);
 }
 
 void RadioInterface::decT500 (void) {
-	AdjustFrequency (-100);
+	adjustFrequency (-100);
 }
 
 void RadioInterface::decT5000 (void) {
-	AdjustFrequency (-1000);
+	adjustFrequency (-1000);
 }
 
 void RadioInterface::incT5 (void) {
-	AdjustFrequency (1);
+	adjustFrequency (1);
 }
 
 void RadioInterface::incT50 (void) {
-	AdjustFrequency (10);
+	adjustFrequency (10);
 }
 
 void RadioInterface::incT500 (void) {
-	AdjustFrequency (100);
+	adjustFrequency (100);
 }
 
 void RadioInterface::incT5000 (void) {
-	AdjustFrequency (1000);
+	adjustFrequency (1000);
 }
 
-void	RadioInterface::AdjustFrequency (int32_t n) {
+void	RadioInterface::adjustFrequency (int32_t n) {
 	if (lcdTimer	-> isActive ()) {
 	   ClearPanel ();
 	   lcdTimer -> stop ();
@@ -718,8 +730,8 @@ void	RadioInterface::AdjustFrequency (int32_t n) {
 	inc_Tuner (n);
 }
 
-void	RadioInterface::AdjustFrequencywithKHz (int n) {
-	AdjustFrequency (Khz (n));
+void	RadioInterface::adjustFrequencywithKHz (int n) {
+	adjustFrequency (Khz (n));
 }
 //
 //	If/when we want the needle in the middle, we just
@@ -1048,7 +1060,7 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (AdjustFrequencywithKHz (int)));
+	         SLOT (adjustFrequencywithKHz (int)));
 	hfScope		-> setNeedle (inputRate / 4);
 	set_HFplotterView	(HFplotterView	-> currentText ());
 //	and we restore some settings, directly from the GUI settings
@@ -1098,14 +1110,16 @@ void	RadioInterface::wheelEvent (QWheelEvent *e) {
  *	are connected here.
  */
 void	RadioInterface::localConnects (void) {
-	connect (pauseButton, SIGNAL (clicked ()),
-	              this, SLOT (clickPause ()));
-	connect (startButton, SIGNAL (clicked ()),
-	              this, SLOT (set_Start ()));
+	connect (pauseButton, SIGNAL (clicked (void)),
+	              this, SLOT (clickPause (void)));
+	connect (startButton, SIGNAL (clicked (void)),
+	              this, SLOT (set_Start (void)));
+	connect (notchButton, SIGNAL (clicked (void)),
+	              this, SLOT (set_notchFilter (void)));
 	connect (streamOutSelector, SIGNAL (activated (int)),
 	              this, SLOT (set_StreamOutSelector (int)));
-	connect (QuitButton, SIGNAL (clicked ()),
-	              this, SLOT (TerminateProcess ()));
+	connect (QuitButton, SIGNAL (clicked (void)),
+	              this, SLOT (TerminateProcess (void)));
 	connect (symbol_shifter, SIGNAL (valueChanged (int)),
 	              this, SLOT (set_symbolLeftshift (int)));
 /*
@@ -1357,6 +1371,8 @@ int16_t	amount, i;
 	if (theDecoder == NULL)
 	   return;
 	amount = convertRate (DSPCOMPLEX (re, im), b, theDecoder -> rateOut ());
+	if (amount <= 0)
+	   return;
 	if (lf_dumpFile != NULL) {
 	   for (i = 0; i < amount; i ++) {
 	      c [2 * i] 	= real (b [i]);
@@ -1376,6 +1392,8 @@ DSPCOMPLEX v3	[BUFFERSIZE];
 float	dumpBuffer [2 * BUFFERSIZE];
 int16_t	i, ifCount;
 
+	if (runMode == IDLE)
+	   return;
 	while (theDevice -> Samples () >= BUFFERSIZE) {
 	   theDevice -> getSamples (buffer, BUFFERSIZE, inputMode);
 	   for (i = 0; i < BUFFERSIZE; i ++) {
@@ -1401,6 +1419,8 @@ int16_t	i, ifCount;
 	      v3 [i]	= lfFilter	-> Pass (v3 [i]);
 	      agcGain	= agc		-> doAgc (v3 [i]);
 	      v3 [i]	*= agcGain;
+	      if (notch)
+	         v3 [i] = my_notchFilter	-> Pass (v3 [i]);
 	      lfScope -> addElement (v3 [i]);
 	      if (++delayCount > workingRate / 10) {
 	         delayCount = 0;
@@ -1409,6 +1429,7 @@ int16_t	i, ifCount;
 	      }
 	      else
 	         (void)theMeter -> MeterValue (v3 [i]);
+
 	      if (theDecoder != NULL)
 	         theDecoder -> doDecode (v3 [i]);
 	   }
@@ -1471,5 +1492,17 @@ int16_t	i;
 	   out [i] = theFilter -> Pass (DSPCOMPLEX (0, 0));
 
 	return audioRate / inrate;
+}
+
+void	RadioInterface::set_notchFilter	(void) {
+	notch	= !notch;
+	if (notch)
+	   notchButton	-> setText ("on");
+	else
+	   notchButton	-> setText ("notch");
+}
+
+void	RadioInterface::set_notchFrequency	(int n) {
+	my_notchFilter	-> setFrequency (n);
 }
 

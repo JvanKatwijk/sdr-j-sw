@@ -121,6 +121,7 @@ QString	fileName;
 	      qobject_cast<rigInterface *> (plugin);
 L2:	rigWindow	= theRig	-> createPluginWindow (rate,
 	                                                       mySettings);
+	rigWindow	-> show ();
 	rigWindow	-> setParent (myFrame);
 	myLayout	-> addWidget (rigWindow);
 	myFrame		-> setLayout (myLayout);

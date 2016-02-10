@@ -43,26 +43,17 @@ public:
 	                         int32_t,	// spectrum size
 	                         int32_t,	// samplerate
 	                         int16_t);	// repeat frequency
-			~fft_scope	();
+			~fft_scope	(void);
 	void		addElement	(DSPCOMPLEX);
-	void		addElement	(DSPCOMPLEX, int16_t);
 	void		addElements	(DSPCOMPLEX *, int16_t);
-	void		addElementsandShow	(DSPCOMPLEX *, int16_t);
 	void		setAmplification	(int16_t);
 	void		setZero			(int64_t);
-	void		setZoompoint		(int32_t);
-	void		resetZoompoint		(void);
 	void		setNeedle		(int32_t);
 	void		clearAverage		(void);
 	void		SelectView		(int8_t);
 	void		setAverager		(bool);
 private:
-	void		mapSpectrumtoDisplay	(int16_t, int32_t);
-	int64_t		frequencyFor		(int64_t);
-	int32_t		indexOf			(int64_t);
 	void		doAverage		(void);
-	double		*dummyBuffer;
-	int32_t		dummyCount;
 
 	int32_t		sampleRate;
 	int16_t		displaySize;
@@ -84,8 +75,6 @@ private:
 	int32_t		needle;
 	int16_t		amplification;
 	int64_t		vfo;
-	int32_t		zoomingPoint;
-	int16_t		zoomingLevel;
 
 	int32_t		spectrumSize;
 	double		*X_axis;
@@ -94,7 +83,6 @@ private:
 	uint32_t	averageCount;
 //	inherits adjustFrequency  and RightClick from Scope
 public slots:
-	void	addValue (double, int);
 	void	showSpectrum	(void);
 };
 	

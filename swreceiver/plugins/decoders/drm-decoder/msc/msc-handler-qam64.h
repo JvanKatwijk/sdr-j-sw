@@ -35,12 +35,13 @@ class	Mapper;
 
 class	QAM64_SM_Handler : public mscHandler {
 public:
-		QAM64_SM_Handler	(mscConfig *, viterbi *);
+		QAM64_SM_Handler	(mscConfig *, int8_t, viterbi *);
 		~QAM64_SM_Handler	(void);
 	void	process			(theSignal *, uint8_t *);
 private:
 
 	mscConfig	*msc;
+	int8_t		qam64Roulette;
 	int16_t		lengthA;
 	int16_t		lengthB;
 	qam64_metrics	*myDecoder;

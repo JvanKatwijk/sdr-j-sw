@@ -69,12 +69,12 @@ float	**PHI;
 float	*THETA;
 //	Based on table 92 ETSI ES 201980
 //
-int16_t		symbols_per_window_list_0 []	= {10, 6, 4, 6};
-int16_t		symbols_per_window_list_1 []	= {12, 8, 6, 6};
-int16_t		symbols_per_window_list_2 []	= {14, 10, 8, 6};
-int16_t		symbols_per_window_list_3 []	= {15, 12, 10, 6};
-int16_t		symbols_per_window_list_4 []	= {15, 15, 15, 6};
-int16_t		symbols_per_window_list_5 []	= {15, 15, 20, 6};
+int16_t		symbols_per_window_list_0 []	= {6, 4, 4, 6};
+int16_t		symbols_per_window_list_1 []	= {10, 6, 6, 6};
+int16_t		symbols_per_window_list_2 []	= {12, 8, 6, 6};
+int16_t		symbols_per_window_list_3 []	= {14, 10, 8, 6};
+int16_t		symbols_per_window_list_4 []	= {15, 12, 10, 6};
+int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
 //
 //	first shorthands 
 	symbols_per_window	=  strength == 0 ?

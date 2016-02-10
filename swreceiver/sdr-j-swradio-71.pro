@@ -5,6 +5,9 @@ TEMPLATE = app
 QT	+= widgets
 CONFIG	+= console
 TARGET	= sdr-j-swreceiver-7.1
+QMAKE_CFLAGS	+= -ffast-math -g
+QMAKE_CXXFLAGS	+= -ffast-math -g
+QMAKE_LFLAGS	+= -g
 
 QT_DEBUG_PLUGINS	= 1
 DEPENDPATH += .  \
@@ -50,6 +53,7 @@ HEADERS += ./includes/swradio-constants.h \
            ./includes/filters/fft-filters.h \
            ./includes/filters/fir-filters.h \
            ./includes/filters/iir-filters.h \
+	   ./includes/filters/notch-filters.h \
            ./includes/scopes-qwt6/fft-scope.h \
 	   ./includes/scopes-qwt6/scope.h \
            ./plugins/input/rig-interface.h \
@@ -74,6 +78,7 @@ SOURCES += ./src/main.cpp \
            ./src/filters/fft-filters.cpp \
            ./src/filters/fir-filters.cpp \
            ./src/filters/iir-filters.cpp \
+	   ./src/filters/notch-filters.cpp \
            ./src/scopes-qwt6/fft-scope.cpp \
 	   ./src/scopes-qwt6/scope.cpp \
            ./plugins/input/pa-reader.cpp \	

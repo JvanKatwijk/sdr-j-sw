@@ -804,9 +804,9 @@
   <widget class="QComboBox" name="streamOutSelector">
    <property name="geometry">
     <rect>
-     <x>630</x>
+     <x>640</x>
      <y>400</y>
-     <width>241</width>
+     <width>231</width>
      <height>21</height>
     </rect>
    </property>
@@ -1039,6 +1039,15 @@
    <property name="lineWidth">
     <number>3</number>
    </property>
+   <property name="canvasBackground">
+    <brush brushstyle="SolidPattern">
+     <color alpha="193">
+      <red>220</red>
+      <green>227</green>
+      <blue>240</blue>
+     </color>
+    </brush>
+   </property>
   </widget>
   <widget class="QwtPlot" name="lfscope">
    <property name="geometry">
@@ -1057,6 +1066,15 @@
    </property>
    <property name="lineWidth">
     <number>3</number>
+   </property>
+   <property name="canvasBackground">
+    <brush brushstyle="SolidPattern">
+     <color alpha="255">
+      <red>223</red>
+      <green>227</green>
+      <blue>234</blue>
+     </color>
+    </brush>
    </property>
   </widget>
   <widget class="QComboBox" name="HFplotterView">
@@ -2114,6 +2132,19 @@
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="notchButton">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>400</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>notch</string>
    </property>
   </widget>
  </widget>

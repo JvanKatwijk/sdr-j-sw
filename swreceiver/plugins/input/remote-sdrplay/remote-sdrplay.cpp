@@ -38,7 +38,7 @@
 QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	(void)rate;		// not used here (starting at 6.0)
 	remoteSettings		= s;
-	theFrame		= new QFrame;
+	theFrame		= new QFrame (NULL);
 	setupUi (theFrame);
 
     //	setting the defaults and constants
@@ -265,7 +265,7 @@ int32_t	remote::Samples	(void) {
 //	In 6.0 it is not called
 //	It is used to set the scale for the spectrum
 int16_t	remote::bitDepth	(void) {
-	return 12;
+	return 11;
 }
 
 //
@@ -332,7 +332,7 @@ int16_t	i = 0;
 	ii = (i0 << 8) | i1;
 	qq = (q0 << 8) | q1;
 
-	return  DSPCOMPLEX ((float (ii)) / 32767.0, (float (qq)) / 32767.0);
+	return  DSPCOMPLEX ((float (ii)) / 32768.0, (float (qq)) / 32768.0);
 }
 
 //	we get in 16 bits int16_t, packed in unsigned bytes.

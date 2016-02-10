@@ -80,7 +80,7 @@ int32_t	k;
 void	analogDecoder::setup_analogDecoder	(int32_t rate) {
 int16_t squelchFreq;
 
-	theRate		= rate;
+	theRate			= rate;
 	adaptiveFiltersize	= 15;		/* the default	*/
 	adaptive		= new adaptiveFilter (adaptiveFiltersize, 0.2);
 	analog_Volume		= 30;
@@ -99,7 +99,7 @@ int16_t squelchFreq;
 	                                   0,		// center frequency
 	                                   - 500,	// low offset
 	                                   + 500,	// high offset
-	                                   4000);	// bandwidth
+	                                   0.9 * theRate);	// bandwidth
 
 	if (theRate <= 8000)
 	   squelchFreq = theRate / 3;
@@ -113,9 +113,9 @@ int16_t squelchFreq;
 	amSmooth		= 0;
 	detectorType		= AM_DECODER;
         showDetectorType ();
-	adaptiveFiltering = false;
-	CycleCount	= 0;
-	analog_IF	= 0;
+	adaptiveFiltering 	= false;
+	CycleCount		= 0;
+	analog_IF		= 0;
 }
 
 bool	analogDecoder::initforRate	(int32_t workingRate) {
@@ -130,7 +130,7 @@ int16_t	squelchFreq;
 	adaptive	= new adaptiveFilter	(adaptiveFiltersize, 0.2);
 
 	delete	SSB_Filter;
-	SSB_Filter		= new HilbertFilter (31, 0.25, theRate);
+	SSB_Filter		= new HilbertFilter (11, 0.45, theRate);
 
 	delete	am_pll;
 	am_pll			= new pllC (theRate,
@@ -255,6 +255,7 @@ DSPCOMPLEX	lf;
 
 	switch (detectorType) {
 	   case AM_DECODER:
+	   default:
 	      lf = amDecoder (z, (float)analog_Volume / 10.0);
 	      break;
 
@@ -276,10 +277,6 @@ DSPCOMPLEX	lf;
 
 	   case COHERENT:
 	      lf = syncDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   default:
-	      lf = z;
 	      break;
 	}
 
@@ -308,7 +305,7 @@ DSPCOMPLEX	analogDecoder::usbDecoder (DSPCOMPLEX z, double Vol) {
 DSPCOMPLEX H;
 	z	= SSB_Filter	-> Pass (z);
 	H	= DSPCOMPLEX (Vol * (real (z) - imag (z)),
-		           Vol * (real (z) - imag (z)));
+		              Vol * (real (z) - imag (z)));
 	return H;
 }
 
@@ -316,7 +313,7 @@ DSPCOMPLEX	analogDecoder::lsbDecoder (DSPCOMPLEX z, double Vol) {
 DSPCOMPLEX H;
 	z	= SSB_Filter	-> Pass (z);
 	H	= DSPCOMPLEX (Vol * (real (z) + imag (z)),
-			   Vol * (real (z) + imag (z)));
+			      Vol * (real (z) + imag (z)));
 	return H;
 }
 
@@ -324,14 +321,10 @@ DSPCOMPLEX	analogDecoder::isbDecoder (DSPCOMPLEX z, double Vol) {
 DSPCOMPLEX H;
 	z	= SSB_Filter -> Pass (z);
 	H	= DSPCOMPLEX (Vol * (real (z) - imag (z)),
-	                   Vol * (real (z) + imag (z)));
+	                      Vol * (real (z) + imag (z)));
 	return H;
 }
 
-#define	pllBeta	0.5
-#define	pllGain	0.3
-#define	NcoFreqHLimit	 0.8
-#define	NcoFreqLLimit	 - 0.8
 #define	DC_ALPHA	0.85
 
 DSPCOMPLEX	analogDecoder::amDecoder (DSPCOMPLEX z, double Vol) {

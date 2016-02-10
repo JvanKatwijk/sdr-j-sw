@@ -40,6 +40,7 @@ class	mscProcessor {
 public:
 		mscProcessor		(mscConfig *,
 	                                 drmDecoder *,
+	                                 int8_t,
 	                                 viterbi *);
 		~mscProcessor		(void);
 	void	check_mscConfig		(mscConfig *);
@@ -51,6 +52,7 @@ private:
 	void		create_Handlers	(mscConfig *);
 	drmDecoder	*drmMaster;
 	mscConfig	*msc;
+	int8_t		qam64Roulette;
 	uint8_t		protLevelA;
 	uint8_t		protLevelB;
 	int16_t		numofStreams;

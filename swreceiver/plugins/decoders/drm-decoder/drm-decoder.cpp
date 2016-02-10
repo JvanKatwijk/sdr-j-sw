@@ -65,6 +65,8 @@ int16_t	symbs;
 	symbs		= drmSettings -> value ("searchLength", 15). toInt ();
 	int8_t windowDepth
 	                = drmSettings -> value ("windowDepth", 2). toInt ();
+	int8_t qam64Roulette
+	                = drmSettings -> value ("qam64Roulette", 5). toInt ();
 	drmSettings	-> endGroup ();
 	validFlag	= true;
 	myIQDisplay	= new IQDisplay (iqDisplay, 2 * 322);
@@ -87,7 +89,8 @@ int16_t	symbs;
 	my_frameProcessor	= new frameProcessor (this,
 	                                              buffer,
 	                                              symbs,
-	                                              windowDepth);
+	                                              windowDepth,
+	                                              qam64Roulette);
 	my_frameProcessor	-> start	();
 	return myFrame;
 }

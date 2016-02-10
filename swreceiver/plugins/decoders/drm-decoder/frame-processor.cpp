@@ -45,11 +45,13 @@
 	frameProcessor::frameProcessor (drmDecoder	*mr,
 	                                RingBuffer<DSPCOMPLEX> *buffer,
 	                                int16_t length,
-	                                int8_t	windowDepth) {
+	                                int8_t	windowDepth,
+	                                int8_t qam64Roulette) {
 	this	-> mr 		= mr;
 	this	-> buffer	= buffer;
 	this	-> my_Syncer	= new Syncer (buffer, mr, length * 320);
 	this	-> windowDepth	= windowDepth;
+	this	-> qam64Roulette = qam64Roulette;
 //
 //	One viterbidecoder for all deconvolutions
 	viterbiDecoder		= new viterbi (0);
@@ -130,7 +132,9 @@ void	frameProcessor::createProcessors (void) {
 	                                            viterbiDecoder,
 	                                            my_facData,
 	                                            sdcCells ());
-	my_mscProcessor		= new mscProcessor  (my_mscConfig, mr,
+	my_mscProcessor		= new mscProcessor  (my_mscConfig,
+	                                             mr,
+	                                             qam64Roulette,
 	                                             viterbiDecoder);
 }
 
