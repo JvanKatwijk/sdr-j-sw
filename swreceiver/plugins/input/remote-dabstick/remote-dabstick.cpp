@@ -453,6 +453,10 @@ bool	remoteDabstick::isvalidRate (int32_t rate) {
 void	remoteDabstick:: exit (void) {
 }
 
+bool	remoteDabstick:: isOK	(void) {
+	return true;
+}
+
 void	remoteDabstick::setAgc	(int state) {
 QByteArray datagram;
 int16_t	i;

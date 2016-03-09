@@ -17,8 +17,8 @@
 	make
 	make clean
 	cd ..
-	echo mirics-sdrplay
-	cd mirics-sdrplay
+	echo sdrplay
+	cd sdrplay
 	qmake-qt5
 	make
 	make clean

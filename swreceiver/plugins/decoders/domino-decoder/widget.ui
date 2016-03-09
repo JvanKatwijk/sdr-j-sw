@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>591</width>
     <height>166</height>
    </rect>
   </property>
@@ -31,7 +31,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>510</x>
+      <x>460</x>
       <y>10</y>
       <width>131</width>
       <height>21</height>
@@ -149,7 +149,7 @@
      <rect>
       <x>10</x>
       <y>130</y>
-      <width>641</width>
+      <width>571</width>
       <height>21</height>
      </rect>
     </property>
@@ -163,7 +163,7 @@
    <widget class="QLabel" name="dominotextBox2">
     <property name="geometry">
      <rect>
-      <x>446</x>
+      <x>380</x>
       <y>90</y>
       <width>201</width>
       <height>21</height>

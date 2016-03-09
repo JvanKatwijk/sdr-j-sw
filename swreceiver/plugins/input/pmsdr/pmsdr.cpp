@@ -33,7 +33,6 @@
  */
 
 #include	<QtPlugin>
-#include	<QHBoxLayout>
 #include	<QLabel>
 #include	<QSettings>
 #include	<QMessageBox>
@@ -77,7 +76,7 @@ QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
 //	Initial settings
 	qsdBfig. QSDmute	= false;
 	pmsdrDevice -> set_qsd_bias (&qsdBfig, 0);
-	setGain		(gainSlider	-> value ());
+	set_gainValue	(gainSlider	-> value ());
 	setBias		(biasSlider	-> value ());
 //
 //	and the connects
@@ -101,7 +100,7 @@ QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
 	connect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (setMute (void)));
 	connect (gainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (setGain (int)));
+	         this, SLOT (set_gainValue (int)));
 	connect (biasSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (setBias (int)));
 	connect (offset_KHz, SIGNAL (valueChanged (int)),
@@ -198,6 +197,10 @@ void	pmsdr::exit		(void) {
 	stopReader ();
 }
 
+bool	pmsdr::isOK		(void) {
+	return true;		// for now
+}
+
 int32_t	pmsdr::Samples		(void) {
 int32_t	n;
 	if (!radioOK)
@@ -209,12 +212,16 @@ int32_t	n;
 }
 
 int32_t	pmsdr::getSamples	(DSPCOMPLEX *b, int32_t a, uint8_t m) {
-int32_t	n;
+int32_t	n, i;
+DSPCOMPLEX	temp [m];
 	if (!radioOK)
 	   return 0;
 	readerOwner. lock ();
-	n = myReader -> getSamples (b, a, m);
+	n = myReader -> getSamples (temp, a, m);
 	readerOwner. unlock ();
+	for (i = 0; i < n; i ++)
+	   b [i] = cmul (temp [i], float (gainValue) / 100);
+	fprintf (stderr, "had %d samples\n", n);
 	return n;
 }
 
@@ -403,16 +410,22 @@ void	pmsdr::setMute		(void) {
  *	gain is a value between 0, 1, 2, 3 4, but only working for older 
  *	versions
  */
-void	pmsdr::setGain		(int gain) {
-	if (!radioOK || gain < 0)
-	   return;
+//void	pmsdr::setGain		(int gain) {
+//	if (!radioOK || gain < 0)
+//	   return;
+//
+//	if (gain > 4)
+//	   gain = 4;
+//	qsdBfig. IfGain	= gain;
+//	pmsdrDevice	-> set_qsd_bias (&qsdBfig, 0);
+//	gainDisplay	-> display (qsdBfig. IfGain);
+//}
 
-	if (gain > 4)
-	   gain = 4;
-	qsdBfig. IfGain	= gain;
-	pmsdrDevice	-> set_qsd_bias (&qsdBfig, 0);
-	gainDisplay	-> display (qsdBfig. IfGain);
+void	pmsdr::set_gainValue	(int gain) {
+	gainValue	= gain;
+	gainDisplay	-> display (gain);
 }
+
 /*
  *	parameter is an integer between -100 .. 100
  */

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>154</width>
-    <height>223</height>
+    <width>324</width>
+    <height>268</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>151</width>
-     <height>231</height>
+     <width>311</width>
+     <height>261</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -33,7 +33,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>31</width>
+      <width>51</width>
       <height>31</height>
      </rect>
     </property>
@@ -44,9 +44,9 @@
    <widget class="QPushButton" name="button_f2">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>50</x>
       <y>0</y>
-      <width>31</width>
+      <width>41</width>
       <height>31</height>
      </rect>
     </property>
@@ -57,9 +57,9 @@
    <widget class="QPushButton" name="button_f5">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>180</x>
       <y>0</y>
-      <width>31</width>
+      <width>41</width>
       <height>31</height>
      </rect>
     </property>
@@ -70,9 +70,9 @@
    <widget class="QPushButton" name="button_f3">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>90</x>
       <y>0</y>
-      <width>31</width>
+      <width>51</width>
       <height>31</height>
      </rect>
     </property>
@@ -83,9 +83,9 @@
    <widget class="QPushButton" name="button_f4">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>140</x>
       <y>0</y>
-      <width>31</width>
+      <width>41</width>
       <height>31</height>
      </rect>
     </property>
@@ -135,35 +135,6 @@
      <string/>
     </property>
    </widget>
-   <widget class="QSlider" name="gainSlider">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>70</y>
-      <width>131</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="maximum">
-     <number>4</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="gainDisplay">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>90</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="segmentStyle">
-     <enum>QLCDNumber::Flat</enum>
-    </property>
-   </widget>
    <widget class="QSlider" name="biasSlider">
     <property name="geometry">
      <rect>
@@ -186,8 +157,8 @@
    <widget class="QLCDNumber" name="biasDisplay">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>90</y>
+      <x>40</x>
+      <y>80</y>
       <width>51</width>
       <height>21</height>
      </rect>
@@ -226,7 +197,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>130</y>
+      <y>140</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -241,8 +212,8 @@
    <widget class="QComboBox" name="cardSelector">
     <property name="geometry">
      <rect>
-      <x>2</x>
-      <y>198</y>
+      <x>0</x>
+      <y>180</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -252,7 +223,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>150</y>
+      <y>160</y>
       <width>83</width>
       <height>21</height>
      </rect>
@@ -277,6 +248,38 @@
       <string>New Item</string>
      </property>
     </item>
+   </widget>
+   <widget class="QSlider" name="gainSlider">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>10</y>
+      <width>20</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>10</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="gainDisplay">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>230</y>
+      <width>64</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="digitCount">
+     <number>7</number>
+    </property>
+    <property name="segmentStyle">
+     <enum>QLCDNumber::Flat</enum>
+    </property>
    </widget>
   </widget>
  </widget>

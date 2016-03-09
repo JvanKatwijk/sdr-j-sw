@@ -88,6 +88,7 @@ int16_t	k;
 	pskSettings		-> endGroup ();
 //
 //	setting the initial values
+	psk_IF			= PSK_IF;
 	psk_setAfcon	 	(pskAfconTrigger	-> currentText ());
 	psk_setReverse		(pskReverseTrigger	-> currentText ());
 	psk_setSquelchLevel	(pskSquelchLevelTrigger	-> value ());
@@ -138,7 +139,7 @@ int32_t	pskDecoder::rateOut		(void) {
 }
 
 int16_t	pskDecoder::detectorOffset	(void) {
-	return PSK_IF;
+	return psk_IF;
 }
 
 void	pskDecoder::setup_pskDecoder	(int32_t rate) {
@@ -433,7 +434,7 @@ double	error;
 	if (error >= M_PI /2)
 	   error -= 2 * M_PI;
 
-	error *= (double)theRate / (16 * 2 * M_PI);
+	error *= (double)PSKRATE / (16 * 2 * M_PI);
 	return  - error / 256;
 }
 

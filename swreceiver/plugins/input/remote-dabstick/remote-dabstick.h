@@ -63,6 +63,7 @@ public:
 	int32_t		Samples		(void);
 	int16_t		bitDepth	(void);
 	void		exit		(void);
+	bool		isOK		(void);
 	void		sendStart	(void);
 	void		sendStop	(void);
 	void		sendVFO		(int32_t);

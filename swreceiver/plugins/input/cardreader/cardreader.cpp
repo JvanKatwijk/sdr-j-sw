@@ -35,11 +35,14 @@ QWidget	*cardReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	myFrame		= new QFrame;
 	setupUi (myFrame);
 	inputRate	= rateSelector -> currentText (). toInt ();
+	gainValue	= gainSlider	-> value ();
 	myReader	= new paReader (inputRate, cardSelector);
 	connect (cardSelector, SIGNAL (activated (int)),
 	         this, SLOT (set_streamSelector (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_rateSelector (const QString &)));
+	connect (gainSlider, SIGNAL (valeChanged (int)),
+	         this, SLOT (set_gainValue (int)));
 	connect (myReader, SIGNAL (samplesAvailable (int)),
 	         this, SIGNAL (samplesAvailable (int)));
 	return myFrame;
@@ -95,6 +98,10 @@ void	cardReader::exit	(void) {
 	stopReader ();
 }
 
+bool	cardReader::isOK	(void) {
+	return true;
+}
+
 int32_t	cardReader::Samples	(void) {
 int32_t	n;
 	readerOwner. lock ();
@@ -104,10 +111,14 @@ int32_t	n;
 }
 
 int32_t	cardReader::getSamples	(DSPCOMPLEX *b, int32_t a, uint8_t m) {
-int32_t n;
+int32_t i, n;
+DSPCOMPLEX temp [m];
+
 	readerOwner. lock ();
-	n =  myReader -> getSamples (b, a, m);
+	n =  myReader -> getSamples (temp, a, m);
 	readerOwner. unlock ();
+	for (i = 0; i < n; i ++)
+	   b [i] = cmul (temp [i], float (gainValue) / 100);
 	return n;
 }
 
@@ -140,6 +151,11 @@ int16_t	i;
 	readerOwner. unlock ();
 	emit set_changeRate (newRate);
 //	Now just wait until the caller starts again
+}
+
+void	cardReader::set_gainValue	(int n) {
+	gainValue	= n;
+	gainDisplay	-> display (n);
 }
 
 int16_t	cardReader::bitDepth	(void) {

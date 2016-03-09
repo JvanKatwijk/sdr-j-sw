@@ -25,6 +25,7 @@
  */
 #include	"scope.h"
 #include	<qwt_picker_machine.h>
+#include	<qwt_text.h>
 /*
  *	The "scope" combines the Qwt widgets and control for both
  *	the spectrumdisplay and the waterfall display. It is used
@@ -104,17 +105,20 @@ void	Scope::SelectView (uint8_t n) {
 void	Scope::Display (double	*x_axis,
 	                double	*buffer,
 	                double	amp,
-	                int32_t	marker) {
+	                int32_t	marker_1,
+	                int32_t	marker_2) {
 	if (CurrentWidget == WATERFALL_MODE)
 	   Waterfall	-> ViewWaterfall (x_axis,
 	                                  buffer,
 	                                  amp,
-	                                  marker);
+	                                  marker_1,
+	                                  marker_2);
 	else
 	   Spectrum	-> ViewSpectrum (x_axis,
 	                                 buffer,
 	                                 amp,
-	                                 marker);
+	                                 marker_1,
+	                                 marker_2);
 }
 
 void	Scope::setBitDepth	(int16_t b) {
@@ -129,7 +133,7 @@ void	Scope::setBitDepth	(int16_t b) {
 
 	plotgrid		= plot;
 	this	-> Displaysize	= displaysize;
-	plotgrid-> setCanvasBackground (Qt::black);
+	plotgrid-> setCanvasBackground (Qt::blue);
 	grid	= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid	-> setMajPen (QPen(Qt::white, 0, Qt::DotLine));
@@ -155,10 +159,19 @@ void	Scope::setBitDepth	(int16_t b) {
 	SpectrumCurve	-> setBrush (*ourBrush);
 	SpectrumCurve	-> attach (plotgrid);
 	
-	Marker		= new QwtPlotMarker ();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::red));
-	Marker		-> attach (plotgrid);
+	leftMarker		= new QwtPlotMarker ();
+	leftMarker		-> setLineStyle (QwtPlotMarker::VLine);
+	leftMarker		-> setLinePen (QPen (Qt::red, 3.0));
+	leftMarkerLabel		= QwtText ("label");
+	leftMarkerLabel. setColor (Qt::black);
+	leftMarker		-> setLabel (leftMarkerLabel);
+//	leftMarker		-> setLabelOrientation (Qt::Vertical);
+	leftMarker		-> attach (plotgrid);
+	rightMarker		= new QwtPlotMarker ();
+	rightMarker		-> setLineStyle (QwtPlotMarker::VLine);
+	rightMarker		-> setLinePen (QPen (Qt::red, 3.0));
+	rightMarker		-> attach (plotgrid);
+	old_marker_left		= -1;
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 
 	lm_picker	= new QwtPlotPicker (plot -> canvas ());
@@ -179,7 +192,7 @@ void	Scope::setBitDepth	(int16_t b) {
 	connect (rm_picker, SIGNAL (selected (const QPointF&)),
 	         this, SLOT (rightMouseClick (const QPointF &)));
 
-	IndexforMarker	= 0;
+	indexforMarker	= 0;
 }
 
 	SpectrumViewer::~SpectrumViewer () {
@@ -192,10 +205,12 @@ void	Scope::setBitDepth	(int16_t b) {
 	            this,
 	            SLOT (rightMouseClick (const QPointF &)));
 	plotgrid	-> enableAxis (QwtPlot::yLeft, false);
-	Marker		-> detach ();
+	leftMarker	-> detach ();
+	rightMarker	-> detach ();
 	SpectrumCurve	-> detach ();
 	grid		-> detach ();
-	delete		Marker;
+	delete		leftMarker;
+	delete		rightMarker;
 	delete		SpectrumCurve;
 	delete		grid;
 	delete		lm_picker;
@@ -203,21 +218,22 @@ void	Scope::setBitDepth	(int16_t b) {
 }
 
 void	SpectrumViewer::leftMouseClick (const QPointF &point) {
-	leftClicked ((int)(point. x()) - IndexforMarker);
+	leftClicked ((int)(point. x()) - indexforMarker);
 }
 
 void	SpectrumViewer::rightMouseClick (const QPointF &point) {
-	rightClicked ((int)(point. x()) - IndexforMarker);
+	rightClicked ((int)(point. x()) - indexforMarker);
 }
 
-void	SpectrumViewer::ViewSpectrum (double *X_axis,
-		                      double *Y1_value,
-	                              double amp,
-	                              int32_t marker) {
+void	SpectrumViewer::ViewSpectrum (double	*X_axis,
+		                      double	*Y1_value,
+	                              double	amp,
+	                              int32_t	marker_left,
+	                              int32_t	marker_right) {
 uint16_t	i;
 
 	amp		= amp / 100 * (-get_db (0));
-	IndexforMarker	= marker;
+	indexforMarker	= (marker_left + marker_right) / 2;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
 				         X_axis [Displaysize - 1]);
@@ -233,7 +249,28 @@ uint16_t	i;
 	Y1_value [Displaysize - 1] = get_db (0);
 
 	SpectrumCurve	-> setSamples (X_axis, Y1_value, Displaysize);
-	Marker		-> setXValue (marker);
+	if (marker_right == 0) {
+	   rightMarker	-> setXValue (marker_left);
+	}
+	else {
+	   rightMarker	-> setXValue (marker_right);
+	}
+//
+//	iff the marker is changed, create a new one,
+//	otherwise, the old one will do
+	if (marker_left != old_marker_left) {
+	   const QString help	= QString::number (marker_left);
+	   leftMarkerLabel 	=  QwtText (help);
+	   leftMarkerLabel. setColor (Qt::black);
+	   leftMarker	-> detach ();
+	   leftMarker	= new QwtPlotMarker ();
+	   leftMarker	-> setLineStyle (QwtPlotMarker::VLine);
+	   leftMarker	-> setLinePen (QPen (Qt::red, 3.0));
+	   leftMarker	-> setLabel (leftMarkerLabel);
+	   leftMarker	-> attach (plotgrid);
+	   leftMarker	-> setXValue (marker_left);
+	   old_marker_left	= marker_left;
+	}
 	plotgrid	-> replot(); 
 }
 
@@ -300,12 +337,16 @@ int	i, j;
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, Rastersize);
 
-	Marker		= new QwtPlotMarker ();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::black));
-	Marker		-> attach (plotgrid);
+	leftMarker	= new QwtPlotMarker ();
+	leftMarker	-> setLineStyle (QwtPlotMarker::VLine);
+	leftMarker	-> setLinePen (QPen (Qt::black, 2.0));
+	leftMarker	-> attach (plotgrid);
+	rightMarker	= new QwtPlotMarker ();
+	rightMarker	-> setLineStyle (QwtPlotMarker::VLine);
+	rightMarker	-> setLinePen (QPen (Qt::black, 2.0));
+	rightMarker	-> attach (plotgrid);
 	this		-> attach (plotgrid);
-	IndexforMarker	= 0;
+	indexforMarker	= 0;
 
 	lm_picker	= new QwtPlotPicker (plot -> canvas ());
 	QwtPickerMachine *lpickerMachine =
@@ -327,17 +368,18 @@ int	i, j;
 }
 
 void	WaterfallViewer::leftMouseClick (const QPointF &point) {
-	leftClicked ((int)(point. x()) - IndexforMarker);
+	leftClicked ((int)(point. x()) - indexforMarker);
 }
 
 void	WaterfallViewer::ViewWaterfall (double *X_axis,
 	                                double *Y1_value,
-	                                double amp,
-	                                int32_t marker) {
+	                                double	amp,
+	                                int32_t marker_1,
+	                                int32_t	marker_2) {
 int	orig	= (int)(X_axis [0]);
 int	width	= (int)(X_axis [Displaysize - 1] - orig);
 
-	IndexforMarker	= marker;
+	indexforMarker	= (marker_1 + marker_2) / 2;
 	if (OneofTwo) {
 	   OneofTwo = 0;
 	   return;
@@ -376,7 +418,14 @@ int	width	= (int)(X_axis [Displaysize - 1] - orig);
 	                                 orig,
 	                                 orig + width);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	Marker		-> setXValue (marker);
+	if (marker_2 == 0) {
+	   leftMarker	-> setXValue (marker_1);
+	   rightMarker	-> setXValue (marker_1);
+	}
+	else {
+	   leftMarker	-> setXValue (marker_1);
+	   rightMarker	-> setXValue (marker_2);
+	}
 	this		-> attach     (plotgrid);
 	plotgrid	-> replot();
 }

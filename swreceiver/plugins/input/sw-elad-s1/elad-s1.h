@@ -63,6 +63,7 @@ public:
 	int32_t	getRate			(void);
 	int16_t	bitDepth		(void);
 	void	exit			(void);
+	bool	isOK			(void);
 private	slots:
 	void	setGainReduction	(void);
 	void	setOffset		(int);

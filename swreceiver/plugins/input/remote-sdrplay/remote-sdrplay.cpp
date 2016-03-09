@@ -44,12 +44,17 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
     //	setting the defaults and constants
 	vfoOffset	= 0;
 	remoteSettings	-> beginGroup ("remote-sdrPlay");
-	theRate		= remoteSettings ->
-	                          value ("remote-rate", 192000). toInt ();
 	theGain		= remoteSettings ->
 	                          value ("remote-gain", 50). toInt ();
-	remoteSettings	-> endGroup ();
 	gainSlider	-> setValue (theGain);
+	QString h	= remoteSettings ->
+	                           value ("remote-rate", 96000). toString ();
+	int k		= rateSelector	-> findText (h);
+	if (k != -1) 
+	   rateSelector -> setCurrentIndex (k);
+	theRate		= rateSelector	-> currentText (). toInt ();
+	remoteSettings	-> endGroup ();
+
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(4 * 32768);
 	connected	= false;
@@ -449,6 +454,10 @@ bool	remote::isvalidRate (int32_t rate) {
 }
 
 void	remote::exit	(void) {
+}
+
+bool	remote::isOK	(void) {
+	return true;
 }
 
 #if QT_VERSION < 0x050000

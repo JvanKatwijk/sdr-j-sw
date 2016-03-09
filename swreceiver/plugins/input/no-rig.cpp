@@ -92,3 +92,7 @@ int16_t	no_rig::bitDepth		(void) {
 void	no_rig::exit			(void) {
 }
 
+bool	no_rig::isOK			(void) {
+	return true;
+}
+

@@ -131,7 +131,7 @@ int32_t	k;
 	                                         10);
 	LFviewMode		= SPECTRUM_MODE;
 	lfScope			-> SelectView (SPECTRUM_MODE);
-	lfScope			-> setNeedle (0);
+	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(bitDepth - 1);
 	connect (lfScope, SIGNAL (clickedwithLeft (int)),
 	         this, SLOT (adjustFrequency (int)));
@@ -148,13 +148,13 @@ int32_t	k;
 	                                 10);
 	HFviewMode		= SPECTRUM_MODE;
 	hfScope			-> SelectView (SPECTRUM_MODE);
-	hfScope			-> setNeedle (this -> inputRate / 4);
+	hfScope			-> setNeedles (inputRate / 4, inputRate / 4);
 	hfScope			-> setBitDepth	(bitDepth - 1);
 
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (adjustFrequencywithKHz (int)));
+	         SLOT (adjustFrequencywithClick (int)));
 //
 	QString Version		= QString ("sdrJ-SW-V");
 	Version. append (QString(CURRENT_VERSION));
@@ -191,17 +191,19 @@ int32_t	k;
 	this	-> lockLO	= false;	// only to be changed by Extio
 
 	tunedIF			= inputRate / 4;
-	bandLow			= -workingRate / 2;
-	bandHigh		= workingRate / 2;
 //
 //	Initially, the filter is set over the whole input range
 	hfFilter		= new fftFilter (2048, 377);
-	hfFilter		-> setBand (bandLow, bandHigh, inputRate);
+	hfFilter		-> setBand (getBand_lowend (),
+	                                    getBand_highend (),
+	                                    inputRate);
 	myOscillator		= new Oscillator (inputRate);
 //
 //	The second one is less demanding
 	lfFilter		= new fftFilter (1024, 127);
-	lfFilter		-> setBand (bandLow, bandHigh, workingRate);
+	lfFilter		-> setBand (getBand_lowend (),
+	                                    getBand_highend (),
+	                                    workingRate);
 //
 //
 	agc			= new agcHandler (workingRate);
@@ -214,11 +216,9 @@ int32_t	k;
 	notch			= false;
 	my_notchFilter		= new notchFilter (workingRate, 0.2 * workingRate);
 	hf_dumpFile		= NULL;
-	if_dumpFile		= NULL;
 	lf_dumpFile		= NULL;
 //
 //	set the "state" values to match the GUI settings
-	set_Attenuator		(attenuationSlider	-> value ());
 	set_BalanceSlider	(balanceSlider		-> value ());
 	set_InputMode		(inputModeSelect	-> currentText ());
 	set_AGCMode		(AGC_select		-> currentText ());
@@ -264,15 +264,10 @@ int	k;
 QString	h;
 	pauseButton		-> setText (QString ("Pause"));
 	HFdumpButton		-> setText ("hf dump");
-	IFdumpButton		-> setText ("if dump");
 	LFdumpButton		-> setText ("lf dump");
 
 	k			= s -> value ("balanceSlider", 0). toInt ();
 	balanceSlider		-> setValue (k);
-
-	k			= s -> value ("attenuationSlider", 50).
-	                                                      toInt ();
-	attenuationSlider	-> setValue (k);
 
 	h		= s -> value ("inputModeSelect", "IandQ"). toString ();
 	k		= inputModeSelect	-> findText (h);
@@ -321,8 +316,6 @@ void	RadioInterface::dumpGUIsettings (QSettings *s) {
 
 	s	-> setValue ("balanceSlider",
 	                          balanceSlider -> value ());
-	s	-> setValue ("attenuationSlider",
-	                          attenuationSlider -> value ());
 	s	-> setValue ("displaywidth", displaySize);
 	s	-> setValue ("HFplotterView",
 	                          HFplotterView	-> currentText ());
@@ -402,8 +395,8 @@ void	RadioInterface::TerminateProcess (void) {
 	if (theDevice != NULL) 
 	   theDevice		-> exit ();
 	usleep (1000);
-	delete theDevice;
-
+//	delete theDevice;
+	delete	my_deviceLoader;
 //	and ensure proper termination of decoders
 	if (theDecoder != NULL) {
 	   delete theDecoder;
@@ -425,8 +418,8 @@ void	RadioInterface::abortSystem (int d) {
 	accept ();
 }
 ///////////////////////////////////////////////////////////////////
-//	changing the inputrate only will be called from
-//	within the rigs.
+//	changing the inputrate will be called from
+//	within the rigs and from selecting a device
 //	Quite a few of the instantiated classes have to
 //	be renewed.
 void	RadioInterface::set_inputRate (int32_t newInputRate) {
@@ -450,8 +443,9 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	                                         workingRate, BUFFERSIZE);
 	delete hfFilter;
 	hfFilter		= new fftFilter (2048, 511);
-	hfFilter		-> setBand (getbandLow (),
-	                                    getbandHigh (), inputRate);
+	hfFilter		-> setBand (getBand_lowend (),
+	                                    getBand_highend (),
+	                                    inputRate);
 
 	delete myOscillator;
 	myOscillator		= new Oscillator (inputRate);
@@ -468,13 +462,12 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
-	         SLOT (adjustFrequencywithKHz (int)));
-	hfScope		-> setNeedle (inputRate / 4);
+	         SLOT (adjustFrequencywithClick (int)));
+	hfScope		-> setNeedles (inputRate / 4, inputRate / 4);
 	hfScope			-> setBitDepth	(bitDepth - 1);
 	set_HFplotterView	(HFplotterView	-> currentText ());
 
 //	and we restore some settings, directly from the GUI settings
-	set_Attenuator		(attenuationSlider	-> value ());
 	set_BalanceSlider	(balanceSlider		-> value ());
 	set_InputMode		(inputModeSelect	-> currentText ());
 	set_AGCMode		(AGC_select		-> currentText ());
@@ -492,12 +485,6 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 
 	if (newWorkingRate == workingRate)
 	   return;
-
-	if (if_dumpFile != NULL) {
-	   sf_close (if_dumpFile);
-	   if_dumpFile = NULL;
-	   IFdumpButton	-> setText ("if dump");
-	}
 
 	workingRate		= newWorkingRate;
 
@@ -521,7 +508,7 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	         SIGNAL (clickedwithRight (int)),
 	         this,
 	         SLOT (set_notchFrequency (int)));
-	lfScope			-> setNeedle (0);
+	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(bitDepth - 1);
 	set_LFplotterView	(LFplotterView	-> currentText ());
 }
@@ -534,7 +521,7 @@ void	RadioInterface::set_symbolLeftshift	(int s) {
 //
 //	will be called from the detectors
 void	RadioInterface::setDetectorMarker (int foi) {
-	lfScope	-> setNeedle (foi);
+	lfScope	-> setNeedles (foi);
 }
 
 void	RadioInterface::set_InputMode (const QString &s) {
@@ -574,11 +561,10 @@ void	RadioInterface::set_agcThresholdSlider (int v) {
  */
 void	RadioInterface::set_BalanceSlider (int n) {
 	IQBalanceDisplay -> display (n);
-	theAttenuator -> set_hfGain (n, attenuationSlider -> value ());
+	theAttenuator -> set_hfGain (n, 100);
 }
 
 void	RadioInterface::set_Attenuator (int n) {
-	attenuationLevelDisplay	-> display (n);
 	theAttenuator -> set_hfGain (balanceSlider -> value (), n);
 }
 
@@ -730,7 +716,7 @@ void	RadioInterface::adjustFrequency (int32_t n) {
 	inc_Tuner (n);
 }
 
-void	RadioInterface::adjustFrequencywithKHz (int n) {
+void	RadioInterface::adjustFrequencywithClick (int n) {
 	adjustFrequency (Khz (n));
 }
 //
@@ -740,18 +726,21 @@ void	RadioInterface::set_InMiddle (void) {
 int32_t	vfo	= currentFrequency - inputRate / 4;
 	theDevice	-> setVFOFrequency (vfo);
 	hfScope	-> setZero	(vfo);
-	hfScope	-> setNeedle    (inputRate / 4);
+	hfScope	-> setNeedles    (inputRate / 4, inputRate / 4);
 	set_Filters_hf		(inputRate / 4);
 	lcdFrequency	-> display (currentFrequency);
 }
 
 void	RadioInterface::inc_Tuner (int32_t amount) {
+	fprintf (stderr, "Incrementing with %d (currentFreq = %d)\n",
+	                         amount, currentFrequency);
+	fprintf (stderr, "setting frequency to %d\n", currentFrequency + amount);
 	if (!lockLO) {
 	   tunedIF	= setFrequency (currentFrequency + amount);
 	} 
 }
 
-//
+///////////////////////////////////////////////////////////////////////
 void	RadioInterface::set_HFplotterView (const QString &s) {
 	hfScope -> SelectView (s == "waterfallView" ?
 	                               WATERFALL_MODE : SPECTRUM_MODE);
@@ -765,6 +754,17 @@ void	RadioInterface::set_LFplotterView (const QString &s) {
  *	... and now we manage the passband here.
  *	n is an integer range 0 .. 1000
  */
+int32_t	RadioInterface::getBand_lowend	(void) {
+int32_t	offset	= bandoffsetSlider -> value () * workingRate / 1000;
+	return offset - bandwidthSlider -> value () * workingRate / 1000 / 2;
+}
+
+int32_t	RadioInterface::getBand_highend	(void) {
+int32_t	offset	= bandoffsetSlider -> value () * workingRate / 1000;
+	return  offset + bandwidthSlider -> value () * workingRate / 1000 / 2;
+}
+
+
 void	RadioInterface::set_bandWidthSelect (int n) {
 int32_t	offset	= bandoffsetSlider -> value () * workingRate / 1000;
 int32_t	low	= offset - n * workingRate / 1000 / 2;
@@ -772,10 +772,9 @@ int32_t	high	= offset + n * workingRate / 1000 / 2;
 
 	bandwidthDisplay	-> display (high - low);
 	bandoffsetDisplay	-> display (offset);
-	bandLow		= low;
-	bandHigh	= high;
 	set_Filters_hf (tunedIF);
 	set_Filters_if (tunedIF);
+	hfScope		-> setNeedles (tunedIF, tunedIF);
 }
 /*
  * 	n is an integer range -500 .. 500
@@ -787,10 +786,9 @@ int32_t	low	= offset - k * (int32_t)workingRate / 1000 / 2;
 int32_t	high	= offset + k * (int32_t)workingRate / 1000 / 2;
 	bandwidthDisplay	-> display (high - low);
 	bandoffsetDisplay	-> display (offset);
-	bandLow		= low;
-	bandHigh	= high;
 	set_Filters_hf (tunedIF);
 	set_Filters_if (tunedIF);
+	hfScope		-> setNeedles (tunedIF, tunedIF);
 }
 //
 //	presets for the band selection
@@ -950,35 +948,6 @@ SF_INFO *sf_info = (SF_INFO *)alloca (sizeof (SF_INFO));
 }
 //
 //
-void	RadioInterface::switchIFDump (void) {
-SF_INFO *sf_info = (SF_INFO *)alloca (sizeof (SF_INFO));
-
-	if (if_dumpFile != NULL) {
-	   if_dumpFile	= NULL;
-	   IFdumpButton	-> setText ("if dump");
-	   return;
-	}
-
-	QString fileName = QFileDialog::getSaveFileName (this,
-	                                        tr ("open file .."),
-	                                        QDir::homePath (),
-	                                        tr ("Sound (*.wav)"));
-	fileName	= QDir::toNativeSeparators (fileName);
-	sf_info		-> samplerate	= workingRate;
-	sf_info		-> channels	= 2;
-	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_24;
-
-	if_dumpFile	= sf_open (fileName. toLatin1 (). data (),
-	                                   SFM_WRITE, sf_info);
-	if (if_dumpFile == NULL) {
-	   qDebug () << "Cannot open " << fileName. toLatin1 (). data ();
-	   return;
-	}
-
-	IFdumpButton	-> setText ("WRITING");
-}
-//
-//
 void RadioInterface::switchLFDump (void) {
 SF_INFO *sf_info = (SF_INFO *)alloca (sizeof (SF_INFO));
 
@@ -1007,94 +976,7 @@ SF_INFO *sf_info = (SF_INFO *)alloca (sizeof (SF_INFO));
 	LFdumpButton	-> setText ("WRITING");
 }
 //
-//	Handling device switching is delegated to the deviceLoader
-//	Changing a "device" is so fundamental for the operation
-//	of the front end, that we just delete lots of instances and
-//	create new ones.
-//	Note that all interface functions are handled by
-//	the GUI thread, so while we are busy here, no other
-void	RadioInterface::set_deviceSelect (const QString &s) {
-
-	theDevice	-> exit ();
-	mySoundcardOut	-> stopWriter	();
-	runMode	= IDLE;		// will ensure that we have to push "start"
 //
-//	We started with a dummy device, so there is always
-//	a device to unload
-	my_deviceLoader		-> unloadDevice ();
-	theDevice		= my_deviceLoader -> loadDevice (s, inputRate);
-
-//	We do not know anything about the rig, other than that
-//	it implements the abstract interface.
-//	The cardreader based interfaces might use "set_changeRate",
-//	Extio interfaces, i.e. Winrad compatible dll's, may
-//	give more signals
-	bitDepth	= theDevice	-> bitDepth ();
-	connect (theDevice, SIGNAL (set_ExtFrequency (int)),
-	         this, SLOT (set_ExtFrequency (int)));
-	connect (theDevice, SIGNAL (set_ExtLO (int)),
-	         this, SLOT (set_ExtLO (int)));
-	connect (theDevice, SIGNAL (set_lockLO (void)),
-	         this, SLOT (set_lockLO (void)));
-	connect (theDevice, SIGNAL (set_unlockLO (void)),
-	         this, SLOT (set_unlockLO (void)));
-	connect (theDevice, SIGNAL (set_stopHW (void)),
-	         this, SLOT (set_stopHW (void)));
-	connect (theDevice, SIGNAL (set_startHW (void)),
-	         this, SLOT (set_startHW (void)));
-	connect (theDevice, SIGNAL (set_changeRate (int)),
-	         this, SLOT (set_inputRate (int)));
-	connect (theDevice, SIGNAL (samplesAvailable (int)),
-	         this, SLOT (sampleHandler (int)));
-//
-//	we create a new scope since the new device probably supports
-//	a different X-axis
-	delete	hfScope;
-	hfScope			= new fft_scope (hfscope,
-	                                         displaySize,
-	                                         Khz (1),
-	                                         rasterSize,
-	                                         4096,
-	                                         theDevice	-> getRate (),
-	                                         10);
-	connect (hfScope,
-	         SIGNAL (clickedwithLeft (int)),
-	         this,
-	         SLOT (adjustFrequencywithKHz (int)));
-	hfScope		-> setNeedle (inputRate / 4);
-	set_HFplotterView	(HFplotterView	-> currentText ());
-//	and we restore some settings, directly from the GUI settings
-	set_Attenuator		(attenuationSlider	-> value ());
-	set_BalanceSlider	(balanceSlider		-> value ());
-	set_InputMode		(inputModeSelect	-> currentText ());
-	set_AGCMode		(AGC_select		-> currentText ());
-	set_agcThresholdSlider	(agc_ThresholdSlider	-> value ());
-	set_symbolLeftshift	(symbol_shifter		-> value ());
-	set_bandWidthOffset	(bandoffsetSlider 	-> value ());
-	set_bandWidthSelect	(bandwidthSlider	-> value ());
-	tunedIF		= setFrequency (theDevice -> defaultFrequency ());
-	hfScope		-> setBitDepth	(bitDepth - 1);
-	lfScope		-> setBitDepth	(bitDepth - 1);
-//	qDebug() << "new processor for " << s << endl;
-	inputRate		= theDevice -> getRate ();
-	lcd_SampleRate		-> display (inputRate);
-}
-//
-//	we delegate selecting and loading a decoder
-//	to the decoderLoader. Pattern is similar to that of the
-//	rigLoader
-void	RadioInterface::set_decoderSelect (const QString &s) {
-	my_decoderLoader	-> unloadDecoder ();
-	theDecoder	= my_decoderLoader -> loadDecoder (s, workingRate);
-	if (theDecoder == NULL) 	// should not happen
-	   return;
-	setDetectorMarker (theDecoder -> detectorOffset ());
-	connect (theDecoder, SIGNAL (setDetectorMarker (int)),
-	         this, SLOT (setDetectorMarker (int)));
-	connect (theDecoder, SIGNAL (outputSample (float, float)),
-	         this, SLOT (outputSample (float, float)));
-}
-
 void	RadioInterface::set_mouseIncrement (int inc) {
 	mouseIncrement = inc;
 }
@@ -1103,7 +985,6 @@ void	RadioInterface::wheelEvent (QWheelEvent *e) {
 	inc_Tuner ((e -> delta () > 0) ?  mouseIncrement : -mouseIncrement);
 }
 
-//	... and when there are hf samples available for	display 
 /*
  *	there is a tremendous amount of signal/slot connections
  *	The local connects, knobs, sliders and displays,
@@ -1134,8 +1015,6 @@ void	RadioInterface::localConnects (void) {
 //
 	connect (HFdumpButton, SIGNAL (clicked ()),
 	              this, SLOT (switchHFDump (void)));
-	connect (IFdumpButton, SIGNAL (clicked ()),
-	              this, SLOT (switchIFDump (void)));
 	connect (LFdumpButton, SIGNAL (clicked (void)),
 	              this, SLOT (switchLFDump (void)));
 	connect (HFplotterView, SIGNAL (activated (const QString &)),
@@ -1147,8 +1026,6 @@ void	RadioInterface::localConnects (void) {
 	              this, SLOT (set_HFspectrumAmplitude (int)));
 	connect (LFspectrumamplitudeSlider, SIGNAL (valueChanged (int)),
 	              this, SLOT (set_LFspectrumAmplitude (int)));
-	connect (attenuationSlider, SIGNAL (valueChanged (int) ),
-		      this, SLOT (set_Attenuator (int) ) );
 	connect (balanceSlider, SIGNAL (valueChanged (int) ),
 		      this, SLOT (set_BalanceSlider (int) ) );
 	connect (bandwidthSlider, SIGNAL (valueChanged(int) ),
@@ -1224,12 +1101,60 @@ QString	deviceBase;
 	                    deviceBase. toLatin1 (). data ());
 	my_deviceLoader	= new deviceLoader (rigSelectButton,
 	                                    deviceBase,
-	                                    rigFrame,
 	                                    mainSettings);
 	QDir devicePlugdir (deviceBase);
 	my_deviceLoader	-> setup_deviceTable (devicePlugdir);
 }
+//	Handling device switching is delegated to the deviceLoader
+//	Changing a "device" is so fundamental for the operation
+//	of the front end, that we just delete lots of instances and
+//	create new ones.
+//	Note that all interface functions are handled by
+//	the GUI thread, so while we are busy here, no other
+void	RadioInterface::set_deviceSelect (const QString &s) {
+
+	theDevice	-> exit ();
+	mySoundcardOut	-> stopWriter	();
+	runMode	= IDLE;		// will ensure that we have to push "start"
 //
+//	We started with a dummy device, so there is always
+//	a device to unload
+	my_deviceLoader		-> unloadDevice ();
+	theDevice		= my_deviceLoader -> loadDevice (s, inputRate);
+	if (!theDevice	-> isOK ()) {
+	   my_deviceLoader	-> unloadDevice ();
+	   theDevice = my_deviceLoader -> loadDevice ("no rig", 96000);
+	}
+
+//	We do not know anything about the rig, other than that
+//	it implements the abstract interface.
+//	The cardreader based interfaces might use "set_changeRate",
+//	Extio interfaces, i.e. Winrad compatible dll's, may
+//	give more signals
+	bitDepth	= theDevice	-> bitDepth ();
+	connect (theDevice, SIGNAL (set_ExtFrequency (int)),
+	         this, SLOT (set_ExtFrequency (int)));
+	connect (theDevice, SIGNAL (set_ExtLO (int)),
+	         this, SLOT (set_ExtLO (int)));
+	connect (theDevice, SIGNAL (set_lockLO (void)),
+	         this, SLOT (set_lockLO (void)));
+	connect (theDevice, SIGNAL (set_unlockLO (void)),
+	         this, SLOT (set_unlockLO (void)));
+	connect (theDevice, SIGNAL (set_stopHW (void)),
+	         this, SLOT (set_stopHW (void)));
+	connect (theDevice, SIGNAL (set_startHW (void)),
+	         this, SLOT (set_startHW (void)));
+	connect (theDevice, SIGNAL (set_changeRate (int)),
+	         this, SLOT (set_inputRate (int)));
+	connect (theDevice, SIGNAL (samplesAvailable (int)),
+	         this, SLOT (sampleHandler (int)));
+//
+//	Changing the rate is one of the more complex operations,
+//	many of the instances of classes have to be rebuilt
+	set_inputRate (theDevice	-> getRate ());
+}
+//
+/////////////////////////////////////////////////////////////////////////
 //	The setup for the decoderloader is similar:
 void	RadioInterface::setup_decoderLoader	(void) {
 QString	decoderBase;
@@ -1249,17 +1174,33 @@ QString	defaultBase	= QDir::currentPath (). append ("/decoder-plugins");
 	my_decoderLoader -> setup_decoderTable (decoderPlugdir);
 }
 //
+//	Pattern is similar to that of the
+//	rigLoader
+void	RadioInterface::set_decoderSelect (const QString &s) {
+	my_decoderLoader	-> unloadDecoder ();
+	theDecoder	= my_decoderLoader -> loadDecoder (s, workingRate);
+	if (theDecoder == NULL) 	// should not happen
+	   return;
+	setDetectorMarker (theDecoder -> detectorOffset ());
+	connect (theDecoder, SIGNAL (setDetectorMarker (int)),
+	         this, SLOT (setDetectorMarker (int)));
+	connect (theDecoder, SIGNAL (outputSample (float, float)),
+	         this, SLOT (outputSample (float, float)));
+}
+
 /////////////////////////////////////////////////////////////////////
 //
 //	Sometimes, requests for frequency (or VFO) changes are
-//	from an external source, i.e. an "intelligent" rig
+//	from an external source, i.e. an "intelligent" rig,
 //	in that case we apply simpler functions
 void	RadioInterface::set_ExtFrequency	(int newFreq) {
+	fprintf (stderr, "signal is set ext freq to %d\n", newFreq);
 	if (!lockLO) 
 	   tunedIF	= setFrequency (newFreq);
 }
 
 void	RadioInterface::set_ExtLO	(int newLO) {
+	fprintf (stderr, "signal is set ext lo to %d\n", newLO);
 	if (!lockLO) 
 	   tunedIF	= setFrequency (newLO);
 }
@@ -1282,16 +1223,11 @@ void	RadioInterface::set_startHW	(void) {
 	   clickPause ();
 }
 
-//
 ////////////////////////////////////////////////////////////////
 void	RadioInterface::stop_Dumping (void) {
 	if (hf_dumpFile != NULL) {
 	   sf_close (hf_dumpFile);
 	   hf_dumpFile	= NULL;
-	}
-	if (if_dumpFile != NULL) {
-	   sf_close (if_dumpFile);
-	   if_dumpFile	= NULL;
 	}
 	if (lf_dumpFile != NULL) {
 	   sf_close (lf_dumpFile);
@@ -1320,12 +1256,11 @@ bool	soundSeemsOk;
 	outputDevice		= mySoundcardOut-> invalidDevice ();
 }
 //
+//	Just a small convenience function
 bool	RadioInterface::fitsinDisplay (int32_t freq) {
 int32_t	vfo	= theDevice -> getVFOFrequency ();
-int32_t	bandLow	= getbandLow ();
-int32_t	bandHigh= getbandHigh ();
-int32_t	lborder	= freq - vfo + bandLow;
-int32_t	hborder	= freq - vfo + bandHigh;
+int32_t	lborder	= freq - vfo + getBand_lowend ();
+int32_t	hborder	= freq - vfo + getBand_highend ();
 
 	return  (lborder > - inputRate / 2 + Khz (5)) &&
 	        (hborder < inputRate / 2 - Khz (5));
@@ -1336,14 +1271,16 @@ int32_t	vfo	= theDevice -> getVFOFrequency ();
 int32_t	tunedto;
 
 	if (fitsinDisplay (freq)) {
-	   hfScope	-> setNeedle	(freq - vfo);
+	   hfScope	-> setNeedles	(freq - vfo,
+	                                 freq - vfo);
 	   set_Filters_hf (freq - vfo);
 	   tunedto	= freq - vfo;
 	}
 	else {
 	   theDevice	-> setVFOFrequency (freq - inputRate / 4);
 	   hfScope	-> setZero	(freq - inputRate / 4);
-	   hfScope	-> setNeedle    (inputRate / 4);
+	   hfScope	-> setNeedles    (inputRate / 4,
+	                                  inputRate / 4);
 	   set_Filters_hf (inputRate / 4);
 	   tunedto	= inputRate / 4;
 	}
@@ -1433,13 +1370,6 @@ int16_t	i, ifCount;
 	      if (theDecoder != NULL)
 	         theDecoder -> doDecode (v3 [i]);
 	   }
-	   if (if_dumpFile != NULL) {	// ifCount <= BUFFERSIZE
-	      for (i = 0; i < ifCount; i ++) {
-	         dumpBuffer [2 * i] = real (buffer [i]);
-	         dumpBuffer [2 * i + 1] = imag (buffer [i]);
-	      }
-	      sf_writef_float (if_dumpFile, dumpBuffer, ifCount);
-	   }
 	   amount -= BUFFERSIZE;
 	}
 }
@@ -1449,8 +1379,8 @@ int16_t	i, ifCount;
 void	RadioInterface::set_Filters_hf	(int32_t ifFreq) {
 int32_t	filterLow, filterHigh;
 
-	filterLow	= ifFreq + bandLow;
-	filterHigh	= ifFreq + bandHigh;
+	filterLow	= ifFreq + getBand_lowend ();
+	filterHigh	= ifFreq + getBand_highend ();
 	if (filterLow < - inputRate / 2)
 	   filterLow = - inputRate / 2;
 	if (filterHigh > inputRate / 2)
@@ -1460,16 +1390,9 @@ int32_t	filterLow, filterHigh;
 
 void	RadioInterface::set_Filters_if	(int32_t ifFreq) {
 	(void) ifFreq;
-	lfFilter	-> setBand (bandLow, bandHigh, workingRate);
-}
-
-
-int32_t	RadioInterface::getbandHigh		(void) {
-	return bandHigh;
-}
-
-int32_t	RadioInterface::getbandLow		(void) {
-	return bandLow;
+	lfFilter	-> setBand (getBand_lowend (),
+	                            getBand_highend (),
+	                            workingRate);
 }
 //
 //

@@ -596,6 +596,10 @@ void	dabStick::exit		(void) {
 	stopReader ();
 }
 
+bool	dabStick::isOK		(void) {
+	return libraryLoaded;
+}
+
 void	dabStick::newdataAvailable (int n) {
 	samplesAvailable (n);
 }

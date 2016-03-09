@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>574</width>
     <height>169</height>
    </rect>
   </property>
@@ -16,9 +16,9 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>0</y>
-     <width>661</width>
+     <width>571</width>
      <height>171</height>
     </rect>
    </property>
@@ -31,8 +31,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>520</x>
-      <y>80</y>
+      <x>440</x>
+      <y>110</y>
       <width>121</width>
       <height>41</height>
      </rect>
@@ -49,7 +49,7 @@
    <widget class="QLabel" name="showState">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>440</x>
       <y>40</y>
       <width>111</width>
       <height>31</height>
@@ -65,8 +65,8 @@
    <widget class="QLCDNumber" name="lineNumber">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>90</y>
+      <x>400</x>
+      <y>80</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -81,8 +81,8 @@
    <widget class="QLCDNumber" name="aptFreq">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>90</y>
+      <x>320</x>
+      <y>80</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -135,7 +135,7 @@
    <widget class="QPushButton" name="skipSetter">
     <property name="geometry">
      <rect>
-      <x>520</x>
+      <x>450</x>
       <y>10</y>
       <width>101</width>
       <height>31</height>
@@ -188,8 +188,8 @@
    <widget class="QComboBox" name="modeSetter">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>10</y>
+      <x>120</x>
+      <y>80</y>
       <width>101</width>
       <height>29</height>
      </rect>
@@ -321,8 +321,8 @@
    <widget class="QPushButton" name="resetButton">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>10</y>
+      <x>220</x>
+      <y>80</y>
       <width>97</width>
       <height>31</height>
      </rect>

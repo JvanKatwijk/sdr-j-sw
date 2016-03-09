@@ -51,6 +51,7 @@ public:
 	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
 	int16_t	bitDepth		(void);
 	void	exit			(void);
+	bool	isOK			(void);
 private:
 	QFrame		*myFrame;
 	int32_t		myFrequency;

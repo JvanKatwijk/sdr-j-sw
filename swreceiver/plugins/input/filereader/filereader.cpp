@@ -121,6 +121,10 @@ void	fileReader::exit			(void) {
 	   myReader	-> stopReader ();
 }
 
+bool	fileReader::isOK			(void) {
+	return true;
+}
+
 int32_t	fileReader::Samples			(void) {
 	if (myReader != NULL)
 	   return myReader	-> Samples ();

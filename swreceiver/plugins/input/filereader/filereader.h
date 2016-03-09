@@ -59,6 +59,7 @@ public:
 	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
 	int16_t	bitDepth		(void);
 	void	exit			(void);
+	bool	isOK			(void);
 protected:
 	void		setup_Device	(int32_t);
 	QFrame		*myFrame;

@@ -5,14 +5,14 @@
 	make
 	make clean
 	cd ..
-	echo extio
-	cd extio
+	echo extio-handler
+	cd extio-handler
 	mingw32-qmake-qt5
 	make
 	make clean
 	cd ..
 	echo mirics-sdrplay
-	cd mirics-sdrplay
+	cd sdrplay
 	mingw32-qmake-qt5
 	make
 	make clean

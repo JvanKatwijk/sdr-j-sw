@@ -48,7 +48,8 @@ public:
 	void		addElements	(DSPCOMPLEX *, int16_t);
 	void		setAmplification	(int16_t);
 	void		setZero			(int64_t);
-	void		setNeedle		(int32_t);
+	void		setNeedles		(int32_t);
+	void		setNeedles		(int32_t, int32_t);
 	void		clearAverage		(void);
 	void		SelectView		(int8_t);
 	void		setAverager		(bool);
@@ -72,7 +73,8 @@ private:
 	int32_t		segmentSize;
 
 	int16_t		freq;
-	int32_t		needle;
+	int32_t		left_needle;
+	int32_t		right_needle;
 	int16_t		amplification;
 	int64_t		vfo;
 

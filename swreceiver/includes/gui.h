@@ -134,15 +134,12 @@ private:
 	QTimer		*lcdTimer;
 	QTimer		*displayTimer;
 	SNDFILE		*hf_dumpFile;
-	SNDFILE		*if_dumpFile;
 	SNDFILE		*lf_dumpFile;
 	int16_t		bitDepth;
 //
 	resampler	*ifResampler;
 	int32_t		attValueL;
 	int32_t		attValueR;
-	int32_t		bandLow;
-	int32_t		bandHigh;
 	int32_t		tunedIF;
 	fftFilter	*hfFilter;
 	fftFilter	*lfFilter;
@@ -152,10 +149,10 @@ private:
 	notchFilter	*my_notchFilter;
 	void		set_Filters_hf		(int32_t ifFreq);
 	void		set_Filters_if		(int32_t ifFreq);
-	int32_t		getbandHigh		(void);
-	int32_t		getbandLow		(void);
 	int16_t		convertRate		(DSPCOMPLEX,
 	                                         DSPCOMPLEX *, int32_t);
+	int32_t		getBand_highend		(void);
+	int32_t		getBand_lowend		(void);
 /*
  *	The UI acts as a kind of server, the public slots are the entries
  *	for the radio elements, signals (below) are the triggers
@@ -166,7 +163,7 @@ private slots:
 	void		set_mouseIncrement	(int);
 	void		clickPause		(void);
 	void		set_Start		(void);
-	void		adjustFrequencywithKHz	(int);
+	void		adjustFrequencywithClick	(int);
 
 	void		set_notchFilter		(void);
 	void		set_HFplotterView	(const QString &);
@@ -215,7 +212,6 @@ private slots:
 	void		set_workingRate		(const QString &);
 	void		set_deviceSelect	(const QString &);
 	void		switchHFDump		(void);
-	void		switchIFDump		(void);
 	void		switchLFDump		(void);
 
 	void		set_agcThresholdSlider	(int);

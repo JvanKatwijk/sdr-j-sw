@@ -8,6 +8,7 @@
 
 #include	<QtPlugin>
 #include	<QFrame>
+#include	<QThread>
 #include	<QObject>
 #include	"swradio-constants.h"
 
@@ -19,7 +20,8 @@ QT_END_NAMESPACE
 //
 //	Rig implementations should implement ALL of the
 //	abstract functions of this interface
-class	rigInterface :public QObject {
+class	rigInterface : public QThread {
+//class	rigInterface :public QObject {
 Q_OBJECT
 public:
 virtual	QWidget	*createPluginWindow	(int32_t, QSettings *)	= 0;
@@ -37,6 +39,7 @@ virtual	int32_t	Samples			(void)		= 0;
 virtual	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t) = 0;
 virtual int16_t	bitDepth		(void)		= 0;
 virtual void	exit			(void)		= 0;
+virtual	bool	isOK			(void)		= 0;
 signals:
 //	The following signals originate from the Winrad Extio interface
 	void	set_ExtFrequency	(int);

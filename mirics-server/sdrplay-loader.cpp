@@ -65,11 +65,14 @@ ULONG APIkeyValue_length = 255;
 	  return;
 	}
 #else
-//
-//	Ǹote that under Ubuntu, the Mirics shared object does not seem to be
+//	Note that under Ubuntu, the Mirics shared object does not seem to be
 //	able to find the libusb. That is why we explicity load it here
 	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
-	Handle		= dlopen ("libmir_sdr.so", RTLD_NOW |RTLD_GLOBAL);
+
+	Handle		= dlopen ("libmirsdrapi-rsp.so", RTLD_NOW);
+	if (Handle == NULL)
+	   Handle	= dlopen ("libmir_sdr.so", RTLD_NOW);
+
 	if (Handle == NULL) {
 	   fprintf (stderr, "error report %s\n", dlerror ());
 	   return;
@@ -150,12 +153,10 @@ ULONG APIkeyValue_length = 255;
 	   fprintf (stderr, "Could not find mir_sdr_ApiVersion\n");
 	   return;
 	}
-	mir_sdr_ResetUpdateFlags	= (pfn_mir_sdr_ResetUpdateFlags)
+	xx_mir_sdr_ResetUpdateFlags	= (pfn_mir_sdr_ResetUpdateFlags)
 	                GETPROCADDRESS (Handle, "mir_sdr_ResetUpdateFlags");
-	if (mir_sdr_ResetUpdateFlags == NULL) {
-	   fprintf (stderr, "Could not find mir_sdr_ResetUpdateFlags\n");
-	   return;
-	}
+	xx_mir_sdr_SetParam		= (pfn_mir_sdr_SetParam)
+	                GETPROCADDRESS (Handle, "mir_sdr_SetParam");
 
 	fprintf (stderr, "Functions seem to be loaded\n");
 	*success	= true;
@@ -170,5 +171,17 @@ ULONG APIkeyValue_length = 255;
 #else
 	dlclose (Handle);
 #endif
+}
+
+void	sdrplayLoader::mir_sdr_ResetUpdateFlags	(int x, int y, int z) {
+	if (xx_mir_sdr_ResetUpdateFlags == NULL)
+	   return;
+	(void)xx_mir_sdr_ResetUpdateFlags (x, y, z);
+}
+
+void	sdrplayLoader::mir_sdr_SetParam		(int p, int v) {
+	if (xx_mir_sdr_SetParam == NULL)
+	   return;
+	(void)xx_mir_sdr_SetParam (p, v);
 }
 

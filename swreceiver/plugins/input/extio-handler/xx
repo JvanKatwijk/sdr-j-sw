@@ -1,0 +1,24 @@
+make -f Makefile.Release
+make[1]: Entering directory '/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/extio-handler'
+i686-w64-mingw32-g++ -c -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 --param=ssp-buffer-size=4 -fno-keep-inline-dllexport -O2 -frtti -Wall -Wextra -fexceptions -mthreads -DUNICODE -DQT_NO_DEBUG -DQT_PLUGIN -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -I'.' -I'.' -I'..' -I'../..' -I'../../../includes' -I'../../../includes/various' -I'/usr/i686-w64-mingw32/sys-root/mingw/include' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qwt' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtWidgets' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtGui' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtCore' -I'release' -I'.' -I'/usr/i686-w64-mingw32/sys-root/mingw/share/qt5/mkspecs/win32-g++'  -o release/extio-handler.o extio-handler.cpp
+extio-handler.cpp: In member function 'virtual void ExtioHandler::run()':
+extio-handler.cpp:552:1: warning: label 'L1' defined but not used [-Wunused-label]
+ L1:;
+ ^
+i686-w64-mingw32-g++ -c -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 --param=ssp-buffer-size=4 -fno-keep-inline-dllexport -O2 -frtti -Wall -Wextra -fexceptions -mthreads -DUNICODE -DQT_NO_DEBUG -DQT_PLUGIN -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_OPENGL_ES_2 -DQT_OPENGL_ES_2_ANGLE -I'.' -I'.' -I'..' -I'../..' -I'../../../includes' -I'../../../includes/various' -I'/usr/i686-w64-mingw32/sys-root/mingw/include' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qwt' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtWidgets' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtGui' -I'/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtCore' -I'release' -I'.' -I'/usr/i686-w64-mingw32/sys-root/mingw/share/qt5/mkspecs/win32-g++'  -o release/card-reader.o card-reader.cpp
+card-reader.cpp: In constructor 'cardReader::cardReader(RingBuffer<std::complex<float> >*, QFrame*, ExtioHandler*)':
+card-reader.cpp:44:2: error: 'myLayout' was not declared in this scope
+  myLayout  = new QHBoxLayout;
+  ^
+card-reader.cpp:44:18: error: 'QHBoxLayout' does not name a type
+  myLayout  = new QHBoxLayout;
+                  ^
+card-reader.cpp: In destructor 'virtual cardReader::~cardReader()':
+card-reader.cpp:88:10: error: 'myLayout' was not declared in this scope
+  delete  myLayout;
+          ^
+Makefile.Release:186: recipe for target 'release/card-reader.o' failed
+make[1]: *** [release/card-reader.o] Error 1
+make[1]: Leaving directory '/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input/extio-handler'
+Makefile:34: recipe for target 'release' failed
+make: *** [release] Error 2

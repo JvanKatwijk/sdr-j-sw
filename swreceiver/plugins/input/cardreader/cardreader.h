@@ -58,15 +58,18 @@ public:
 	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
 	int16_t	bitDepth		(void);
 	void	exit			(void);
+	bool	isOK			(void);
 private:
 	QFrame		*myFrame;
 	int32_t		myFrequency;
 	int32_t		inputRate;
 	paReader	*myReader;
 	QMutex		readerOwner;
+	int16_t		gainValue;
 private slots:
 	void		set_streamSelector	(int);
 	void		set_rateSelector	(const QString &);
+	void		set_gainValue		(int);
 };
 #endif
 

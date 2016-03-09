@@ -144,7 +144,9 @@ public:
 	                                         int32_t, uint8_t);
 	int16_t		bitDepth		(void);
 	void		exit			(void);
+	bool		isOK			(void);
 private:
+	int16_t		gainValue;
 	paReader	*myReader;
 	int32_t		inputRate;
 	QSettings	*elektorSettings;
@@ -206,6 +208,7 @@ private slots:
 	void		handleXcalibrator	(int);
 	void		set_streamSelector	(int);
 	void		set_rateSelector	(const QString &);
+	void		set_gainValue	(int);
 };
 #endif
 

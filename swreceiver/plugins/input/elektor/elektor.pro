@@ -23,7 +23,7 @@ FORMS	+= ./widget.ui
 unix {
 DESTDIR     = ../../../../linux-bin/input-plugins-sw
 INCLUDEPATH	+= /usr/include/libftdi1
-LIBS	   += -lftdi 
+LIBS	  	+=  -lftdi1
 }
 
 win32 {

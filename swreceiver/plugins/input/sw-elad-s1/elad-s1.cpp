@@ -231,6 +231,10 @@ void	elad_s1::exit		(void) {
 	stopReader ();
 }
 
+bool	elad_s1::isOK		(void) {
+	return true;
+}
+
 //
 //	The brave old getSamples. For the elad
 //	reading of the "raw" data (i.e. the bytes!!!), we use

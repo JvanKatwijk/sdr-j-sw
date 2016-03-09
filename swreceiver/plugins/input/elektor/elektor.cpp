@@ -59,12 +59,14 @@ QWidget	*elektor::createPluginWindow	(int32_t rate, QSettings *s) {
 	   handleXcalibrator (k);
 	   elektorSettings	-> endGroup ();
 	}
-
+	set_gainValue (gainSlider -> value ());
 	myReader		= new paReader (inputRate, cardSelector);
 	connect (cardSelector, SIGNAL (activated (int)),
 	         this, SLOT (set_streamSelector (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_rateSelector (const QString &)));
+	connect (gainSlider, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_gainValue (int)));
 	connect (myReader, SIGNAL (samplesAvailable (int)),
 	         this, SIGNAL (samplesAvailable (int)));
 //
@@ -620,6 +622,10 @@ void	elektor::exit			(void) {
 	stopReader	();
 }
 
+bool	elektor::isOK			(void) {
+	return true;
+}
+
 int32_t	elektor::Samples		(void) {
 int32_t	n;
 	n = myReader	-> Samples ();
@@ -627,8 +633,12 @@ int32_t	n;
 }
 
 int32_t	elektor::getSamples		(DSPCOMPLEX *b, int32_t a, uint8_t m) {
-int32_t n;
-	n = myReader -> getSamples (b, a, m);
+int32_t i, n;
+DSPCOMPLEX	temp [m];
+
+	n = myReader -> getSamples (temp, a, m);
+	for (i = 0; i < n; i ++) 
+	   b [i] = cmul (temp [i], float (gainValue) / 100.0);
 	return n;
 }
 
@@ -716,6 +726,11 @@ void	elektor::handle_preselectSlider	(int voltage) {
 void	elektor::handleXcalibrator	(int s) {
 	setXtalCal (s);
 	elektor_XtalDisplay	-> display (s);
+}
+
+void	elektor::set_gainValue		(int n) {
+	gainValue	= n;
+	gainDisplay	-> display (n);
 }
 
 int16_t	elektor::bitDepth		(void) {

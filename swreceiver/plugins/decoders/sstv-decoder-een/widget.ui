@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>544</width>
+    <width>479</width>
     <height>140</height>
    </rect>
   </property>
@@ -16,8 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>20</y>
+     <x>350</x>
+     <y>10</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -113,7 +113,7 @@
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>
    </property>
-   <property name="numDigits">
+   <property name="digitCount">
     <number>6</number>
    </property>
    <property name="segmentStyle">

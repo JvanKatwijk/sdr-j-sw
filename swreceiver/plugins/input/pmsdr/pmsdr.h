@@ -94,9 +94,11 @@ public:
 	                                         int32_t, uint8_t);
 	int16_t		bitDepth		(void);
 	void		exit			(void);
+	bool		isOK			(void);
 private slots:
 	void		setMute			(void);
-	void		setGain			(int);
+//	void		setGain			(int);
+	void		set_gainValue		(int);
 	void		setBias			(int);
 	void		set_autoButton		(void);
 	void		set_button_1		(void);
@@ -108,6 +110,7 @@ private slots:
 	void		set_Streamselector	(int);
 	void		set_rateSelector	(const QString &);
 private:
+	int16_t		gainValue;
 	int32_t		inputRate;
 	QSettings	*pmsdrSettings;
 	si570Handler	*mySI570;

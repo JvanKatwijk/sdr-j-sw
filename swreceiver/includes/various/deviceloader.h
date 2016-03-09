@@ -46,7 +46,6 @@ Q_OBJECT
 public:
 		deviceLoader	(QComboBox *,
 	                         QString,
-	                         QFrame *,
 	                         QSettings *);
 		~deviceLoader	(void);
 void		setup_deviceTable	(QDir);

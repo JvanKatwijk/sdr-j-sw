@@ -90,8 +90,8 @@ int32_t	ratio;
 	   return;
 	}
 
-	err			= functions -> mir_sdr_SetDcMode (1, 1);
-//	err			= functions -> mir_sdr_SetDcTrackTime (63);
+	err			= functions -> mir_sdr_SetDcMode (5, 0);
+	err			= functions -> mir_sdr_SetDcTrackTime (63);
 //
 //	some defaults:
 	lastFrequency		= defaultFreq;	// the parameter!!!!
@@ -131,6 +131,8 @@ int32_t		next	= 0;
 
 	functions -> mir_sdr_SetSyncUpdatePeriod ((int)(deviceRate * MHz (1) / 2));
 	functions -> mir_sdr_SetSyncUpdateSampleNum (sps);
+	functions	-> mir_sdr_SetParam	(102, 1);	// DC corr
+	functions	-> mir_sdr_SetParam	(105, 0);	// IQ corr
 	while (runnable) {
 	   err =  functions ->
 	       mir_sdr_ReadPacket (&xi [0], & xq [0], &fs, &grc, &rfc, &fsc);

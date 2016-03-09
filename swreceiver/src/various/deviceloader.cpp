@@ -35,13 +35,10 @@
 #
 	deviceLoader::deviceLoader (QComboBox	*box,
 	                            QString 	searchPath,
-	                            QFrame 	*myFrame,
 	                            QSettings *s) {
 	this	-> box		= box;
 	this	-> searchPath	= searchPath;
-	this	-> myFrame	= myFrame;
 	this	-> mySettings	= s;
-	myLayout		= new QHBoxLayout;
 	theRig			= NULL;
 	rigWindow		= NULL;
 	myLoader		= NULL;
@@ -51,7 +48,6 @@
 	deviceLoader::~deviceLoader (void) {
 	if (somethingLoaded)
 	   unloadDevice ();
-	delete myLayout;
 }
 
 void	deviceLoader::unloadDevice	(void) {
@@ -65,7 +61,6 @@ void	deviceLoader::unloadDevice	(void) {
 
 //	first: get rid of the frame of a previous decoder
 	if (rigWindow != NULL) {
-	   myLayout	-> removeWidget (rigWindow);
 	   rigWindow	-> deleteLater ();
 	   rigWindow	= NULL;
 	}
@@ -107,6 +102,10 @@ QString	fileName;
 	fileName	= QDir::toNativeSeparators (fileName);
 	fprintf (stderr, "found %s\n", fileName. toLatin1 (). data ());
 //	OK, file for plugin exists
+//
+//	But, be careful. Having loaded the plugin does not imply
+//	that the plugin is working correctly. After all, it
+//	might have failed to load libraries for the device!!!
 	myLoader	= new QPluginLoader (fileName);
 	plugin		= myLoader	-> instance ();
 	if (plugin == NULL) {
@@ -122,9 +121,6 @@ QString	fileName;
 L2:	rigWindow	= theRig	-> createPluginWindow (rate,
 	                                                       mySettings);
 	rigWindow	-> show ();
-	rigWindow	-> setParent (myFrame);
-	myLayout	-> addWidget (rigWindow);
-	myFrame		-> setLayout (myLayout);
 	somethingLoaded	= true;
 	return theRig;
 }

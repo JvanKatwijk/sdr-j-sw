@@ -107,6 +107,7 @@ public:
 	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
 	int16_t	bitDepth		(void);
 	void	exit			(void);
+	bool	isOK			(void);
 //
 //	I_Buffer needs to be visible for use within the callback
 	RingBuffer<uint8_t>	*_I_Buffer;

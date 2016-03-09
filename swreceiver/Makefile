@@ -452,7 +452,7 @@ compiler_moc_header_make_all: moc_gui.cpp moc_deviceloader.cpp moc_decoderloader
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_gui.cpp moc_deviceloader.cpp moc_decoderloader.cpp moc_fft-scope.cpp moc_scope.cpp moc_rig-interface.cpp moc_pa-reader.cpp moc_decoder-interface.cpp
 moc_gui.cpp: includes/swradio-constants.h \
-		plugins/ui_sdrgui.h \
+		ui_sdrgui.h \
 		includes/various/ringbuffer.h \
 		includes/gui.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/decoders -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/plugins/input -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/various -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/output -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/filters -I/usr/shared/sdr-j-development/systems/sdr-j-sw/swreceiver/includes/scopes-qwt6 -I/usr/include/qwt -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtCore -I/usr/include/c++/5.3.1 -I/usr/include/c++/5.3.1/x86_64-redhat-linux -I/usr/include/c++/5.3.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.3.1/include -I/usr/local/include -I/usr/include includes/gui.h -o moc_gui.cpp
@@ -521,13 +521,13 @@ compiler_clean: compiler_moc_header_clean compiler_uic_clean
 main.o: src/main.cpp includes/swradio-constants.h \
 		includes/various/utilities.h \
 		includes/gui.h \
-		plugins/ui_sdrgui.h \
+		ui_sdrgui.h \
 		includes/various/ringbuffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 gui.o: src/gui.cpp includes/gui.h \
 		includes/swradio-constants.h \
-		plugins/ui_sdrgui.h \
+		ui_sdrgui.h \
 		includes/various/ringbuffer.h \
 		plugins/input/no-rig.h \
 		plugins/input/rig-interface.h \
@@ -541,6 +541,7 @@ gui.o: src/gui.cpp includes/gui.h \
 		includes/various/agchandler.h \
 		includes/filters/fft-filters.h \
 		includes/filters/fir-filters.h \
+		includes/filters/notch-filters.h \
 		includes/output/pa-writer.h \
 		includes/various/utilities.h \
 		includes/various/oscillator.h \
@@ -559,7 +560,7 @@ decoderloader.o: src/various/decoderloader.cpp includes/various/decoderloader.h 
 		includes/swradio-constants.h \
 		plugins/decoders/decoder-interface.h \
 		includes/gui.h \
-		plugins/ui_sdrgui.h \
+		ui_sdrgui.h \
 		includes/various/ringbuffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o decoderloader.o src/various/decoderloader.cpp
 
@@ -617,7 +618,8 @@ iir-filters.o: src/filters/iir-filters.cpp includes/filters/iir-filters.h \
 		includes/swradio-constants.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iir-filters.o src/filters/iir-filters.cpp
 
-notch-filters.o: src/filters/notch-filters.cpp includes/filters/notch-filters.h
+notch-filters.o: src/filters/notch-filters.cpp includes/filters/notch-filters.h \
+		includes/swradio-constants.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o notch-filters.o src/filters/notch-filters.cpp
 
 fft-scope.o: src/scopes-qwt6/fft-scope.cpp includes/scopes-qwt6/fft-scope.h \

@@ -76,7 +76,8 @@ double	temp;
 	this	-> fillPointer		= 0;
 	this	-> vfo			= 0;
 	this	-> amplification	= 100;
-	this	-> needle		= 0;
+	this	-> left_needle		= 0;
+	this	-> right_needle		= 0;
 	this	-> displayBuffer	= new double [displaySize];
 	this	-> averageBuffer	= new double [displaySize];
 	for (i = 0; i < displaySize; i ++)
@@ -94,12 +95,12 @@ double	temp;
 	   Window [i] = 0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumFillpoint - 1)) +
 	                      0.08 * cos ((4.0 * M_PI * i) / (spectrumFillpoint - 1));
 
-
 	temp	= (double)MaxFrequency / displaySize;
-	for (i = 0; i < displaySize; i ++)
+	for (i = 0; i < displaySize; i ++) {
 	   X_axis [i] =
-	      ((double)vfo - (double)MaxFrequency
-	           +  (double)((i) * (double) 2 * temp)) / ((double)scale);
+	      ((double)vfo - MaxFrequency
+	         + (double)((i * 2.0 * MaxFrequency)) / displaySize) / ((double)scale);
+	}
 }
 
 	fft_scope::~fft_scope (void) {
@@ -119,14 +120,23 @@ void	fft_scope::setZero (int64_t vfo) {
 int32_t	i;
 float	temp	= (double)MaxFrequency / displaySize;
 	this	-> vfo = vfo;
-	for (i = 0; i < displaySize; i ++)
+	temp	= (double)MaxFrequency / displaySize;
+	for (i = 0; i < displaySize; i ++) {
 	   X_axis [i] =
-	      ((double)vfo - (double)MaxFrequency
-	           +  (double)((i) * (double) 2 * temp)) / ((double)scale);
+	      ((double)vfo - MaxFrequency
+	         + (double)((i * 2.0 * MaxFrequency)) / displaySize) / ((double)scale);
+	}
 }
 
-void	fft_scope::setNeedle (int32_t needle) {
-	this -> needle = needle;
+void	fft_scope::setNeedles (int32_t left_needle,
+	                       int32_t right_needle) {
+	this	-> left_needle = left_needle;
+	this	-> right_needle	= right_needle;
+}
+
+void	fft_scope::setNeedles (int32_t left_needle) {
+	this	-> left_needle = left_needle;
+	this	-> right_needle	= left_needle;
 }
 //
 void	fft_scope::addElements (DSPCOMPLEX *v, int16_t n) {
@@ -177,7 +187,8 @@ void	fft_scope::showSpectrum (void) {
 	Scope::Display (X_axis,
 	                displayBuffer,
 	                amplification,
-	                ((int32_t)vfo + needle) / (int32_t)scale);
+	                ((int32_t)vfo + left_needle + 0.5 * scale) / (int32_t)scale,
+	                ((int32_t)vfo + right_needle + 0.5 * scale) / (int32_t)scale);
 }
 
 void	fft_scope::SelectView (int8_t Mode) {
