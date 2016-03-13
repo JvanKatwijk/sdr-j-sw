@@ -103,10 +103,9 @@ private:
 	int32_t		getPanel		(void);
 	void		CorrectPanel		(void);
 	void		stop_Dumping		(void);
-	int32_t		setFrequency		(int32_t);
+	void		setFrequency		(int32_t);
 	bool		fitsinDisplay		(int32_t);
 	void		set_hfGain		(int16_t, int16_t);
-	int32_t		currentFrequency;
 	decoderInterface	*theDecoder;
 	decoderLoader	*my_decoderLoader;
 	rigInterface	*theDevice;

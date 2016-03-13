@@ -66,7 +66,7 @@ int16_t	symbs;
 	int8_t windowDepth
 	                = drmSettings -> value ("windowDepth", 2). toInt ();
 	int8_t qam64Roulette
-	                = drmSettings -> value ("qam64Roulette", 5). toInt ();
+	                = drmSettings -> value ("qam64Roulette", 6). toInt ();
 	drmSettings	-> endGroup ();
 	validFlag	= true;
 	myIQDisplay	= new IQDisplay (iqDisplay, 2 * 322);

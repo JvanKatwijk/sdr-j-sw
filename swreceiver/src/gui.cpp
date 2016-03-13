@@ -81,20 +81,19 @@ int32_t	k;
 	fprintf (stderr, "going to setup\n");
 	setupUi (this);
 	this	-> mainSettings	= sI;
-	if (mainSettings == NULL)
+	if (mainSettings == NULL) {
 	   fprintf (stderr, "foutje\n");
+	   exit (2);
+	}
 	this	-> runMode	= IDLE;
-
 	this	-> displaySize =
 	           mainSettings -> value ("displaywidth", 1024). toInt ();
-
 	this -> inputRate =
 	              mainSettings -> value ("inputRate", 96000). toInt ();
-
 	this -> audioRate =
 	              mainSettings -> value ("audioRate", "48000"). toInt ();
 
-	if (audioRate < 48000) {
+	if (audioRate % 48000 != 0) {
 	   qDebug () << "Version 6 requires output to be a multiple of 48000\n";
 	   audioRate = 48000;
 	}
@@ -132,7 +131,7 @@ int32_t	k;
 	LFviewMode		= SPECTRUM_MODE;
 	lfScope			-> SelectView (SPECTRUM_MODE);
 	lfScope			-> setNeedles (0);
-	lfScope			-> setBitDepth	(bitDepth - 1);
+	lfScope			-> setBitDepth	(bitDepth);
 	connect (lfScope, SIGNAL (clickedwithLeft (int)),
 	         this, SLOT (adjustFrequency (int)));
 	connect (lfScope, SIGNAL (clickedwithRight (int)),
@@ -149,7 +148,7 @@ int32_t	k;
 	HFviewMode		= SPECTRUM_MODE;
 	hfScope			-> SelectView (SPECTRUM_MODE);
 	hfScope			-> setNeedles (inputRate / 4, inputRate / 4);
-	hfScope			-> setBitDepth	(bitDepth - 1);
+	hfScope			-> setBitDepth	(bitDepth);
 
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
@@ -189,18 +188,20 @@ int32_t	k;
 	                                                         inputRate);
 
 	this	-> lockLO	= false;	// only to be changed by Extio
-
+//
+//	tunedIF is the frequency we tune to, after subtracting the
+//	vfo frequency of the device
 	tunedIF			= inputRate / 4;
 //
 //	Initially, the filter is set over the whole input range
-	hfFilter		= new fftFilter (2048, 377);
+	hfFilter		= new fftFilter (2048, 127);
 	hfFilter		-> setBand (getBand_lowend (),
 	                                    getBand_highend (),
 	                                    inputRate);
 	myOscillator		= new Oscillator (inputRate);
 //
 //	The second one is less demanding
-	lfFilter		= new fftFilter (1024, 127);
+	lfFilter		= new fftFilter (1024, 63);
 	lfFilter		-> setBand (getBand_lowend (),
 	                                    getBand_highend (),
 	                                    workingRate);
@@ -215,6 +216,7 @@ int32_t	k;
 //
 	notch			= false;
 	my_notchFilter		= new notchFilter (workingRate, 0.2 * workingRate);
+	notch_frequency		-> hide ();
 	hf_dumpFile		= NULL;
 	lf_dumpFile		= NULL;
 //
@@ -235,8 +237,8 @@ int32_t	k;
 	localConnects		();
 //
 //	Note that setFrequency has as side effect that the bandfilters
-//	are set/changed.
-	tunedIF			= setFrequency (Khz (14070));
+//	are set/changed, it is a.o. set in setFrequency
+	setFrequency (Khz (14070));
 	connect	(theDevice, SIGNAL (samplesAvailable (int)),
 	         this, SLOT (sampleHandler (int)));
 	qDebug ("GUI is set up and working\n"); 
@@ -309,6 +311,7 @@ QString	h;
 }
 //
 //	dumping the GUI settings should mirror the restauration
+//	of the GUI settings
 //
 void	RadioInterface::dumpGUIsettings (QSettings *s) {
 	if (s == NULL)
@@ -395,16 +398,15 @@ void	RadioInterface::TerminateProcess (void) {
 	if (theDevice != NULL) 
 	   theDevice		-> exit ();
 	usleep (1000);
-//	delete theDevice;
-	delete	my_deviceLoader;
+	delete	my_deviceLoader;	// will delete the device, if any
 //	and ensure proper termination of decoders
 	if (theDecoder != NULL) {
 	   delete theDecoder;
 	   theDecoder = NULL;
 	}
-
+//
 	mySoundcardOut	-> stopWriter ();
-//	Everything now has come to a halt,
+//	All (potentially) moving parts did come to a halt
 //	save some slider values
 	if (mainSettings != NULL)
 	   dumpGUIsettings (mainSettings);
@@ -464,7 +466,7 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	         this,
 	         SLOT (adjustFrequencywithClick (int)));
 	hfScope		-> setNeedles (inputRate / 4, inputRate / 4);
-	hfScope			-> setBitDepth	(bitDepth - 1);
+	hfScope			-> setBitDepth	(theDevice -> bitDepth ());
 	set_HFplotterView	(HFplotterView	-> currentText ());
 
 //	and we restore some settings, directly from the GUI settings
@@ -476,10 +478,12 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	set_bandWidthOffset	(bandoffsetSlider 	-> value ());
 	set_bandWidthSelect	(bandwidthSlider	-> value ());
 	lcd_SampleRate		-> display (inputRate);
-	tunedIF		= setFrequency (theDevice -> defaultFrequency ());
+	setFrequency (theDevice -> defaultFrequency ());
 }
 //
 //	Changing the workingrate might be called from the GUI,
+//	It is pretty heavy though, although we assume that the
+//	decoder is not affected
 void	RadioInterface::set_workingRate (const QString &s) {
 int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 
@@ -509,7 +513,7 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	         this,
 	         SLOT (set_notchFrequency (int)));
 	lfScope			-> setNeedles (0);
-	lfScope			-> setBitDepth	(bitDepth - 1);
+	lfScope			-> setBitDepth	(theDevice -> bitDepth ());
 	set_LFplotterView	(LFplotterView	-> currentText ());
 }
 ////////////////////////////////////////////////////////////////
@@ -622,7 +626,7 @@ void RadioInterface::addClear() {
 	ClearPanel ();
 	if (lcdTimer	-> isActive ())
 	   lcdTimer -> stop ();
-	lcdFrequency -> display (currentFrequency);
+	lcdFrequency -> display (theDevice -> getVFOFrequency () + tunedIF);
 }
 
 void RadioInterface::AcceptFreqinHz (void) {
@@ -634,7 +638,7 @@ int32_t	p;
 	p 		= getPanel ();
 	ClearPanel	();
 	if (!lockLO) 
-	   tunedIF	= setFrequency (p);
+	   setFrequency (p);
 }
 
 void RadioInterface::AcceptFreqinKhz (void) {
@@ -646,7 +650,7 @@ int32_t	p;
 	p = KHz (getPanel ());
 	ClearPanel ();
 	if (!lockLO) 
-	   tunedIF	= setFrequency (p);
+	   setFrequency (p);
 }
 
 void RadioInterface::addCorr (void) {
@@ -723,20 +727,19 @@ void	RadioInterface::adjustFrequencywithClick (int n) {
 //	If/when we want the needle in the middle, we just
 //	set the frequency
 void	RadioInterface::set_InMiddle (void) {
-int32_t	vfo	= currentFrequency - inputRate / 4;
+int32_t	vfo		= theDevice -> getVFOFrequency () + tunedIF - inputRate / 4;
 	theDevice	-> setVFOFrequency (vfo);
 	hfScope	-> setZero	(vfo);
-	hfScope	-> setNeedles    (inputRate / 4, inputRate / 4);
+	hfScope	-> setNeedles	(inputRate / 4);
 	set_Filters_hf		(inputRate / 4);
-	lcdFrequency	-> display (currentFrequency);
+	tunedIF		= inputRate / 4;
+	lcdFrequency	-> display (vfo + tunedIF);
 }
 
 void	RadioInterface::inc_Tuner (int32_t amount) {
-	fprintf (stderr, "Incrementing with %d (currentFreq = %d)\n",
-	                         amount, currentFrequency);
-	fprintf (stderr, "setting frequency to %d\n", currentFrequency + amount);
+int32_t	currentFrequency = theDevice -> getVFOFrequency () + tunedIF;
 	if (!lockLO) {
-	   tunedIF	= setFrequency (currentFrequency + amount);
+	   setFrequency (currentFrequency + amount);
 	} 
 }
 
@@ -867,7 +870,7 @@ QDateTime	currentTime = QDateTime::currentDateTime ();
 
 void	RadioInterface::lcdTimeout () {
 	Panel		= 0;			// throw away anything
-	lcdFrequency	-> display (currentFrequency);
+	lcdFrequency	-> display (theDevice -> getVFOFrequency () + tunedIF);
 }
 //
 //
@@ -1152,6 +1155,7 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 //	Changing the rate is one of the more complex operations,
 //	many of the instances of classes have to be rebuilt
 	set_inputRate (theDevice	-> getRate ());
+	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
 }
 //
 /////////////////////////////////////////////////////////////////////////
@@ -1196,13 +1200,13 @@ void	RadioInterface::set_decoderSelect (const QString &s) {
 void	RadioInterface::set_ExtFrequency	(int newFreq) {
 	fprintf (stderr, "signal is set ext freq to %d\n", newFreq);
 	if (!lockLO) 
-	   tunedIF	= setFrequency (newFreq);
+	   setFrequency (newFreq);
 }
 
 void	RadioInterface::set_ExtLO	(int newLO) {
 	fprintf (stderr, "signal is set ext lo to %d\n", newLO);
 	if (!lockLO) 
-	   tunedIF	= setFrequency (newLO);
+	   setFrequency (newLO);
 }
 
 void	RadioInterface::set_lockLO	(void) {
@@ -1266,15 +1270,14 @@ int32_t	hborder	= freq - vfo + getBand_highend ();
 	        (hborder < inputRate / 2 - Khz (5));
 }
 	   
-int32_t	RadioInterface::setFrequency	(int32_t freq) {
+void	RadioInterface::setFrequency	(int32_t freq) {
 int32_t	vfo	= theDevice -> getVFOFrequency ();
-int32_t	tunedto;
 
 	if (fitsinDisplay (freq)) {
 	   hfScope	-> setNeedles	(freq - vfo,
 	                                 freq - vfo);
 	   set_Filters_hf (freq - vfo);
-	   tunedto	= freq - vfo;
+	   tunedIF	= freq - vfo;
 	}
 	else {
 	   theDevice	-> setVFOFrequency (freq - inputRate / 4);
@@ -1282,12 +1285,10 @@ int32_t	tunedto;
 	   hfScope	-> setNeedles    (inputRate / 4,
 	                                  inputRate / 4);
 	   set_Filters_hf (inputRate / 4);
-	   tunedto	= inputRate / 4;
+	   tunedIF 	= inputRate / 4;
 	}
 
 	lcdFrequency	-> display (freq);
-	currentFrequency	= freq;
-	return tunedto;
 }
 
 void	RadioInterface::showAgcGain		(float gain) {
@@ -1419,13 +1420,18 @@ int16_t	i;
 
 void	RadioInterface::set_notchFilter	(void) {
 	notch	= !notch;
-	if (notch)
+	if (notch) {
 	   notchButton	-> setText ("on");
-	else
+	   notch_frequency	-> show ();
+	}
+	else {
 	   notchButton	-> setText ("notch");
+	   notch_frequency	-> hide ();
+	}
 }
 
 void	RadioInterface::set_notchFrequency	(int n) {
 	my_notchFilter	-> setFrequency (n);
+	notch_frequency	-> display (n);
 }
 

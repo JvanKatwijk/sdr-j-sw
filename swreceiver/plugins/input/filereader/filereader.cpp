@@ -32,7 +32,7 @@
 
 QWidget	*fileReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	this	-> rate		= rate;
-	this	-> rate		= 96000;	// default
+//	this	-> rate		= 96000;	// default
 	(void)s;
 	myFrame		= new QFrame;
 	setupUi		(myFrame);

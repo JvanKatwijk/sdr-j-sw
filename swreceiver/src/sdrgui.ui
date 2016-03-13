@@ -1695,7 +1695,7 @@
   <widget class="QPushButton" name="HFdumpButton">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>390</x>
      <y>380</y>
      <width>71</width>
      <height>21</height>
@@ -1708,7 +1708,7 @@
   <widget class="QPushButton" name="LFdumpButton">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>320</x>
      <y>380</y>
      <width>71</width>
      <height>21</height>
@@ -1941,6 +1941,22 @@
    </property>
    <property name="maximum">
     <number>15</number>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="notch_frequency">
+   <property name="geometry">
+    <rect>
+     <x>460</x>
+     <y>380</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="segmentStyle">
+    <enum>QLCDNumber::Flat</enum>
    </property>
   </widget>
  </widget>

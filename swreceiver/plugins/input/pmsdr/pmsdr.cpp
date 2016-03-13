@@ -213,7 +213,7 @@ int32_t	n;
 
 int32_t	pmsdr::getSamples	(DSPCOMPLEX *b, int32_t a, uint8_t m) {
 int32_t	n, i;
-DSPCOMPLEX	temp [m];
+DSPCOMPLEX	temp [a];
 	if (!radioOK)
 	   return 0;
 	readerOwner. lock ();
@@ -221,7 +221,6 @@ DSPCOMPLEX	temp [m];
 	readerOwner. unlock ();
 	for (i = 0; i < n; i ++)
 	   b [i] = cmul (temp [i], float (gainValue) / 100);
-	fprintf (stderr, "had %d samples\n", n);
 	return n;
 }
 
