@@ -28,8 +28,8 @@ DESTDIR	= ../../../../../../windows-bin-sw/decoder-plugins
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include/qwt
-LIBS	+= -lfftw3f-3
-LIBS	+= -lqwt
+LIBS	+= -lfftw3f
+LIBS	+= -lqwt-qt5
 LIBS	+= -lportaudio
 LIBS	+= -lole32
 LIBS	+= -lwinmm

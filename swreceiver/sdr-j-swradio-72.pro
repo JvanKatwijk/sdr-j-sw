@@ -4,7 +4,7 @@
 TEMPLATE = app
 QT	+= widgets
 CONFIG	+= console
-TARGET	= sdr-j-swreceiver-7.1
+TARGET	= sdr-j-swreceiver-7.2
 QMAKE_CFLAGS	+= -ffast-math -g
 QMAKE_CXXFLAGS	+= -ffast-math -g
 QMAKE_LFLAGS	+= -g

@@ -466,7 +466,7 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	         this,
 	         SLOT (adjustFrequencywithClick (int)));
 	hfScope		-> setNeedles (inputRate / 4, inputRate / 4);
-	hfScope			-> setBitDepth	(theDevice -> bitDepth ());
+	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
 	set_HFplotterView	(HFplotterView	-> currentText ());
 
 //	and we restore some settings, directly from the GUI settings
@@ -1152,10 +1152,9 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 	connect (theDevice, SIGNAL (samplesAvailable (int)),
 	         this, SLOT (sampleHandler (int)));
 //
-//	Changing the rate is one of the more complex operations,
-//	many of the instances of classes have to be rebuilt
 	set_inputRate (theDevice	-> getRate ());
-	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
+//	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
+	lfScope		-> setBitDepth	(theDevice -> bitDepth ());
 }
 //
 /////////////////////////////////////////////////////////////////////////

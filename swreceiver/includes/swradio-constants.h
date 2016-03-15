@@ -41,11 +41,11 @@ using namespace std;
 #include	<malloc.h>
 
 #ifdef __MINGW32__
-#define	CURRENT_VERSION		"7.1:x32-Windows"
+#define	CURRENT_VERSION		"7.2:x32-Windows"
 #include	"windows.h"
 #else
 #include	"alloca.h"
-#define	CURRENT_VERSION		"7.1:x32-Linux"
+#define	CURRENT_VERSION		"7.2:x32-Linux"
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 #endif
