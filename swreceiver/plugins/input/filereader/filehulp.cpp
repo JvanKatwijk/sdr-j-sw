@@ -42,12 +42,11 @@ struct timeval	tv;
 	return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 
-	fileHulp::fileHulp	(QString f, int32_t rate) {
+	fileHulp::fileHulp	(QString f, int32_t *rate) {
 SF_INFO	*sf_info;
 
 	fileName		= f;
 	readerOK		= false;
-	this	-> rate		= rate;
 	_I_Buffer		= new RingBuffer<float>(__BUFFERSIZE);
 
 	sf_info			= (SF_INFO *)alloca (sizeof (SF_INFO));
@@ -63,6 +62,8 @@ SF_INFO	*sf_info;
 
 	samplesinFile	= sf_info	-> frames;
 	sampleRate	= sf_info	-> samplerate;
+	this	-> rate	= sampleRate;
+	*rate		= sampleRate;
 	numofChannels	= sf_info	-> channels;
 	readerOK	= true;
 	readerPausing	= true;

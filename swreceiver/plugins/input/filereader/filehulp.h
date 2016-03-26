@@ -37,7 +37,7 @@
 class	fileHulp: public QThread {
 Q_OBJECT
 public:
-	fileHulp	(QString, int32_t);
+	fileHulp	(QString, int32_t *);
 	~fileHulp	(void);
 //	
 //	functions really for this rig

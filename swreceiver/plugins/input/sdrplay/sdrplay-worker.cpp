@@ -61,8 +61,7 @@ int32_t	ratio;
 
 	ratio			= dongleRate / outputRate;
 	fprintf (stderr, "ratio = %d\n", ratio);
-//	d_filter		= new DecimatingFIR (ratio * 5,
-	d_filter		= new DecimatingFIR (5,
+	d_filter		= new DecimatingFIR (ratio * 5,
 	                                             - outputRate / 2,
 	                                             + outputRate / 2,
 	                                             dongleRate,
@@ -137,11 +136,12 @@ int32_t		next	= 0;
 	while (runnable) {
 	   err =  functions ->
 	       mir_sdr_ReadPacket (&xi [0], & xq [0], &fs, &grc, &rfc, &fsc);
-
+	   (void)err;
 //	currently, we are not interested in the results other than the actual
 //	data
 	   for (i = 0; i < sps; i ++) {
-	      DSPCOMPLEX tmp = DSPCOMPLEX (xi [i] / 2048.0, xq [i] / 2048.0);
+//	      DSPCOMPLEX tmp = DSPCOMPLEX (xi [i] / 2048.0, xq [i] / 2048.0);
+	      DSPCOMPLEX tmp = DSPCOMPLEX (xi [i] / 4095.0, xq [i] / 4095.0);
 	      if (d_filter -> Pass (tmp, &tmp))
 	         localBuf [next ++] 	= tmp;
 	   }

@@ -61,7 +61,7 @@ public:
 	void	exit			(void);
 	bool	isOK			(void);
 protected:
-	void		setup_Device	(int32_t);
+	int32_t		setup_Device	(void);
 	QFrame		*myFrame;
 	fileHulp	*myReader;
 	QLabel		*indicator;

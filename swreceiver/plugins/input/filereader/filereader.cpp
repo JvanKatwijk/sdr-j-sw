@@ -32,13 +32,14 @@
 
 QWidget	*fileReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	this	-> rate		= rate;
-//	this	-> rate		= 96000;	// default
+	this	-> rate		= 96000;	// default
 	(void)s;
 	myFrame		= new QFrame;
 	setupUi		(myFrame);
 	myReader	= NULL;
 	nameofFile	-> setText (QString ("no file"));
-	setup_Device	(this -> rate);
+	this	-> rate	= setup_Device	();
+	rateDisplay	-> display (this -> rate);
 	this	-> lastFrequency	= Khz (14070);
 	connect (resetButton, SIGNAL (clicked (void)),
 	         this, SLOT (reset (void)));
@@ -62,8 +63,8 @@ int32_t	fileReader::getRate		(void) {
 	return rate;
 }
 
-void	fileReader::setup_Device	(int32_t rate) {
-	(void)rate;
+int32_t	fileReader::setup_Device	(void) {
+int32_t	rate	= 96000;
 	QString	replayFile
 	              = QFileDialog::
 	                 getOpenFileName (myFrame,
@@ -71,13 +72,14 @@ void	fileReader::setup_Device	(int32_t rate) {
 	                                  QDir::homePath (),
 	                                  tr ("sound (*.wav)"));
 	replayFile	= QDir::toNativeSeparators (replayFile);
-	myReader	= new fileHulp (replayFile, rate);
+	myReader	= new fileHulp (replayFile, &rate);
 	connect (myReader, SIGNAL (set_progressBar (int)),
 	         this, SLOT (set_progressBar (int)));
 	connect (myReader, SIGNAL (samplesAvailable (int)),
 	         this, SIGNAL (samplesAvailable (int)));
 	nameofFile	-> setText (replayFile);
 	set_progressBar	(0);
+	return rate;
 }
 
 void	fileReader::handle_progressBar		(int f) {

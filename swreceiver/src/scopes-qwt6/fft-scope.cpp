@@ -52,21 +52,10 @@ double	temp;
 	this	-> rasterSize		= rasterSize;
 	this	-> averageCount		= 0;
 
-	if (spectrumSize < 0) {		// we compute
-	   spectrumFillpoint	= segmentSize;
-	   spectrumSize		= nearestTwoPower (2 * segmentSize);
-	}
-	else {
-	   if ((spectrumSize & (spectrumSize - 1)) != 0)
-	      spectrumSize = 1024;
-	   if (displaySize > spectrumSize)
-	      spectrumSize = displaySize;
-
-	   if (segmentSize < spectrumSize / 2)
-	      spectrumFillpoint = segmentSize;
-	   else
-	      spectrumFillpoint	= spectrumSize / 2;
-	}
+	if ((spectrumSize & (spectrumSize - 1)) != 0)
+	   spectrumSize = 1024;
+	if (displaySize > spectrumSize)
+	   spectrumSize = displaySize;
 
 	this	-> spectrumSize		= spectrumSize;
 	this	-> sampleRate		= SampleRate;
@@ -84,16 +73,16 @@ double	temp;
 	   averageBuffer [i] = 0;
 	this	-> X_axis		= new double [displaySize];
 
-	this	-> Window		= new DSPFLOAT [spectrumFillpoint];
-	this	-> inputBuffer		= new DSPCOMPLEX [spectrumFillpoint];
+	this	-> Window		= new DSPFLOAT [spectrumSize];
+	this	-> inputBuffer		= new DSPCOMPLEX [spectrumSize];
 	this	-> sampleCounter	= 0;
 	this	-> spectrum_fft		= new common_fft (spectrumSize);
 	this	-> spectrumBuffer	= spectrum_fft	-> getVector ();
 	this	-> binWidth		= sampleRate / spectrumSize;
 
-	for (i = 0; i < spectrumFillpoint; i ++) 
-	   Window [i] = 0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumFillpoint - 1)) +
-	                      0.08 * cos ((4.0 * M_PI * i) / (spectrumFillpoint - 1));
+	for (i = 0; i < spectrumSize; i ++) 
+	   Window [i] = 0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
+	                      0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
 
 	temp	= (double)MaxFrequency / displaySize;
 	for (i = 0; i < displaySize; i ++) {
@@ -152,19 +141,16 @@ int32_t	i, j;
 DSPFLOAT	temp [spectrumSize];
 
 	inputBuffer [fillPointer] = x;
-	fillPointer	= (fillPointer + 1) % spectrumFillpoint;
+	fillPointer	= (fillPointer + 1) % spectrumSize;
 
 	if (++ sampleCounter < segmentSize)
 	   return;
 
 	sampleCounter	= 0;
-	for (i = 0; i < spectrumFillpoint; i ++) {
-	   DSPCOMPLEX tmp = inputBuffer [(fillPointer + i) % spectrumFillpoint];
+	for (i = 0; i < spectrumSize; i ++) {
+	   DSPCOMPLEX tmp = inputBuffer [(fillPointer + i) % spectrumSize];
 	   spectrumBuffer [i] = cmul (tmp, Window [i]); 
-//	   spectrumBuffer [i] = cmul (tmp, multiplier * Window [i]); 
 	}
-	for (i = spectrumFillpoint; i < spectrumSize; i ++)
-	   spectrumBuffer [i] = 0;
 
 	spectrum_fft	-> do_FFT ();
 	for (i = 0; i < spectrumSize / 2; i ++) {
