@@ -99,14 +99,17 @@ uint16_t	i, j;
 				         (double)X_axis [0],
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0) + 10, get_db (0) + 150);
+	plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, nrCurves);
 
-	for (i = 0; i < nrCurves; i ++) 
+	for (i = 0; i < nrCurves; i ++) {
+	   float av = 0;
 	   for (j = 0; j < displaySize; j ++)
-	      Y_values [i] [j] = get_db (Values [i] [j]) + 5 * i; 
-
+	      av += abs (Values [i][j]);
+	   av /= displaySize;
+	   for (j = 0; j < displaySize; j ++)
+	      Y_values [i] [j] = abs (Values [i] [j]) / av + i; 
+	}
 	for (i = 0; i < nrCurves; i ++)
 	   Curves [i] -> setSamples (X_axis, Y_values [i], displaySize);
-	plotgrid	-> replot(); 
+	plotgrid	-> replot (); 
 }

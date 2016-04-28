@@ -196,7 +196,7 @@ DSPCOMPLEX	*BasicBandPass::getKernel () {
  *	to the right position to form a nice bandfilter.
  *	For the real domain, we use the Simple BandPass version.
  */
-	BandPassFIR::BandPassFIR (int16_t firSize,
+	bandpassFIR::bandpassFIR (int16_t firSize,
 	                          int32_t low, int32_t high,
 	                          int32_t fs):Basic_FIR (firSize) {
 	sampleRate	= fs;
@@ -205,7 +205,7 @@ DSPCOMPLEX	*BasicBandPass::getKernel () {
 //
 //	For the kernel we compute the size of the "equivalent"
 //	low pass filter (lo), and the amount of the shift
-void	BandPassFIR::newKernel (int32_t low, int32_t high) {
+void	bandpassFIR::newKernel (int32_t low, int32_t high) {
 DSPFLOAT	tmp [filterSize];
 DSPFLOAT	lo	= (DSPFLOAT)((high - low) / 2) / sampleRate;
 DSPFLOAT	shift	= (DSPFLOAT) ((high + low) / 2) / sampleRate;
@@ -233,10 +233,10 @@ int16_t	i;
 	}
 }
 
-	BandPassFIR::~BandPassFIR () {
+	bandpassFIR::~bandpassFIR () {
 }
 
-DSPCOMPLEX	*BandPassFIR::getKernel () {
+DSPCOMPLEX	*bandpassFIR::getKernel () {
 	return filterKernel;
 }
 

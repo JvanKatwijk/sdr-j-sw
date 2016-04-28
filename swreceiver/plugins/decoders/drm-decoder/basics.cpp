@@ -158,7 +158,7 @@ int16_t	ususedCarriers	(uint8_t Mode) {
 }
 
 #define	DBL_EPSILON	(0.000015)
-double	sinc	(double f) {
+float	sinc	(float f) {
 	if (fabs (f) < DBL_EPSILON)
 	   return 1.0;
 	return sin (M_PI * f) / (M_PI * f);

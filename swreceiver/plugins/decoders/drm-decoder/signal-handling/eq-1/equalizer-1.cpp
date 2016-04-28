@@ -53,7 +53,13 @@
 #include	"basics.h"
 #include	"equalizer-1.h"
 #include	"estimator-base.h"
+#ifdef	ESTIMATOR_1
 #include	"estimator-1.h"
+#elif	ESTIMATOR_2
+#include	"estimator-2.h"
+#else
+#include	"estimator-3.h"
+#endif
 #include	"matrix2.h"
 
 #define	realSym(x)	((x + symbolsinFrame)% symbolsinFrame)
@@ -70,8 +76,8 @@ float	*THETA;
 //	Based on table 92 ETSI ES 201980
 //
 int16_t		symbols_per_window_list_0 []	= {6, 4, 4, 6};
-int16_t		symbols_per_window_list_1 []	= {10, 6, 6, 6};
-int16_t		symbols_per_window_list_2 []	= {12, 8, 6, 6};
+int16_t		symbols_per_window_list_1 []	= {10, 6, 8, 6};
+int16_t		symbols_per_window_list_2 []	= {12, 8, 8, 6};
 int16_t		symbols_per_window_list_3 []	= {14, 10, 8, 6};
 int16_t		symbols_per_window_list_4 []	= {15, 12, 10, 6};
 int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
@@ -99,7 +105,7 @@ int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
 
 	theTrainers		= new trainer *[windowsinFrame];
 	for (i = 0; i < windowsinFrame; i ++) 
-	   theTrainers [i] = new trainer [1000];
+	   theTrainers [i] = new trainer [1000];	// not nice, but large
 	pilotEstimates		= new DSPCOMPLEX *[symbolsinFrame];
 	for (i = 0; i < symbolsinFrame; i ++)
 	   pilotEstimates [i] = new DSPCOMPLEX [carriersinSymbol];
@@ -113,7 +119,7 @@ int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
 //	THETA	= cross-covariance-vector
 //	f_cut_t	% two-sided maximum doppler frequency
 //	                       (normalized w.r.t symbol duration Ts) 
-//	f_cut_k two-sided maximum echo delay
+//	f_cut_k % two-sided maximum echo delay
 //	                       (normalized w.r.t useful symbol duration Tu)
 //
 //	values taken from diorama
@@ -121,9 +127,9 @@ int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
 	f_cut_k = 1.75 * (float) Tg_of (Mode) / (float) Tu;
 //	1.75 seems a little large and has as effect that in the equalizatiom
 //	a dip will appear, so we take a smaller value
-	f_cut_k = (Mode == Mode_A ? 1.75 :
-	           Mode == Mode_B ? 1.00 :
-	           0.50) * (float) Tg_of (Mode) / (float) Tu;
+	f_cut_k = (Mode == Mode_A ? 2.25 :
+	           Mode == Mode_B ? 1.25 :
+	           0.50) * (float) Tg_of (Mode) / (float) Tu_of (Mode);
 //
 //	This code is based on the diorama Matlab code, and a
 //	(complete)rewrite of the C translation of this Matlab code by Ties Bos.
@@ -170,8 +176,7 @@ int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
                    trainer_2 < trainers_in_window; trainer_2 ++) {
 	         int16_t sym_2	= currentTrainers [trainer_2]. symbol;
 	         int16_t car_2	= currentTrainers [trainer_2]. carrier;
-	         
-                 PHI [trainer_1][trainer_2] = sinc ((car_1 - car_2) * f_cut_k)
+	         PHI [trainer_1][trainer_2] = sinc ((car_1 - car_2) * f_cut_k)
 	                                    * sinc ((sym_1 - sym_2) * f_cut_t);
               }
 	   }	// end of trainer_1 loop
@@ -229,7 +234,13 @@ int16_t		symbols_per_window_list_5 []	= {15, 15, 15, 6};
 //	and finally, the estimators
 	Estimators	= new estimatorBase *[symbolsinFrame];
 	for (i = 0; i < symbolsinFrame; i ++)
+#ifdef	ESTIMATOR_1
 	   Estimators [i] = new estimator_1 (refFrame, Mode, Spectrum, i);
+#elif	ESTIMATOR_2
+	   Estimators [i] = new estimator_2 (refFrame, Mode, Spectrum, i);
+#else
+	   Estimators [i] = new estimator_3 (refFrame, Mode, Spectrum, i);
+#endif
 }
 
 		equalizer_1::~equalizer_1 (void) {
@@ -282,12 +293,10 @@ int16_t	i;
 //	First, we copy the incoming vector to the appropriate vector
 //	in the testFrame. Next we compute the estimates for the
 //	channels of the pilots.
-//	This is the most simple approach: the channels of the pilots
-//	are obtained by dividing the value observed by the pilot value.
 //
 //	Tracking the freqency offset is done by looking at the
 //	phase difference of frequency pilots in subsequent words
-	float		offs1	= 0;
+	DSPCOMPLEX	offs1	= DSPCOMPLEX (0, 0);
 	DSPCOMPLEX	offs2	= DSPCOMPLEX (0, 0);
 	float		offsa	= 0;
 	int		offs3	= 0;
@@ -312,14 +321,12 @@ int16_t	i;
 //	look at the average phase difference in the
 //	frequency pilots of the last N symbols
 	   if (isFreqCell (Mode, newSymbol, carrier)) {
-	      DSPCOMPLEX temp = DSPCOMPLEX (0, 0);
 	      for (i = 1; i < symbolsinFrame; i ++) {
-	         temp += conj (testFrame [realSym (newSymbol)]
+	         offs1 += conj (testFrame [realSym (newSymbol - 1)]
 	                                             [indexFor (carrier)]) *
-	                   (testFrame [realSym (newSymbol - 1)]
+	                   (testFrame [realSym (newSymbol)]
 	                                             [indexFor (carrier)]);
 	      }
-	      offs1	+= arg (temp) / (symbolsinFrame - 1);
 	   }
 //
 //	alternatively, use the phase differences between successive
@@ -365,10 +372,11 @@ int16_t	i;
 //	offs1 means using the frequency pilots over N symbols
 //	offs7 means using all pilots over two near symbols with the same
 //	pilot layout
-	*delta_freq_offset	= - offs1 / 3;
-	*delta_freq_offset	=   arg (offs7) / periodforSymbols;
+//	*delta_freq_offset	=  arg (offs1);
+	*delta_freq_offset	=  arg (offs7) / periodforSymbols;
 //	fprintf (stderr, "freq error: freq pilots = %f, all pilots  = %f\n",
-//	                 -offs1 / 3,  arg (offs7) / periodforSymbols);
+//	                 arg (offs1) / (3 * (symbolsinFrame - 1)),
+//	                 arg (offs7) / periodforSymbols);
 //
 	Estimators [newSymbol] ->
 	              estimate (testFrame [newSymbol],
@@ -482,8 +490,7 @@ int16_t	carrier;
 	      DSPCOMPLEX qq = testFrame [symbol][indexFor (carrier)] / temp;
 	      outVector [indexFor (carrier)] . signalValue = qq;
 	   }
-	   outVector [indexFor (carrier)]. rTrans =
-	             real (temp * conj (temp));
+	   outVector [indexFor (carrier)]. rTrans = abs (temp);
 	}
 }
 

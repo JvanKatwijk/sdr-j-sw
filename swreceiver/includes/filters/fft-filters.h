@@ -51,9 +51,10 @@ private:
 	DSPCOMPLEX	*FFT_C;
 	common_fft	*FilterFFT;
 	DSPCOMPLEX	*filterVector;
-	DSPFLOAT	*RfilterVector;
+	float		*RfilterVector;
 	DSPCOMPLEX	*Overloop;
 	int32_t		inp;
+	float		*blackman;
 };
 
 #endif

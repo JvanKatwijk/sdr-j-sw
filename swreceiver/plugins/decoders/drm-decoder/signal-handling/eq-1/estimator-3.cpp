@@ -19,7 +19,7 @@
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *	Channel estimator (simple MLE) according to 
+ *	Channel estimator according to 
  *	" A comparison of Pilot-aided Channel Estimation Methods
  *	  for OFDM systems"
  *	Michele Morelli and Umberto Mengali
@@ -45,14 +45,19 @@ complex<float> createExp (float s) {
 	                          uint8_t	Mode,
 	                          uint8_t	Spectrum,
 	                          int16_t	refSymbol):
-	                              estimatorBase (refFrame,	
-                                                     Mode,
-	                                             Spectrum,
-	                                             refSymbol) {
+	                           estimatorBase (refFrame,
+	                                          Mode,
+	                                          Spectrum,
+	                                          refSymbol) {
 int16_t	carrier, tap, pilot;
 int16_t	next	= 0;
 
-	numberofCarriers	= K_max - K_min + 1;
+	this ->	refFrame	= refFrame;
+	this	-> Mode		= Mode;
+	this	-> Spectrum	= Spectrum;
+	this	-> refSymbol	= refSymbol;
+	numberofCarriers	= Kmax (Mode, Spectrum) -
+	                          Kmin (Mode, Spectrum) + 1;
 	numberofPilots		= getnrPilots (refSymbol);
 	numberofTaps		= Tg_of (Mode) - 1;
 
@@ -122,4 +127,3 @@ cx_fvec Z (numberofPilots);
 	for (pilot = 0; pilot < numberofPilots; pilot ++) 
 	   resultRow [indexFor (pilotTable [pilot])] = H_fd (pilot);
 }
-

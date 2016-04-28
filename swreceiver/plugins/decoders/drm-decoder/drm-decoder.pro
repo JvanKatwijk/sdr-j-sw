@@ -39,7 +39,6 @@ HEADERS     = ../decoder-interface.h \
 	      ./signal-handling/matrix2.h \
 	      ./signal-handling/eq-1/equalizer-1.h \
 	      ./signal-handling/eq-1/estimator-base.h \
-	      ./signal-handling/eq-1/estimator-1.h \
 	      ./utilities/viterbi-drm.h \
 	      ./utilities/mapper.h \
 	      ./utilities/prbs.h \
@@ -86,7 +85,6 @@ SOURCES     = ./drm-decoder.cpp  \
 	      ./signal-handling/equalizer-base.cpp \
 	      ./signal-handling/matrix2.cpp \
 	      ./signal-handling/eq-1/estimator-base.cpp \
-	      ./signal-handling/eq-1/estimator-1.cpp \
 	      ./signal-handling/eq-1/equalizer-1.cpp \
 	      ./utilities/viterbi-drm.cpp \
 	      ./utilities/mapper.cpp \
@@ -121,20 +119,21 @@ SOURCES     = ./drm-decoder.cpp  \
 TARGET		= $$qtLibraryTarget(drmdecoder)
 FORMS		+= widget.ui
 
-unix {
-DESTDIR     = ../../../../../linux-bin/decoder-plugins
+unix {	
+CONFIG		+= estimator-1
+DESTDIR    	 = ../../../../../linux-bin/decoder-plugins
 INCLUDEPATH	+= /usr/include/qwt
 INCLUDEPATH	+= /usr/local/include
-LIBS	+= -L/usr/local/lib
-#LIBS	+= -lqwt			# ubuntu 15.04
-LIBS	+= -lqwt-qt5			# fedora 21
-LIBS	+= -lfaad
-LIBS	+= -lsndfile
-LIBS	+= -lsamplerate
-LIBS	+= -lm
+LIBS		+= -L/usr/local/lib
+#LIBS		+= -lqwt			# ubuntu 15.04
+LIBS		+= -lqwt-qt5			# fedora 21
+LIBS		+= -lfaad
+LIBS		+= -lsndfile
+LIBS		+= -lm
 }
 
 win32 {
+CONFIG	+= estimator-1
 DESTDIR     = ../../../../../../windows-bin-sw/decoder-plugins
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
@@ -144,5 +143,25 @@ LIBS	+= -lqwt-qt5
 LIBS	+= -lfaad
 LIBS	+= -lole32
 LIBS	+= -lwinmm
+}
+
+estimator-1 {
+HEADERS	+= ./signal-handling/eq-1/estimator-1.h 
+SOURCES	+= ./signal-handling/eq-1/estimator-1.cpp
+DEFINES	+= ESTIMATOR_1
+}
+
+estimator-2 {
+HEADERS	+= ./signal-handling/eq-1/estimator-2.h 
+SOURCES	+= ./signal-handling/eq-1/estimator-2.cpp
+LIBS	+= -larmadillo
+DEFINES	+= ESTIMATOR_2
+}
+
+estimator-3 {
+HEADERS	+= ./signal-handling/eq-1/estimator-3.h 
+SOURCES	+= ./signal-handling/eq-1/estimator-3.cpp
+LIBS	+= -larmadillo
+DEFINES	+= ESTIMATOR_3
 }
 

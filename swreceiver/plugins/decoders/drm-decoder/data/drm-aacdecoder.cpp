@@ -127,8 +127,8 @@ uint16_t	i;
 	*conversionOK	= !hInfo. error;
 
 	if (hInfo. error != 0) {
-//	   fprintf (stderr, "Warning %s\n",
-//	                     faacDecGetErrorMessage (hInfo. error));
+	   fprintf (stderr, "Warning %s\n",
+	                     faacDecGetErrorMessage (hInfo. error));
 	   *samples	= 0;
 	   return;
 	}

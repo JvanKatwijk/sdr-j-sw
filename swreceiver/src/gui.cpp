@@ -61,6 +61,9 @@
 #define	PAUSED		0101
 #define	RUNNING		0102
 #define	BUFFERSIZE	1024
+
+#define	FILTER_SIZE	1024
+#define	FILTER_STRENGTH	 255
 /*
  *	We use the creation function merely to set up the
  *	user interface and make the connections between the
@@ -132,6 +135,7 @@ int32_t	k;
 	lfScope			-> SelectView (SPECTRUM_MODE);
 	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(bitDepth);
+	lfScope			-> setAmplification (LFspectrumamplitudeSlider -> value ());
 	connect (lfScope, SIGNAL (clickedwithLeft (int)),
 	         this, SLOT (adjustFrequency (int)));
 	connect (lfScope, SIGNAL (clickedwithRight (int)),
@@ -149,6 +153,7 @@ int32_t	k;
 	hfScope			-> SelectView (SPECTRUM_MODE);
 	hfScope			-> setNeedles (inputRate / 4, inputRate / 4);
 	hfScope			-> setBitDepth	(bitDepth);
+	hfScope			-> setAmplification (HFspectrumamplitudeSlider -> value ());
 
 	connect (hfScope,
 	         SIGNAL (clickedwithLeft (int)),
@@ -194,17 +199,19 @@ int32_t	k;
 	tunedIF			= inputRate / 4;
 //
 //	Initially, the filter is set over the whole input range
-	hfFilter		= new fftFilter (2048, 127);
-	hfFilter		-> setBand (getBand_lowend (),
-	                                    getBand_highend (),
-	                                    inputRate);
+	hfFilter		= new fftFilter (FILTER_SIZE,
+	                                         FILTER_STRENGTH);
+	hfFilter	-> setBand (getBand_lowend (),
+	                            getBand_highend (),
+	                            inputRate);
 	myOscillator		= new Oscillator (inputRate);
 //
 //	The second one is less demanding
-	lfFilter		= new fftFilter (1024, 63);
-	lfFilter		-> setBand (getBand_lowend (),
-	                                    getBand_highend (),
-	                                    workingRate);
+	lfFilter		= new fftFilter (FILTER_SIZE,
+	                                         FILTER_STRENGTH);
+	lfFilter	-> setBand (getBand_lowend (),
+	                            getBand_highend (),
+	                            workingRate);
 //
 //
 	agc			= new agcHandler (workingRate);
@@ -444,10 +451,11 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	ifResampler		= new resampler (inputRate,
 	                                         workingRate, BUFFERSIZE);
 	delete hfFilter;
-	hfFilter		= new fftFilter (2048, 511);
-	hfFilter		-> setBand (getBand_lowend (),
-	                                    getBand_highend (),
-	                                    inputRate);
+	hfFilter		= new fftFilter (FILTER_SIZE,
+	                                         FILTER_STRENGTH);
+	hfFilter	-> setBand (getBand_lowend (),
+	                            getBand_highend (),
+	                            inputRate);
 
 	delete myOscillator;
 	myOscillator		= new Oscillator (inputRate);
@@ -467,6 +475,7 @@ void	RadioInterface::set_inputRate (int32_t newInputRate) {
 	         SLOT (adjustFrequencywithClick (int)));
 	hfScope		-> setNeedles (inputRate / 4, inputRate / 4);
 	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
+	hfScope		-> setAmplification (HFspectrumamplitudeSlider -> value ());
 	set_HFplotterView	(HFplotterView	-> currentText ());
 
 //	and we restore some settings, directly from the GUI settings
@@ -504,6 +513,7 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	                                         1024,
 	                                         workingRate,
 	                                         10);
+	lfScope			-> setAmplification (LFspectrumamplitudeSlider -> value ());
 	connect (lfScope,
 	         SIGNAL (clickedwithLeft (int)),
 	         this,
@@ -515,6 +525,14 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(theDevice -> bitDepth ());
 	set_LFplotterView	(LFplotterView	-> currentText ());
+//
+//	and we need a new if bandfilter!!!
+	delete	lfFilter;
+	lfFilter		= new fftFilter (FILTER_SIZE,
+	                                         FILTER_STRENGTH);
+	lfFilter	-> setBand (getBand_lowend (),
+	                            getBand_highend (),
+	                            workingRate);
 }
 ////////////////////////////////////////////////////////////////
 //	lots of local settings
@@ -1391,8 +1409,7 @@ int32_t	filterLow, filterHigh;
 void	RadioInterface::set_Filters_if	(int32_t ifFreq) {
 	(void) ifFreq;
 	lfFilter	-> setBand (getBand_lowend (),
-	                            getBand_highend (),
-	                            workingRate);
+	                            getBand_highend (), workingRate);
 }
 //
 //

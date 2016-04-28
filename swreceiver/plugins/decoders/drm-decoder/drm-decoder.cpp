@@ -91,6 +91,13 @@ int16_t	symbs;
 	                                              symbs,
 	                                              windowDepth,
 	                                              qam64Roulette);
+#ifdef	ESTIMATOR_1
+	drmName	-> setText ("drm 0.15 straight");
+#elif	ESTIMATOR_2
+	drmName	-> setText ("drm 0.15 arma-1");
+#else
+	drmName	-> setText ("drm 0.15 arma-2");
+#endif
 	my_frameProcessor	-> start	();
 	return myFrame;
 }

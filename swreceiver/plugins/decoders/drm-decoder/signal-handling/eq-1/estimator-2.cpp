@@ -61,7 +61,7 @@ int16_t	pilotIndex, tap;
 	numberofTaps		= Tg_of (Mode) - 1;
 	F_p			= cx_fmat (numberofPilots, numberofTaps);
 	S_p			= zeros<cx_fmat> (numberofPilots,
-	                                         numberofPilots);
+	                                          numberofPilots);
 	F_p_inv			= cx_fmat (numberofTaps, numberofPilots);
 //
 	pilotTable		= new int16_t [numberofPilots];

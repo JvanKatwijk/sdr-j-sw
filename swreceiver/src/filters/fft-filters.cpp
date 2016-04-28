@@ -46,7 +46,7 @@ int32_t	i;
 
 	FilterFFT	= new common_fft	(fftSize);
 	filterVector	= FilterFFT	->	getVector ();
-	RfilterVector	= new DSPFLOAT [fftSize];
+	RfilterVector	= new float [fftSize];
 
 	Overloop	= new DSPCOMPLEX [OverlapSize];
 	inp		= 0;
@@ -56,6 +56,11 @@ int32_t	i;
 	   filterVector [i] = 0;
 	   RfilterVector [i] = 0;
 	}
+	blackman	= new float [filterDegree];
+	for (i = 0; i < filterDegree; i ++)
+	   blackman [i] = (0.42 -
+		    0.5 * cos (2 * M_PI * (float)i / (float)filterDegree) +
+		    0.08 * cos (4 * M_PI * (float)i / (float)filterDegree));
 }
 
 	fftFilter::~fftFilter () {
@@ -64,6 +69,7 @@ int32_t	i;
 	delete		FilterFFT;
 	delete[]	RfilterVector;
 	delete[]	Overloop;
+	delete[]	blackman;
 }
 
 void	fftFilter::setSimple (int32_t low, int32_t high, int32_t rate) {
@@ -79,21 +85,38 @@ BasicBandPass	*BandPass	= new BasicBandPass ((int16_t)filterDegree,
 	inp		= 0;
 	delete	BandPass;
 }
-
+//
+//	set the band to a new value, i.e. create a new kernel
 void	fftFilter::setBand (int32_t low, int32_t high, int32_t rate) {
-int32_t	i;
-BandPassFIR	*BandPass	= new BandPassFIR ((int16_t)filterDegree,
-	                                           low, high,
-	                                           rate);
+float	tmp [filterDegree];
+float	lo	= (float)((high - low) / 2) / rate;
+float	shift	= (float) ((high + low) / 2) / rate;
+float	sum	= 0.0;
+int16_t	i;
 
-	for (i = 0; i < filterDegree; i ++)
-	   filterVector [i] = (BandPass -> getKernel ()) [i];
-//	   filterVector [i] = conj ((BandPass -> getKernel ()) [i]);
+	for (i = 0; i < filterDegree; i ++) {
+	   if (i == filterDegree / 2)
+	      tmp [i] = 2 * M_PI * lo;
+	   else 
+	      tmp [i] = sin (2 * M_PI * lo *
+	                  (i - filterDegree /2)) / (i - filterDegree / 2);
+//
+//	windowing, according to Blackman
+	   tmp [i]  *= blackman [i];
+	   sum += tmp [i];
+	}
+//
+//	Now the modulation
+	for (i = 0; i < filterDegree; i ++) {	// shifting
+	   float v = (i - filterDegree / 2) * (2 * M_PI * shift);
+	   filterVector [i] = DSPCOMPLEX (tmp [i] * cos (v) / sum, 
+	                                  tmp [i] * sin (v) / sum);
+	}
+
 	memset (&filterVector [filterDegree], 0,
 	                (fftSize - filterDegree) * sizeof (DSPCOMPLEX));
 	FilterFFT	-> do_FFT ();
 	inp		= 0;
-	delete	BandPass;
 }
 
 void	fftFilter::setLowPass (int32_t low, int32_t rate) {
@@ -111,9 +134,9 @@ LowPassFIR	*LowPass	= new LowPassFIR ((int16_t)filterDegree,
 	delete LowPass;
 }
 
-DSPFLOAT	fftFilter::Pass (DSPFLOAT x) {
+float	fftFilter::Pass (float x) {
 int32_t		j;
-DSPFLOAT	sample;
+float	sample;
 
 	sample	= real (FFT_C [inp]);
 	FFT_A [inp] = x;

@@ -337,7 +337,8 @@ int16_t	i = 0;
 	ii = (i0 << 8) | i1;
 	qq = (q0 << 8) | q1;
 
-	return  DSPCOMPLEX ((float (ii)) / 32768.0, (float (qq)) / 32768.0);
+//	return  DSPCOMPLEX ((float (ii)) / 32768.0, (float (qq)) / 32768.0);
+	return  DSPCOMPLEX ((float (ii)) / 4096.0, (float (qq)) / 4096.0);
 }
 
 //	we get in 16 bits int16_t, packed in unsigned bytes.

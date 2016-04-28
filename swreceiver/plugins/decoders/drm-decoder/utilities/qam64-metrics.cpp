@@ -85,7 +85,6 @@ void	qam64_metrics::computemetrics	(theSignal	*signalVector,
 	                                 uint8_t	*level_2) {
 
 int32_t	i;
-
 	if (iLevel == 0 && !retry) {
 	   for (i = 0; i < amount; i++) {
 /* Real part -------------------------------------------- */
@@ -104,7 +103,7 @@ int32_t	i;
                                  rTableQAM64SM[BI_110 /* [1 1 0] */][0],
                                  rTableQAM64SM[BI_111 /* [1 1 1] */][0],
                                  signalVector [i].rTrans);
-
+	
 /* Imaginary part --------------------------------------- */
 	         outputMetrics [2 * i + 1]. rTow0 =
                         Minimum4 (imag (signalVector [i]. signalValue),
@@ -162,8 +161,8 @@ int32_t	i;
 	}
 	else
 	if (iLevel == 2) {
-//	first time or not does not matter anymore now
-//	compute i2 and q2. We know i0, i1, q0 and q1 are known
+//	first time or it does not matter anymore now, since we
+//	know i0, i1, q0 and q1. So, compute i2, q2
 	   for (i = 0; i < amount; i ++) {
 	      uint8_t iTabInd0;
 //	Highest bit defined by "level_0",

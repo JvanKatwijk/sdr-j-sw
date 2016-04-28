@@ -39,9 +39,16 @@ struct metrics_struct {
 
 typedef struct metrics_struct metrics;
 
+//
+//	rChan was computed by the equalizer,
+//	in the current setting, the best results are
+//	with a plain rDist (or squared)
 static inline
 float computeMetric (const float rDist, const float rChan) {
-/* The calculation of "rChan" was done in the channel estimation module */
+	return rDist * rDist * rChan;
+//	return rDist * rChan;
+//	return rDist * rDist;
+	return rDist;
 #ifdef USE_MAX_LOG_MAP
 /* | r / h - s | ^ 2 * | h | ^ 2 */
 	return rDist * rDist * rChan;
@@ -54,17 +61,17 @@ float computeMetric (const float rDist, const float rChan) {
 static inline
 float Minimum1 (const float rA, const float rB, const float rChan) {
 //	The minimum in case of only one parameter is trivial 
-	return computeMetric(fabs(rA - rB), rChan);
+	return computeMetric (fabs(rA - rB), rChan);
 }
 
 static inline
-float	Minimum2 (const float rA,		// value to consider
+float	Minimum2 (const float rA,	// value to consider
 	          const float rB1,	// reference 1
 	          const float rB2,	// reference 2
 	          const float rChan) {
         /* First, calculate all distances */
-const float rResult1 = fabs(rA - rB1);
-const float rResult2 = fabs(rA - rB2);
+const float rResult1 = fabs (rA - rB1);
+const float rResult2 = fabs (rA - rB2);
 
 /* Return smallest one */
         return  (rResult1 < rResult2) ?
@@ -82,8 +89,8 @@ float	Minimum2 (const float rA,
            X1: L0 > 0 */
 
 /* First, calculate all distances */
-float rResult1	= computeMetric (fabs(rA - rX0), rChan);
-float rResult2	= computeMetric (fabs(rA - rX1), rChan);
+float rResult1	= computeMetric (fabs (rA - rX0), rChan);
+float rResult2	= computeMetric (fabs (rA - rX1), rChan);
 
 /* Add L-value to metrics which to not correspond to correct hard decision */
 	if (rLVal0 > 0.0)
@@ -102,10 +109,10 @@ static inline
 float	Minimum4 (const float rA, const float rB1, const float rB2,
 	          const float rB3, float rB4, const float rChan) {
 /* First, calculate all distances */
-const float rResult1 = fabs(rA - rB1);
-const float rResult2 = fabs(rA - rB2);
-const float rResult3 = fabs(rA - rB3);
-const float rResult4 = fabs(rA - rB4);
+const float rResult1 = fabs (rA - rB1);
+const float rResult2 = fabs (rA - rB2);
+const float rResult3 = fabs (rA - rB3);
+const float rResult4 = fabs (rA - rB4);
 
         /* Search for smallest one */
 float rReturn = rResult1;
@@ -136,6 +143,6 @@ int16_t		symbolsperGroup	(uint8_t);
 int16_t		Kmin		(uint8_t, uint8_t);
 int16_t		Kmax		(uint8_t, uint8_t);
 int16_t		ususedCarriers	(uint8_t);
-double		sinc		(double);
+float		sinc		(float);
 #endif
 

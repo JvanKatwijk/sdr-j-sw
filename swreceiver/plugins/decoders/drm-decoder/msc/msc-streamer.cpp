@@ -123,8 +123,11 @@ int16_t	i;
 
 //	second step: get the higher protected bits
 	for (pntr = 0; pntr < 6 * highProtectedbits; pntr ++)
-	   if (punctureHigh [pntr % (6 * RX_High)] == 1)
-	      UTemp [pntr] = temp [next ++];
+	   if (punctureHigh [pntr % (6 * RX_High)] == 1) {
+	      UTemp [pntr]. rTow0 = temp [next]. rTow0;
+	      UTemp [pntr]. rTow1 = temp [next]. rTow1;
+	      next ++;
+	   }
 	   else {
 	      UTemp [pntr]. rTow0 = 0;
 	      UTemp [pntr]. rTow1 = 0;
@@ -135,8 +138,11 @@ int16_t	i;
 //	... then the lower protected part, just until the tailbits
 	for (pntr = 6 * highProtectedbits;
 	     pntr < 6 * (highProtectedbits + lowProtectedbits); pntr ++) {
-	   if (punctureLow [(pntr - 6 * highProtectedbits) % (6 * RX_Low)] == 1)
-	      UTemp [pntr] = temp [next ++];
+	   if (punctureLow [(pntr - 6 * highProtectedbits) % (6 * RX_Low)] == 1) {
+	      UTemp [pntr]. rTow0 = temp [next] . rTow0;
+	      UTemp [pntr]. rTow1 = temp [next] . rTow1;
+	      next ++;
+	   }
 	   else {
 	      UTemp [pntr]. rTow0 = 0;
 	      UTemp [pntr]. rTow1 = 0;
@@ -149,8 +155,11 @@ int16_t	i;
 	for (pntr = 6 * (highProtectedbits + lowProtectedbits);
 	     pntr < 6 * (highProtectedbits + lowProtectedbits) + 36; pntr ++)
 	   if (residuTable [pntr -
-	            6 * (highProtectedbits + lowProtectedbits)] == 1)
-	      UTemp [pntr] = temp [next ++];
+	            6 * (highProtectedbits + lowProtectedbits)] == 1) {
+	      UTemp [pntr]. rTow0 = temp [next] . rTow0;
+	      UTemp [pntr]. rTow1 = temp [next] . rTow1;
+	      next ++;
+	   }
 	   else {
 	      UTemp [pntr]. rTow0 = 0;
 	      UTemp [pntr]. rTow1 = 0;

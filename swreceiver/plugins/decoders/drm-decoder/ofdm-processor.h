@@ -57,7 +57,6 @@ public:
 	                                         int32_t,
 	                                         float,
 	                                         bool,
-	                                         int16_t,
 	                                         float,
 	                                         float,
 	                                         float);

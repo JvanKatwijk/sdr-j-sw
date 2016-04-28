@@ -123,8 +123,9 @@ int16_t	startPosB	= 0;
 	            fprintf (stderr, "single packets (id = %d)\n",
 	                           msc -> streams [i]. packetId);
 	         else
-	            fprintf (stderr, "data units (id = %d)\n",
-	                           msc -> streams [i]. packetId);
+//	            fprintf (stderr, "data units (id = %d)\n",
+//	                           msc -> streams [i]. packetId);
+	         ;
 	         process_data (v, i,
 	                       startPosA, lengthA,
 	                       startPosB, lengthB);
@@ -295,6 +296,8 @@ int16_t	prevCI	= -1;
 	PPI		= (header & 0x8) >> 3;
 	CI		= header & 0x7;
 
+	fprintf (stderr, "packet with id %d, PPI %d, CI %d and fl = %d\n",
+	                       packetId, PPI, CI, (firstBit << 1) | lastBit);
 	if (PPI) {
 	   bytesAvailable = packetBuffer [1];
 	   bufPtr	  = (const char *)&packetBuffer [2];
@@ -338,8 +341,10 @@ int16_t	prevCI	= -1;
 //	Note that positions where the segments are to be found
 //	can be deduced from the start positions: just add the size
 //	of the header and the size of the crc block to the start position.
-void	dataProcessor::handle_eep_audio (uint8_t *v, int16_t mscIndex,
-	                           int16_t startLow, int16_t lengthLow) {
+void	dataProcessor::handle_eep_audio (uint8_t *v,
+	                                 int16_t mscIndex,
+	                                 int16_t startLow,
+	                                 int16_t lengthLow) {
 int16_t		i, j;
 int16_t		headerLength;
 int16_t		crc_start;
@@ -349,27 +354,29 @@ int16_t		payLoad_length = 0;
 	numFrames = msc -> streams [mscIndex]. audioSamplingRate == 1 ? 5 : 10;
 	headerLength = numFrames == 10 ? (9 * 12 + 4) / 8 : (4 * 12) / 8;
 
-//	fprintf (stderr, "superframe %d start %d\n", mscIndex, startLow);
 	f [0]. startPos = startLow;
 	for (i = 1; i < numFrames; i ++) {
 	   f [i]. startPos = startLow + get_MSCBits (v,
 	                                  startLow * 8 + 12 * (i - 1), 12);
-//	   fprintf (stderr, "frame %d start at %d\n", i, f [i]. startPos);
 	}
 
 	for (i = 1; i < numFrames; i ++) {
 	   f [i - 1]. length = f [i]. startPos - f [i - 1]. startPos;
 	   if (f [i - 1]. length < 0 ||
-	       f [i - 1]. length >= lengthLow)
-	   return;
+	       f [i - 1]. length >= lengthLow) {
+	      faadSuccess (false);
+	      return;
+	   }
 	   payLoad_length += f [i - 1]. length;
 	}
 
 	f [numFrames - 1]. length = lengthLow - 
 	                            (headerLength + numFrames) -
 	                            payLoad_length;
-	if (f [numFrames - 1]. length < 0)
+	if (f [numFrames - 1]. length < 0) {
+	   faadSuccess (false);
 	   return;
+	}
 
 	crc_start	= startLow + headerLength;
 	for (i = 0; i < numFrames; i ++)
@@ -378,18 +385,11 @@ int16_t		payLoad_length = 0;
 //	The actual audiobits (bytes) starts at crc_start + numFrames
 	payLoad_start	= crc_start + numFrames; // the crc's
 
-	int16_t	lll	= 0;
 	for (i = 0; i < numFrames; i ++) {
 	   for (j = 0; j < f [i]. length; j ++) {
-//	      int16_t in2 = (payLoad_start + lll + j);
 	      int16_t in2 = (payLoad_start + f [i]. startPos + j);
-//	      if (in2 < 0 || in2 >= lengthLow)
-//	         fprintf (stderr, "PIEP %d %d %d (%d)\n",
-//	                          payLoad_start, f [i]. startPos, j, in2);
-	     
 	      f [i]. audio [j] = get_MSCBits (v, in2 * 8, 8);
 	   }
-           lll += j;
 	}
 	playOut (mscIndex);
 }
@@ -402,9 +402,11 @@ uint8_t	audioMode		= msc -> streams [mscIndex]. audioMode;
 
 	if (!my_aacDecoder	->  checkfor (audioSamplingRate,
 	                                      SBR_flag, 
-	                                      audioMode))
+	                                      audioMode)) {
+	   faadSuccess (false);
 	   return;
-//	fprintf (stderr, "Audioframes gevuld en klaar voor decoderen\n");
+	}
+
 	for (i = 0; i < numFrames; i ++) {
 	   int16_t	index = i;
 	   bool		convOK;
@@ -415,6 +417,7 @@ uint8_t	audioMode		= msc -> streams [mscIndex]. audioMode;
 	                                 &convOK,
 	                                 outBuffer,
 	                                 &cnt, &rate);
+//	   fprintf (stderr, "faad says %s\n", convOK ? "OK" : "fail");
 	   if (convOK) {
 	      faadSuccess (true);
 	      writeOut (outBuffer, cnt, rate);

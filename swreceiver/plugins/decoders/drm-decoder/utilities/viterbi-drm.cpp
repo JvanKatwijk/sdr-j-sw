@@ -106,11 +106,11 @@ float		minimalCosts;
 int32_t		**history = new int32_t *[blockLength + N_POLYS + 1];
 	for (i = 0; i < blockLength + N_POLYS + 1; i ++)
 	   history [i] = new int32_t [NumofStates];
-//int32_t		history	[blockLength + N_POLYS + 1][NumofStates];
-//float		transCosts [blockLength + N_POLYS + 1][NumofStates];
+
 float		**transCosts = new float *[blockLength + N_POLYS + 1];
 	for (i = 0; i < blockLength + N_POLYS + 1; i ++)
 	   transCosts [i] = new float [NumofStates];
+
 int32_t		sequence  [blockLength + N_POLYS + 1];
 
 	for (i = 0; i < blockLength + N_POLYS + 1; i ++) {
@@ -182,7 +182,7 @@ int32_t		sequence  [blockLength + N_POLYS + 1];
 	}
 	sequence [blockLength] = bestState;
 /*
- *	Trace backgoes back to state 0, and builds up the
+ *	Trace back goes back to state 0, and builds up the
  *	sequence of decoded symbols
  */
 	for (i = blockLength + N_POLYS; i > 0; i --) 

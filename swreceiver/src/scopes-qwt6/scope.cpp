@@ -39,9 +39,11 @@
 	Displaysize		= displaysize;
 	Rastersize		= rastersize;
 	bitDepth		= 24;
-	Spectrum	= NULL;
-	Waterfall	= new WaterfallViewer (Plotter, Displaysize, Rastersize);
-	CurrentWidget	= WATERFALL_MODE;
+	Spectrum		= NULL;
+	Waterfall		= new WaterfallViewer (Plotter,
+	                                               Displaysize,
+	                                               Rastersize);
+	CurrentWidget		= WATERFALL_MODE;
 	connect (Waterfall,
 	         SIGNAL (leftClicked (int)),
 	         this,
@@ -163,7 +165,7 @@ void	Scope::setBitDepth	(int16_t b) {
 	leftMarker		-> setLineStyle (QwtPlotMarker::VLine);
 	leftMarker		-> setLinePen (QPen (Qt::red, 3.0));
 	leftMarkerLabel		= QwtText ("label");
-	leftMarkerLabel. setColor (Qt::black);
+	leftMarkerLabel. setColor (Qt::red);
 	leftMarker		-> setLabel (leftMarkerLabel);
 //	leftMarker		-> setLabelOrientation (Qt::Vertical);
 	leftMarker		-> attach (plotgrid);
@@ -261,7 +263,7 @@ uint16_t	i;
 	if (marker_left != old_marker_left) {
 	   const QString help	= QString::number (marker_left);
 	   leftMarkerLabel 	=  QwtText (help);
-	   leftMarkerLabel. setColor (Qt::black);
+	   leftMarkerLabel. setColor (Qt::red);
 	   leftMarker	-> detach ();
 	   leftMarker	= new QwtPlotMarker ();
 	   leftMarker	-> setLineStyle (QwtPlotMarker::VLine);

@@ -28,7 +28,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="drmName">
     <property name="geometry">
      <rect>
       <x>490</x>
@@ -207,8 +207,8 @@
    <widget class="QLCDNumber" name="goodFrames">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>150</y>
+      <x>550</x>
+      <y>130</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -220,8 +220,8 @@
    <widget class="QLCDNumber" name="badFrames">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>150</y>
+      <x>550</x>
+      <y>140</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -274,19 +274,6 @@
       <x>10</x>
       <y>100</y>
       <width>31</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="messageLabel">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>150</y>
-      <width>401</width>
       <height>21</height>
      </rect>
     </property>
@@ -409,6 +396,19 @@
     </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="messageLabel">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>150</y>
+      <width>421</width>
+      <height>21</height>
+     </rect>
     </property>
     <property name="text">
      <string/>

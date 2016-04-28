@@ -430,7 +430,6 @@ restart:
 	                       intOffset,	// initial value
 	                       time_offset_fractional,	// initial value
 	                       firstTime,
-	                       offsetInteger,	// not used
 	                       offsetFractional,	// tracking value
 	                       deltaFreqOffset,		// tracking value
 	                       sampleclockOffset	// tracking value

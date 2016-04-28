@@ -26,11 +26,12 @@
 
 #include	"swradio-constants.h"
 #include	"referenceframe.h"
+#include	"estimator-base.h"
 #include	<armadillo>
 #include	<QString>
-#include	"estimator-base.h"
 
 using namespace	arma;
+
 
 //	The processor for estimating the channel(s) of a single
 //	symbol

@@ -294,7 +294,6 @@ void	ofdmProcessor::getWord (uint8_t		Mode,	// not needed, really
 	                        int32_t		initialFreq,
 	                        float		initial_timeOffset,
 	                        bool		firstTime,
-	                        int16_t		offsetInteger,	// not used
 	                        float		offsetFractional,
 	                        float		angle,
 	                        float		clockOffset) {
@@ -320,7 +319,7 @@ int16_t	d;
 	}
 	else { 			// apparently tracking mode
 	   sampleclockOffset	= 0.9 * sampleclockOffset + 0.1 * clockOffset;
-	   timedelay		-= 0.8 * offsetFractional;
+	   timedelay		-= 0.5 * offsetFractional;
 	}
 	
 	timeOffsetInteger	= floor (timedelay + 0.5);
@@ -359,14 +358,14 @@ int16_t	d;
 	   theAngle = arg (c);
 	}
 	else
-	   theAngle	= theAngle - 0.1 * angle;
+	   theAngle	= theAngle - 0.2 * angle;
 //	offset in Hz / 100
 	offset		= theAngle * 1200000 / (2 * M_PI * Tu);
 	if (offset == offset)	// precaution to handle undefines
-	   for (i = 0; i < Ts; i ++)
+	   for (i = 0; i < Ts; i ++) 
 	      temp [i] *= localOscillator_1 -> nextValue (100 * initialFreq
 	                                                        -offset);
-
+	
 	if (++displayCount > 20) {
 	   displayCount = 0;
 	   show_coarseOffset	(initialFreq);

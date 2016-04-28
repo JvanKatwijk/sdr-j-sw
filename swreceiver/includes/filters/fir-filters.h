@@ -147,10 +147,10 @@ public:
 	void		newKernel	(int32_t);
 };
 
-class	BandPassFIR: public Basic_FIR {
+class	bandpassFIR: public Basic_FIR {
 public:
-			BandPassFIR	(int16_t, int32_t, int32_t, int32_t);
-			~BandPassFIR	(void);
+			bandpassFIR	(int16_t, int32_t, int32_t, int32_t);
+			~bandpassFIR	(void);
 	DSPCOMPLEX	*getKernel	(void);
 	void		newKernel	(int32_t, int32_t);
 private:

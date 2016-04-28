@@ -38,7 +38,6 @@ public:
 	                     uint8_t, uint8_t, int16_t);
 		~estimator_2 (void);
 	void	estimate	(DSPCOMPLEX *, DSPCOMPLEX *);
-	int16_t	indexFor	(int16_t);
 private:
 	int16_t		numberofCarriers;
 	int16_t		numberofPilots;
