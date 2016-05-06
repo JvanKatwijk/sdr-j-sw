@@ -98,7 +98,7 @@
 	taskMayRun	= false;
 	while (isRunning ())
 	   usleep (100);
-//	deleteProcessors	(Mode);	 need to be addressed!!!
+	deleteProcessors	(Mode);	//	need to be addressed!!!
 }
 
 void	frameProcessor::stop (void) {

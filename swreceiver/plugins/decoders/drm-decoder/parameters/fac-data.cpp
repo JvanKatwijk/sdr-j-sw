@@ -182,8 +182,6 @@ uint8_t	language [3], country [2];
 	                                          get_SDCBits (v, 8, 1);
 	            msc -> streams [index]. domain =
 	                                          get_SDCBits (v, 9, 3);
-	         fprintf (stderr, "stream met domain %d\n", 
-	                        msc -> streams [index]. domain);
 	         } else {
 	            // packet mode
 	            msc -> streams [index]. dataUnitIndicator =
@@ -196,6 +194,7 @@ uint8_t	language [3], country [2];
 	                                          get_SDCBits (v, 9, 3);
 	            msc -> streams [index]. packetLength =
 	                                          get_SDCBits (v, 12, 8);
+	
 	            if (msc -> streams [index]. domain == 0)
 	               msc -> streams [index]. applicationId =
 	                                          get_SDCBits (v, 20, 16);
@@ -204,11 +203,12 @@ uint8_t	language [3], country [2];
 	               msc -> streams [index]. applicationId =
 	                                          get_SDCBits (v, 25, 11);
 	            msc -> streams [index]. startofData = 36;
-	         fprintf (stderr, "packetLength = %d, domain = %d, (app Id = %x) dataUnit = %d\n",
-	                    msc -> streams [index]. packetLength,
-	                    msc -> streams [index]. domain,
-	                    msc -> streams [index]. applicationId,
-	                    msc -> streams [index]. dataUnitIndicator);
+//	         fprintf (stderr, " stream %d packetLength = %d, domain = %d, (app Id = %x) dataUnit = %d\n",
+//	                    index,
+//	                    msc -> streams [index]. packetLength,
+//	                    msc -> streams [index]. domain,
+//	                    msc -> streams [index]. applicationId,
+//	                    msc -> streams [index]. dataUnitIndicator);
 	         }
 	      }
 	      return;
@@ -225,7 +225,7 @@ uint8_t	language [3], country [2];
 	            uint8_t f     = get_SDCBits (v, 30, 1);
 	            hours += f ? - offset : offset;
 	         }
-	         fprintf (stderr, "time = %d %d\n", hours, minutes);
+//	         fprintf (stderr, "time = %d %d\n", hours, minutes);
 	      }
 	      return;
 
@@ -271,12 +271,13 @@ uint8_t	language [3], country [2];
 	      return;
 
 	   case 14:
-	      { int16_t streamId = get_SDCBits	(v, 0, 2);
-	      rfu		= get_SDCBits	(v, 2, 2);
+	      {  int16_t streamId = get_SDCBits	(v, 0, 2);
+	         rfu		  = get_SDCBits	(v, 2, 2);
 	      msc -> streams [streamId]. R	= get_SDCBits (v, 4, 8);
 	      msc -> streams [streamId]. C	= get_SDCBits (v, 12, 8);
-	      msc -> streams [streamId]. packetLength = get_SDCBits (v, 20, 8);
-	      return;
+	      msc -> streams [streamId]. packetLength =
+	                             get_SDCBits (v, 20, 8) - 3;
+	      msc -> streams [streamId]. FEC	= true;
 	      }
 	      return;
 

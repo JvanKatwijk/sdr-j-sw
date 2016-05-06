@@ -1152,7 +1152,8 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 //	The cardreader based interfaces might use "set_changeRate",
 //	Extio interfaces, i.e. Winrad compatible dll's, may
 //	give more signals
-	bitDepth	= theDevice	-> bitDepth ();
+	bitDepth	= theDevice	-> bitDepth ();	
+	fprintf (stderr, "bitDepth = %d\n", bitDepth);
 	connect (theDevice, SIGNAL (set_ExtFrequency (int)),
 	         this, SLOT (set_ExtFrequency (int)));
 	connect (theDevice, SIGNAL (set_ExtLO (int)),
@@ -1171,7 +1172,7 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 	         this, SLOT (sampleHandler (int)));
 //
 	set_inputRate (theDevice	-> getRate ());
-//	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
+	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
 	lfScope		-> setBitDepth	(theDevice -> bitDepth ());
 }
 //

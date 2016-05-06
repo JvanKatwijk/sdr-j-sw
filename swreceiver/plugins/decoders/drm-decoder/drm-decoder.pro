@@ -61,7 +61,13 @@ HEADERS     = ../decoder-interface.h \
 	      ./msc/msc-streamer.h \
 	      ./msc/msc-handler.h \
 	      ./data/data-processor.h \
+	      ./data/fec-handler.h \
+	      ./data/galois.h \
+	      ./data/reed-solomon.h \
 	      ./data/message-processor.h \
+	      ./data/packet-assembler.h \
+	      ./data/virtual-datahandler.h \
+	      ./data/mot-data.h \
 	      ./data/drm-aacdecoder.h \
 	      ./data/neaacdec_dll.h \
 	      ../../../includes/filters/fir-filters.h  \
@@ -108,7 +114,13 @@ SOURCES     = ./drm-decoder.cpp  \
 	      ./msc/msc-streamer.cpp \
 	      ./msc/msc-handler.cpp \
 	      ./data/data-processor.cpp \
+	      ./data/fec-handler.cpp \
+	      ./data/galois.cpp \
+	      ./data/reed-solomon.cpp \
 	      ./data/message-processor.cpp \
+	      ./data/packet-assembler.cpp \
+	      ./data/virtual-datahandler.cpp \
+	      ./data/mot-data.cpp \
 	      ./data/drm-aacdecoder.cpp \
 	      ../../../src/filters/fir-filters.cpp  \
 	      ../../../src/various/oscillator.cpp \

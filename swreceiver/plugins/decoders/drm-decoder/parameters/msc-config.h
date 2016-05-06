@@ -86,6 +86,7 @@ enum	{
 	   uint8_t	packetId;
 	   int16_t	R;
 	   int16_t	C;
+	   uint8_t	FEC;
 	   int16_t	packetLength;
 	   int16_t	applicationId;
 	   int16_t	startofData;

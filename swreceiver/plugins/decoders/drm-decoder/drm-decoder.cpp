@@ -84,7 +84,6 @@ int16_t	symbs;
 	         this, SLOT (selectChannel_3 (void)));
 	connect (channel_4, SIGNAL (clicked (void)),
 	         this, SLOT (selectChannel_4 (void)));
-	channelSelector		= 1;
 	running			= true;
 	my_frameProcessor	= new frameProcessor (this,
 	                                              buffer,
@@ -98,6 +97,7 @@ int16_t	symbs;
 #else
 	drmName	-> setText ("drm 0.15 arma-2");
 #endif
+	pictureLabel		= NULL;
 	my_frameProcessor	-> start	();
 	return myFrame;
 }
@@ -110,9 +110,13 @@ int16_t	symbs;
 	my_frameProcessor -> stop ();
 	while (my_frameProcessor -> isRunning ())
 	   usleep (10);
-	delete my_frameProcessor;
+	delete	my_frameProcessor;
 	delete	buffer;
+	delete	myScope;
+	delete	myIQDisplay;
+	delete[] Y_values;
 	delete	myFrame;
+	delete	pictureLabel;
 }
 
 int32_t	drmDecoder::rateOut	(void) {
@@ -270,7 +274,6 @@ void	drmDecoder::sampleOut		(float re, float im) {
 }
 
 void	drmDecoder::newYvalue		(int n1, float z) {
-
 	Y_values [currentS] [n1] = z;
 }
 
@@ -293,24 +296,41 @@ void	drmDecoder::showSNR		(float snr) {
 	snrDisplay	-> display (snr);
 }
 
+static	bool audio_channel_1	= true;
+static	bool audio_channel_2	= false;
+static	bool data_channel_1	= true;
+static	bool data_channel_2	= false;
+
 void	drmDecoder::selectChannel_1	(void) {
-	channelSelector	= 1;
+	audio_channel_1 = true;
+	audio_channel_2 = false;
 }
 
 void	drmDecoder::selectChannel_2	(void) {
-	channelSelector	= 2;
+	audio_channel_1 = false;
+	audio_channel_2 = true;
 }
 
 void	drmDecoder::selectChannel_3	(void) {
-	channelSelector	= 3;
+	data_channel_1	= true;
+	data_channel_2	= false;
 }
 
 void	drmDecoder::selectChannel_4	(void) {
-	channelSelector	= 4;
+	data_channel_1	= false;
+	data_channel_2	= true;
 }
 
-bool	drmDecoder::isSelectedChannel	(int16_t c) {
-	return channelSelector == c;
+int16_t	drmDecoder::getAudioChannel	(void) {
+	return audio_channel_1 ? 0 : 1;
+}
+
+int16_t	drmDecoder::getDataChannel	(void) {
+int16_t	c = 0;
+	if (channel_1 -> isHidden ()) c ++;
+	if (channel_2 -> isHidden ()) c ++;
+	return data_channel_1 ? 2 - c : 
+	          data_channel_2 ? 3 - c: -1;
 }
 
 void	drmDecoder::faadSuccess		(bool b) {
@@ -318,6 +338,21 @@ void	drmDecoder::faadSuccess		(bool b) {
 	   faadSyncLabel -> setStyleSheet ("QLabel {background-color:green}");
 	else
 	   faadSyncLabel -> setStyleSheet ("QLabel {background-color:red}");
+}
+
+//	showMOT is triggered by the MOT handler,
+//	the GUI may decide to ignore the data sent
+//	since data is only sent whenever a data channel is selected
+void	drmDecoder::showMOT		(QByteArray data, int subtype) {
+	if (running)
+	   pictureLabel	= new QLabel (NULL);
+
+	QPixmap p;
+	p. loadFromData (data, subtype == 0 ? "GIF" :
+	                       subtype == 1 ? "JPEG" :
+	                       subtype == 2 ? "BMP" : "PNG");
+	pictureLabel ->  setPixmap (p);
+	pictureLabel ->  show ();
 }
 
 

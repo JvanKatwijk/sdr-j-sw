@@ -26,9 +26,11 @@
 #include	<stdio.h>
 #include	"drm-aacdecoder.h"
 #include	"message-processor.h"
+#include	"fec-handler.h"
 #include	"fir-filters.h"
 #include	<float.h>
 #include	<math.h>
+#include	"packet-assembler.h"
 
 static	inline
 uint16_t	get_MSCBits (uint8_t *v, int16_t offset, int16_t nr) {
@@ -60,7 +62,7 @@ uint32_t y;
 	}
 	for (i = N - 2; i < N; i++) {
 	   for (j = 7; j >= 0; j--) {
-	      y = ((b >> 15) + ((uint32_t) ((in[i] >> j) & 0x01)) ^ 0x01) & 0x01;	/* extra parent pa0mbo */
+	      y = (((b >> 15) + ((uint32_t) ((in[i] >> j) & 0x01))) ^ 0x01) & 0x01;	/* extra parent pa0mbo */
 	      if (y == 1)
 	         b = ((b << 1) ^ x);
 	      else
@@ -70,10 +72,17 @@ uint32_t y;
 	return (b & 0xFFFF);
 }
 
-	dataProcessor::dataProcessor	(mscConfig *msc, drmDecoder *drm) {
+	dataProcessor::dataProcessor	(mscConfig *msc,
+	                                 drmDecoder *drm) {
 	this	-> msc			= msc;
 	this	-> drmMaster		= drm;
-
+//
+//	do not change the order of the next two initializations
+//	although here they are dummies
+	audioChannel			= 1;
+	dataChannel			= 3;
+	my_packetAssembler		= new packetAssembler (msc, drm, -1);
+	my_fecHandler			= new fecHandler (my_packetAssembler);
 	this	-> my_aacDecoder	= new DRM_aacDecoder ();
 	this	-> my_messageProcessor	= new messageProcessor (drm);
 	upFilter_12000			= new LowPassFIR (5, 6000, 48000);
@@ -85,12 +94,19 @@ uint32_t y;
 	connect (this, SIGNAL (faadSuccess (bool)),
 	         drmMaster, SLOT (faadSuccess (bool)));
 	show_audioMode (" ");
+	selectedAudioService		= -1;
+	selectedDataService		= -1;
 }
 
 	dataProcessor::~dataProcessor	(void) {
-	delete my_aacDecoder;
-	delete my_messageProcessor;
+	delete	my_aacDecoder;
+	delete	my_messageProcessor;
+	delete my_fecHandler;
+	delete	my_packetAssembler;
+	delete	upFilter_12000;
+	delete	upFilter_24000;
 }
+
 //
 //	The first thing we do is to define the borders for the
 //	streams and dispatch on the kind of stream
@@ -98,7 +114,19 @@ void	dataProcessor::process		(uint8_t *v, int16_t size) {
 int16_t	i;
 int16_t	startPosA	= 0;
 int16_t	startPosB	= 0;
-//
+int16_t	new_dataChannel	= drmMaster	-> getDataChannel ();
+	audioChannel	= drmMaster	-> getAudioChannel ();
+	if (new_dataChannel != dataChannel) {
+	   uint16_t applicationId = msc -> streams [new_dataChannel]. applicationId;
+	   delete my_packetAssembler;
+	   delete my_fecHandler;
+	   my_packetAssembler		= new packetAssembler (msc,
+	                                                       drmMaster,
+	                                                       applicationId);
+	   my_fecHandler		= new fecHandler (my_packetAssembler);
+	   dataChannel = new_dataChannel;
+	}
+	   
 	(void)size;
 //	we first compute the length of the HP part, which - apparently -
 //	is the start of the LP part
@@ -109,7 +137,7 @@ int16_t	startPosB	= 0;
 	   int16_t lengthA = msc -> streams [i]. lengthHigh;
 	   int16_t lengthB  = msc -> streams [i]. lengthLow;
 	   if (msc -> streams [i]. soort == mscConfig::AUDIO_STREAM &&
-	                           drmMaster -> isSelectedChannel (i + 1)) {
+	                               (audioChannel == i)) {
 	      process_audio (v, i,
 	                     startPosA, lengthA,
 	                     startPosB, lengthB);
@@ -117,21 +145,19 @@ int16_t	startPosB	= 0;
 	                                       8 * (startPosB + lengthB - 4));
 	   }
 	   else
-	   if (msc -> streams [i]. soort == mscConfig::DATA_STREAM) {
+	   if (msc -> streams [i]. soort == mscConfig::DATA_STREAM &&
+	                                (dataChannel == i)) {
+//
+//	just a reminder:
+//	if the packetmode indicator == 1 we have an asynchronous stream
+//	if 0, we have a synchronous stream which we don't handle yet
 	      if (msc -> streams [i]. packetModeInd == 1) {
-	         if (msc -> streams [i]. dataUnitIndicator == 0)
-	            fprintf (stderr, "single packets (id = %d)\n",
-	                           msc -> streams [i]. packetId);
-	         else
-//	            fprintf (stderr, "data units (id = %d)\n",
-//	                           msc -> streams [i]. packetId);
-	         ;
-	         process_data (v, i,
-	                       startPosA, lengthA,
-	                       startPosB, lengthB);
+	         process_packets (v, i,
+	                          startPosA, lengthA,
+	                          startPosB, lengthB);
 	      }
-	      else
-	         fprintf (stderr, "Sorry, streams not supported yet\n");
+	      else {;	// synchronous stream
+	      }
 	   }
 	
 	   startPosA	+= lengthA;
@@ -177,14 +203,14 @@ uint8_t	audioCoding		= msc -> streams [mscIndex]. audioCoding;
 	}
 }
 
-void	dataProcessor::process_data (uint8_t *v, int16_t mscIndex,
-	                             int16_t startHigh, int16_t lengthHigh,
-	                             int16_t startLow,  int16_t lengthLow) {
+void	dataProcessor::process_packets (uint8_t *v, int16_t mscIndex,
+	                                int16_t startHigh, int16_t lengthHigh,
+	                                int16_t startLow,  int16_t lengthLow) {
 	if (lengthHigh != 0) 
-	   handle_uep_data (v, mscIndex, startHigh, lengthHigh,
+	   handle_uep_packets (v, mscIndex, startHigh, lengthHigh,
 	                            startLow, lengthLow);
 	else
-	   handle_eep_data (v, mscIndex,  startLow, lengthLow);
+	   handle_eep_packets (v, mscIndex, startLow, lengthLow);
 }
 //
 //
@@ -256,7 +282,7 @@ int16_t	payloadLength;
 	playOut (mscIndex);
 }
 
-void	dataProcessor::handle_uep_data (uint8_t *v, int16_t mscIndex,
+void	dataProcessor::handle_uep_packets (uint8_t *v, int16_t mscIndex,
 	                           int16_t startHigh, int16_t lengthHigh,
 	                           int16_t startLow, int16_t lengthLow) {
 int16_t	i;
@@ -267,63 +293,88 @@ uint8_t dataBuffer [lengthLow + lengthHigh];
 	for (i = 0; i < lengthLow; i ++)
 	   dataBuffer [lengthHigh + i] =
 	                    get_MSCBits (v, (startLow + i) * 8, 8);
-	
+	if (msc -> streams [mscIndex]. FEC)
+	   handle_packets_with_FEC (dataBuffer,
+	                                lengthLow + lengthHigh, mscIndex);
+	else
+	   handle_packets (dataBuffer, lengthLow + lengthHigh, mscIndex);
 }
 
-void	dataProcessor::handle_eep_data (uint8_t *v, int16_t mscIndex,
+void	dataProcessor::handle_eep_packets (uint8_t *v, int16_t mscIndex,
 	                           int16_t startLow, int16_t lengthLow) {
-int16_t	i;
 uint8_t	dataBuffer [lengthLow];
-uint8_t	firstBit, lastBit, packetId, PPI, CI;
-uint8_t	packetBuffer [lengthLow];
-uint8_t	header;
-const char * bufPtr;
-int16_t	bytesAvailable;
-static
-int16_t	prevCI	= -1;
+int16_t i;
 
 	for (i = 0; i < lengthLow; i ++)
-	   packetBuffer [i] = get_MSCBits (v, (startLow + i) * 8, 8);
-	if (!crc16_bytewise (packetBuffer,
-	                   msc -> streams [mscIndex]. packetLength + 3) == 0) 
-	   return;
-//
-//	packetBuffer [0] contains the header
-	header		= packetBuffer [0];
-	firstBit	= header & 0x80;
-	lastBit		= header & 0x40;
-	packetId	= (header & 0x30) >> 4;
-	PPI		= (header & 0x8) >> 3;
-	CI		= header & 0x7;
+	   dataBuffer [i] = get_MSCBits (v, (startLow + i) * 8, 8);
+	if (msc -> streams [mscIndex]. FEC)
+	   handle_packets_with_FEC (dataBuffer, lengthLow, mscIndex);
+	else
+	   handle_packets (dataBuffer, lengthLow, mscIndex);
+}
 
-	fprintf (stderr, "packet with id %d, PPI %d, CI %d and fl = %d\n",
-	                       packetId, PPI, CI, (firstBit << 1) | lastBit);
-	if (PPI) {
-	   bytesAvailable = packetBuffer [1];
-	   bufPtr	  = (const char *)&packetBuffer [2];
-	}
-	else {
-	   bytesAvailable = msc -> streams [mscIndex]. packetLength - 1;
-	   bufPtr	  = (const char *) &packetBuffer [1];
-	}
-	fprintf (stderr, "CI = %d\n", CI);
+void	dataProcessor::handle_packets_with_FEC (uint8_t *v,
+	                                        int16_t length,
+	                                        uint8_t mscIndex) {
+uint8_t *packetBuffer;
+int16_t	packetLength = msc -> streams [mscIndex]. packetLength + 3;
+int16_t	i;
+static	int	cnt	= 0;
 //
-	if (CI == (prevCI + 1) % 8) {
-	   int16_t packetLength = msc -> streams [mscIndex]. packetLength;
-	   prevCI = CI;
-	   if (firstBit && !lastBit) {
-	      firstSegment (packetBuffer, packetLength, CI);
+//	first check the RS decoder
+	my_fecHandler -> checkParameters (
+	          msc -> streams [mscIndex]. R,
+	          msc -> streams [mscIndex]. C, 
+	          msc -> streams [mscIndex]. packetLength + 3,
+	          mscIndex);
+
+	for (i = 0; i < length / packetLength; i ++) {
+	   packetBuffer = &v [i * packetLength];
+//	Fetch relevant info from the stream
+
+//	packetBuffer [0] contains the header
+	   uint8_t header	= packetBuffer [0];
+	   uint8_t firstBit	= (header & 0x80) >> 7;
+	   uint8_t lastBit	= (header & 0x40) >> 6;
+	   uint8_t packetId	= (header & 0x30) >> 4;
+	   uint8_t PPI		= (header & 0x8) >> 3;
+	   uint8_t CI		= header & 0x7;
+//
+	   if ((packetId == 3) && (PPI == 0)) {
+	      my_fecHandler -> fec_packet (packetBuffer, packetLength);
+	      cnt = 0;
 	   }
-	   else
-	   if (lastBit && !firstBit) {
-	      lastSegment (packetBuffer, packetLength, CI);
+	   else 
+//	   if (packetId != 0) 
+//	      if (PPI)
+//	         fprintf (stderr, "filler with %d\n", packetBuffer [1]);
+//	      else
+//	      fprintf (stderr, "rommelpacket ertussen PPI = %d, CI = %d\n",
+//	                               PPI, CI);
+	   if (packetId == 0) {
+	      my_fecHandler -> data_packet (packetBuffer, packetLength);
+	      cnt ++;
 	   }
-	   else
-	      addSegment (packetBuffer, packetLength, CI);
 	}
-	else {
-	   fprintf (stderr, "Resetting current segment\n");
-	   prevCI = -1;
+}
+
+void	dataProcessor::handle_packets (uint8_t *v, int16_t length,
+	                               uint8_t mscIndex) {
+uint8_t *packetBuffer;
+int16_t	packetLength = msc -> streams [mscIndex]. packetLength + 3;
+int16_t	i;
+static	int	cnt	= 0;
+
+	for (i = 0; i < length / packetLength; i ++) {
+	   packetBuffer = &v [i * packetLength];
+//	Fetch relevant info from the stream
+//
+//	first a crc check
+	   if (crc16_bytewise (packetBuffer, packetLength) != 0)
+	      continue;
+
+	   my_packetAssembler -> assemble (packetBuffer,
+	                                   packetLength, mscIndex);
 	}
 }
 //
@@ -490,8 +541,8 @@ int16_t	i;
 	}
 
 	if (pcmRate == 12000) {
-	   float lbuffer [8 * 2 * cnt];
-	   for (i = 0; i < cnt; i ++) {
+	   float lbuffer [4 * cnt];
+	   for (i = 0; i < cnt / 2; i ++) {
 	      DSPCOMPLEX help =
 	           upFilter_12000 -> Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
 	                                           buffer [2 * i + 1] / 32767.0));
@@ -507,12 +558,12 @@ int16_t	i;
 	      lbuffer [8 * i + 6] = real (help);
 	      lbuffer [8 * i + 7] = imag (help);
 	   }
-	   toOutput (lbuffer, 8 * cnt / 2);
+	   toOutput (lbuffer, 4 * cnt);
 	   return;
 	}
 	if (pcmRate == 24000) {
-	   float lbuffer [4 * 2 * cnt];
-	   for (i = 0; i < cnt; i ++) {
+	   float lbuffer [2 * cnt];
+	   for (i = 0; i < cnt / 2; i ++) {
 	      DSPCOMPLEX help =
 	           upFilter_24000 -> Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
 	                                           buffer [2 * i + 1] / 32767.0));
@@ -522,21 +573,9 @@ int16_t	i;
 	      lbuffer [4 * i + 2] = real (help);
 	      lbuffer [4 * i + 3] = imag (help);
 	   }
-	   toOutput (lbuffer, 4 * cnt / 2);
+	   toOutput (lbuffer, 2 * cnt);
 	   return;
 	}
-}
-
-void	dataProcessor::firstSegment (uint8_t *b, int16_t cnt, int8_t ci) {
-	fprintf (stderr, "segment %d is added as first segment\n", ci);
-}
-
-void	dataProcessor::lastSegment (uint8_t *b, int16_t cnt, int8_t ci) {
-	fprintf (stderr, "segment %d is added as last segment\n", ci);
-}
-
-void	dataProcessor::addSegment (uint8_t *b, int16_t cnt, int8_t ci) {
-	fprintf (stderr, "segment %d is added\n", ci);
 }
 
 

@@ -32,6 +32,7 @@
 #include	"decoder-interface.h"
 #include	"ui_widget.h"
 #include	"ringbuffer.h"
+#include	<QLabel>
 
 class	frameProcessor;
 class	IQDisplay;
@@ -58,11 +59,14 @@ public:
 	void		show			(DSPCOMPLEX);
 	void		show_stationLabel	(const QString &);
 	bool		haltSignal		(void);
-	bool		isSelectedChannel	(int16_t);
+	int16_t		getAudioChannel		(void);
+	int16_t		getDataChannel		(void);
+	bool		isSelectedDataChannel	(int16_t);
 private:
 	int32_t		theRate;
 	QSettings	*drmSettings;
 
+	QLabel		*pictureLabel;
 	int16_t		currentS;
 	QFrame		*myFrame;
 	frameProcessor	*my_frameProcessor;
@@ -76,7 +80,6 @@ private:
 	IQDisplay	*myIQDisplay;
 	localScope	*myScope;
 	double		**Y_values;
-	int16_t		channelSelector;
 public slots:
 	void		show_frames	(int, int);
 	void		show_audioMode	(QString);
@@ -91,6 +94,7 @@ public slots:
 	void		show_channels		(int, int);
 	void		show_angle		(float);
 	void		faadSuccess		(bool);
+	void		showMOT			(QByteArray, int);
 private slots:
 	void		showIQ	(float, float);
 	void		executeTimeSync	(bool);

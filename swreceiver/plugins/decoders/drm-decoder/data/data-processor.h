@@ -26,9 +26,11 @@
 #include	<QObject>
 #include	"swradio-constants.h"
 #include	<cstring>
+#include	"fec-handler.h"
 
 class	drmDecoder;
 class	mscConfig;
+class	packetAssembler;
 class	DRM_aacDecoder;
 class	messageProcessor;
 class	LowPassFIR;
@@ -48,13 +50,19 @@ public:
 enum	{
 	S_AAC, S_CELPT, S_HVXC
 };
-
+	void	selectDataService	(int16_t);
+	void	selectAudioService	(int16_t);
 private:
+	int16_t	selectedDataService;
+	int16_t	selectedAudioService;
+	fecHandler	*my_fecHandler;
 	mscConfig	*msc;
 	drmDecoder	*drmMaster;
+	packetAssembler	*my_packetAssembler;
+	int16_t		old_CI;
 	void	process_audio	(uint8_t *, int16_t,
 	                         int16_t, int16_t, int16_t, int16_t);
-	void	process_data	(uint8_t *, int16_t,
+	void	process_packets	(uint8_t *, int16_t,
 	                         int16_t, int16_t, int16_t, int16_t);
 	void	process_celp	(uint8_t *, int16_t,
 	                         int16_t, int16_t, int16_t, int16_t);
@@ -65,12 +73,11 @@ private:
 	void	handle_uep_audio	(uint8_t *, int16_t,
 	                         int16_t, int16_t, int16_t, int16_t);
 	void	handle_eep_audio	(uint8_t *, int16_t, int16_t, int16_t);
-	void	handle_uep_data	(uint8_t *, int16_t,
+	void	handle_uep_packets	(uint8_t *, int16_t,
 	                         int16_t, int16_t, int16_t, int16_t);
-	void	handle_eep_data	(uint8_t *, int16_t, int16_t, int16_t);
-	void	firstSegment	(uint8_t *, int16_t, int8_t);
-	void	lastSegment	(uint8_t *, int16_t, int8_t);
-	void	addSegment	(uint8_t *, int16_t, int8_t);
+	void	handle_eep_packets	(uint8_t *, int16_t, int16_t, int16_t);
+	void	handle_packets_with_FEC	(uint8_t *, int16_t, uint8_t);
+	void	handle_packets	(uint8_t *, int16_t, uint8_t);
 	void	writeOut	(int16_t *, int16_t, int32_t);
 	void	toOutput	(float *, int16_t);
 	void	playOut		(int16_t);
@@ -83,6 +90,8 @@ private:
 	uint8_t		prev_audioSamplingRate;
 	uint8_t		prevSBR_flag;
 	uint8_t		prev_audioMode;
+	int16_t		audioChannel;
+	int16_t		dataChannel;
 signals:
 	void		show_audioMode	(QString);
 	void		putSample	(float, float);

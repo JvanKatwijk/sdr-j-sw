@@ -270,7 +270,7 @@ int32_t	remote::Samples	(void) {
 //	In 6.0 it is not called
 //	It is used to set the scale for the spectrum
 int16_t	remote::bitDepth	(void) {
-	return 11;
+	return 14;
 }
 
 //

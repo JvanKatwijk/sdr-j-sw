@@ -21,11 +21,15 @@
  */
 #
 #include	"msc-config.h"
-#
+#include	<string.h>
+
 		mscConfig::mscConfig	(uint8_t Mode, uint8_t Spectrum) {
+int16_t	i;
 	this	-> Mode			= Mode;
 	this	-> Spectrum		= Spectrum;
 	this	-> currentConfig	= true;
+	for (i = 0; i < 3; i ++)
+	   memset (&streams [i], 0, sizeof (streams [0]));
 }
 
 		mscConfig::~mscConfig	(void) {
