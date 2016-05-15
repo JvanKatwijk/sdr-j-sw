@@ -117,6 +117,7 @@ int16_t	i;
 QString s = QString();
 uint8_t	language [3], country [2];
 
+	(void)afs;
 	if (versionFlag == 1)	// next configuration, skip for now
 	   return;
 //
@@ -150,6 +151,8 @@ uint8_t	language [3], country [2];
 	   case 1:	// label entity, first 4 bits are:
 	      shortId	= get_SDCBits (v, 0, 2);
 	      rfu	= get_SDCBits (v, 2, 2);
+//	for now:
+	      (void)shortId; (void)rfu;
 //	the "full" bits are
 	      for (i = 0; i < lengthofBody; i ++) 
 	          s. append (get_SDCBits (v, 4 + 8 * i, 8));
@@ -225,7 +228,7 @@ uint8_t	language [3], country [2];
 	            uint8_t f     = get_SDCBits (v, 30, 1);
 	            hours += f ? - offset : offset;
 	         }
-//	         fprintf (stderr, "time = %d %d\n", hours, minutes);
+	         fprintf (stderr, "time = %d %d\n", hours, minutes);
 	      }
 	      return;
 
@@ -265,6 +268,10 @@ uint8_t	language [3], country [2];
 	      language [2]	= get_SDCBits (v, 20, 8);
 	      country [0]	= get_SDCBits (v, 28, 8);
 	      country [1]	= get_SDCBits (v, 36, 8);
+	      (void)shortId;
+	      (void)rfu;
+	      (void)language;
+	      (void)country;
 	      return;
 
 	   case 13:

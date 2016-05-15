@@ -29,9 +29,7 @@ HEADERS     = ../decoder-interface.h \
 	       ./drm-decoder.h  \
 	      ./basics.h \
 	      ./ofdm-processor.h \
-	      ./gettimeOffset.h \
 	      ./frame-processor.h \
-	      ./local-scope.h \
 	      ./input/syncer.h \
 	      ./input/simplebuf.h \
 	      ./signal-handling/referenceframe.h \
@@ -72,7 +70,7 @@ HEADERS     = ../decoder-interface.h \
 	      ./data/neaacdec_dll.h \
 	      ../../../includes/filters/fir-filters.h  \
 	      ../../../includes/various/oscillator.h \
-	      ../../../includes/scopes-qwt6/iqdisplay.h \
+#	      ../../../includes/scopes-qwt6/iqdisplay.h \
 	      ../../../includes/various/utilities.h \
 	      ../../../includes/various/ringbuffer.h \
 	      ../../../includes/various/fft.h \
@@ -81,11 +79,9 @@ HEADERS     = ../decoder-interface.h \
 SOURCES     = ./drm-decoder.cpp  \
 	      ./main.cpp \
 	      ./basics.cpp \
-	      ./local-scope.cpp \
 	      ./input/syncer.cpp \
 	      ./input/simplebuf.cpp \
 	      ./ofdm-processor.cpp \
-	      ./gettimeOffset.cpp \
 	      ./frame-processor.cpp \
 	      ./signal-handling/referenceframe.cpp \
 	      ./signal-handling/equalizer-base.cpp \
@@ -125,14 +121,14 @@ SOURCES     = ./drm-decoder.cpp  \
 	      ../../../src/filters/fir-filters.cpp  \
 	      ../../../src/various/oscillator.cpp \
 	      ../../../src/various/fft.cpp \
-	      ../../../src/scopes-qwt6/iqdisplay.cpp \
+#	      ../../../src/scopes-qwt6/iqdisplay.cpp \
 #	      ../../../src/scopes-qwt6/scope.cpp \
 	      ../../../src/various/utilities.cpp 
 TARGET		= $$qtLibraryTarget(drmdecoder)
 FORMS		+= widget.ui
 
 unix {	
-CONFIG		+= estimator-1
+CONFIG		+= estimator-3
 DESTDIR    	 = ../../../../../linux-bin/decoder-plugins
 INCLUDEPATH	+= /usr/include/qwt
 INCLUDEPATH	+= /usr/local/include

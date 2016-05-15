@@ -31,11 +31,11 @@
 #include	<cstring>
 #include	<math.h>
 #include	<fftw3.h>
+#include	"oscillator.h"
+
 class	Syncer;
 class	simpleBuf;
 class	drmDecoder;
-class	Oscillator;
-class	timeOffset;
 
 class	ofdmProcessor:public QObject {
 Q_OBJECT
@@ -48,20 +48,17 @@ public:
 	void		getWord			(uint8_t,
 	                                         uint8_t,
 	                                         DSPCOMPLEX *,
-	                                         bool,
 	                                         int32_t,
 	                                         float);
 	void		getWord			(uint8_t,
 	                                         uint8_t,
 	                                         DSPCOMPLEX *,
 	                                         int32_t,
-	                                         float,
 	                                         bool,
 	                                         float,
 	                                         float,
 	                                         float);
-	bool		frequencySync 		(simpleBuf *,
-	                                         float,
+	bool		frequencySync 		(float,
 	                                         uint8_t *,
 	                                         int32_t *);
 private:
@@ -70,7 +67,7 @@ private:
 	                                         int32_t,
 	                                         int16_t,
 	                                         float);
-	int32_t		get_zeroBin 		(int16_t, int16_t);
+	int32_t		get_zeroBin 		(int16_t);
 	Syncer		* buffer;
 	uint8_t		Mode;
 	uint8_t		Spectrum;
@@ -79,8 +76,7 @@ private:
 	int16_t		k_pilot3;
 	drmDecoder	*master;
 	float		theAngle;
-	int16_t		timeOffsetInteger;
-	float		timeOffsetFractional;
+	float		sampleclockOffset;
 	int16_t		Tu;
 	int16_t		Ts;
 	int16_t		Tg;
@@ -90,11 +86,9 @@ private:
 	int16_t		N_symbols;
 	int16_t		bufferIndex;
 	DSPCOMPLEX	**symbolBuffer;
-	timeOffset	*myTimer;
 	DSPCOMPLEX	*fft_vector;
 	fftwf_plan	hetPlan;
-	Oscillator	*localOscillator_1;
-	Oscillator	*localOscillator_2;
+	Oscillator	localOscillator;
 //
 //
 	float		kP_freq_controller;

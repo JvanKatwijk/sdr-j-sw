@@ -155,11 +155,13 @@ uint8_t residuTables [12][36] = {
 uint8_t	*punctureTables::getResiduTable	(uint8_t RX,
 	                                 uint8_t RY, int16_t nrCells) {
 int16_t	residuIndex	= (2 * nrCells - 12) - RY * ((2 * nrCells - 12) / RY);
+	(void)RX;
 	return residuTables [residuIndex];
 }
 
 int16_t	punctureTables::getResiduBits (uint8_t RX,
 	                               uint8_t RY, int16_t nrCells) {
+	(void)RX;
 	return 12 + (2 * nrCells - 12) - RY * ((2 * nrCells - 12) / RY);
 }
 

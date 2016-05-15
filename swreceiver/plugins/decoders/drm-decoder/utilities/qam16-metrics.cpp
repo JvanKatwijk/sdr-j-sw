@@ -16,7 +16,7 @@
  * [1 2 3]  -> ([vecSubsetDef1 vecSubsetDef2 vecSubsetDef3])
  *
  ******************************************************************************
-/*
+ *
  *    Copyright (C) 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
@@ -54,6 +54,13 @@
 #include	"qam16-metrics.h"
 #include	"basics.h"
 
+static
+const float rTableQAM16 [4][2] = {
+    { 0.9486832980,  0.9486832980},
+    {-0.3162277660, -0.3162277660},
+    { 0.3162277660,  0.3162277660},
+    {-0.9486832980, -0.9486832980}
+};
 	qam16_metrics::qam16_metrics	(void) {
 }
 

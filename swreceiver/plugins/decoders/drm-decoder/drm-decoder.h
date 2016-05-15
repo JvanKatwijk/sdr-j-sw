@@ -66,8 +66,6 @@ private:
 	int32_t		theRate;
 	QSettings	*drmSettings;
 
-	QLabel		*pictureLabel;
-	int16_t		currentS;
 	QFrame		*myFrame;
 	frameProcessor	*my_frameProcessor;
 	RingBuffer<DSPCOMPLEX> *buffer;
@@ -76,16 +74,9 @@ private:
 	bool		validFlag;
 	int16_t		Length;
 	int16_t		bufferLength;
-	void		showBlock		(DSPCOMPLEX *, uint8_t);
-	IQDisplay	*myIQDisplay;
-	localScope	*myScope;
-	double		**Y_values;
 public slots:
-	void		show_frames	(int, int);
 	void		show_audioMode	(QString);
 	void		sampleOut	(float, float);
-	void		newYvalue	(int, float);
-	void		showEq		(int);
 	void		show_coarseOffset	(float);
 	void		show_fineOffset		(float);
 	void		show_timeDelay		(float);
@@ -96,7 +87,6 @@ public slots:
 	void		faadSuccess		(bool);
 	void		showMOT			(QByteArray, int);
 private slots:
-	void		showIQ	(float, float);
 	void		executeTimeSync	(bool);
 	void		executeFACSync	(bool);
 	void		executeSDCSync	(bool);

@@ -201,10 +201,9 @@ int32_t		sequence  [blockLength + N_POLYS + 1];
 }
 
 float	viterbi::costsFor (uint16_t lIndex, metrics *sym) {
-float		res		= 0;
-float		res1, res2, res3, res4, res5, res6;
+float	res1, res2, res3, res4, res5, res6;
 
-uint8_t		targetBit	= 0;
+uint8_t	targetBit	= 0;
 
 //	still considering to make this code more general by
 //	creating a loop-like construct

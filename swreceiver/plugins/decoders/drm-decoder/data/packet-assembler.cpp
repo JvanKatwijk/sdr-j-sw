@@ -30,17 +30,20 @@
 //
 //	The assembler hands the packages over to the application handler
 //	when completed.
+//	The applicationId is a parameter, the applicationhandler is
+//	local to the packetassembler
 
 	packetAssembler::packetAssembler	(mscConfig *msc,
 	                                         drmDecoder *drm,
 	                                         uint16_t applicationId) {
-//	fprintf (stderr, "applicationId = %x\n", applicationId);
+	fprintf (stderr, "applicationId = %x\n", applicationId);
 	this	-> msc	= msc;
 	mscIndex	= 0;
 	waitforFirst	= true;
 	old_CI		= 11;		// illegal value
 	switch (applicationId) {
-	   case 02:
+	   case 02:		// slide
+	   case 03:		// website
 	   case 60:
 	      my_dataHandler	= new motHandler (drm);
 	      break;
@@ -58,7 +61,10 @@
 	packetAssembler::~packetAssembler	(void) {
 	delete my_dataHandler;
 }
-
+//
+//	we get in the mscpackets and assemble packets for the application,
+//	basically simple, take into account the Continuation Indices
+//	and the FL flags
 void	packetAssembler::assemble	(uint8_t *packet,
 	                                 int16_t length,
 	                                 int16_t mscIndex) {
@@ -69,6 +75,7 @@ uint8_t PPI		= (packet [0] & 0x08) >> 3;
 uint8_t	CI		= packet [0] & 07;
 int16_t	i;
 
+	(void)packetId;
 	this	-> mscIndex	= mscIndex;
 	if (CI != ((old_CI + 1) & 07)) {
 	   waitforFirst	= true;
@@ -136,9 +143,9 @@ uint16_t segmentNumber	= 0;
 bool transportIdFlag	= false;
 uint16_t transportId	= 0;
 uint8_t	lengthInd;
-int16_t	i;
 
 	(void)CI;
+	(void)crcFlag;
 	if (msc. size () == 0)
 	   return;
 
@@ -159,10 +166,8 @@ int16_t	i;
 	   lengthInd		= data [next] & 0x0F;
 	   next += 1;
 	   if (transportIdFlag) {
-	      transportId = (data [next + 1] << 8) | data [next + 2];
+	      transportId = (data [next] << 8) | data [next + 1];
 	   }
-//	   fprintf (stderr, "transportId = %d, length = %d\n",
-//	                                    transportId, lengthInd);
 	   next	+= lengthInd;
 	}
 

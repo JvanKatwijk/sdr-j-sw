@@ -59,16 +59,6 @@
      <enum>QLCDNumber::Flat</enum>
     </property>
    </widget>
-   <widget class="QwtPlot" name="iqDisplay">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>10</y>
-      <width>331</width>
-      <height>131</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLCDNumber" name="show_small_offset">
     <property name="geometry">
      <rect>
@@ -202,32 +192,6 @@
     </property>
     <property name="text">
      <string/>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="goodFrames">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>130</y>
-      <width>41</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="segmentStyle">
-     <enum>QLCDNumber::Flat</enum>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="badFrames">
-    <property name="geometry">
-     <rect>
-      <x>550</x>
-      <y>140</y>
-      <width>41</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="segmentStyle">
-     <enum>QLCDNumber::Flat</enum>
     </property>
    </widget>
    <widget class="QLabel" name="audioModelabel">
@@ -414,16 +378,21 @@
      <string/>
     </property>
    </widget>
+   <widget class="QLabel" name="pictureLabel">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>10</y>
+      <width>161</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QwtPlot</class>
-   <extends>QFrame</extends>
-   <header>qwt_plot.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

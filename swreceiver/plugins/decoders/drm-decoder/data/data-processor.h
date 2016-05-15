@@ -27,13 +27,13 @@
 #include	"swradio-constants.h"
 #include	<cstring>
 #include	"fec-handler.h"
+#include	"fir-filters.h"
+#include	"drm-aacdecoder.h"
+#include	"message-processor.h"
 
 class	drmDecoder;
 class	mscConfig;
 class	packetAssembler;
-class	DRM_aacDecoder;
-class	messageProcessor;
-class	LowPassFIR;
 
 typedef	struct frame {
 	int16_t length, startPos;
@@ -53,8 +53,13 @@ enum	{
 	void	selectDataService	(int16_t);
 	void	selectAudioService	(int16_t);
 private:
-	int16_t	selectedDataService;
-	int16_t	selectedAudioService;
+	messageProcessor my_messageProcessor;
+	DRM_aacDecoder	my_aacDecoder;
+	LowPassFIR	upFilter_24000;
+	LowPassFIR	upFilter_12000;
+	int16_t		numFrames;
+	int16_t		selectedDataService;
+	int16_t		selectedAudioService;
 	fecHandler	*my_fecHandler;
 	mscConfig	*msc;
 	drmDecoder	*drmMaster;
@@ -81,11 +86,6 @@ private:
 	void	writeOut	(int16_t *, int16_t, int32_t);
 	void	toOutput	(float *, int16_t);
 	void	playOut		(int16_t);
-	DRM_aacDecoder	*my_aacDecoder;
-	messageProcessor	*my_messageProcessor;
-	int16_t		numFrames;
-	LowPassFIR	*upFilter_12000;
-	LowPassFIR	*upFilter_24000;
 	uint8_t		aac_isInit;
 	uint8_t		prev_audioSamplingRate;
 	uint8_t		prevSBR_flag;

@@ -25,7 +25,6 @@
 //
 #include	"msc-handler-qam16.h"
 #include	"msc-streamer.h"
-#include	"qam16-metrics.h"
 #include	"msc-config.h"
 #include	"mapper.h"
 #include	"basics.h"
@@ -36,10 +35,10 @@
 //	as is the bit-deinterleaving
 	QAM16_SM_Handler::QAM16_SM_Handler	(mscConfig	*msc,
 	                                         viterbi	* v):
-	                                             mscHandler (msc) {
+	                                             mscHandler (msc),
+	                                             myDecoder () {
 int16_t	RYlcm, i;
 float	denom;
-	myDecoder	= new qam16_metrics ();
 //
 //	apply the formula from page 112 (section 7.2.1.1) to determine
 //	the number of QAM cells in the A part, then the number of QAM cells
@@ -117,10 +116,10 @@ uint8_t	level_0	[msc -> muxSize ()];
 uint8_t	level_1	[msc -> muxSize ()];
 //
 //	First the "normal" decoding. leading to two bit rows
-	myDecoder	-> computemetrics (v, msc -> muxSize (), 0, Y0,
+	myDecoder. computemetrics (v, msc -> muxSize (), 0, Y0,
 	                                   false, level_0, level_1);
 	stream_0	-> process	(Y0, bits_0, level_0);
-	myDecoder	-> computemetrics (v, msc -> muxSize (), 1, Y1,
+	myDecoder. computemetrics (v, msc -> muxSize (), 1, Y1,
 	                                   false, level_0, level_1);
 	stream_1	-> process	(Y1, bits_1, level_1); 
 //

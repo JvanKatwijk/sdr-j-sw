@@ -108,15 +108,16 @@ QString	name 	= QString ("");;
 	         pointer += length;
 	   } 
 	}
-	if (getHandle (transportId) != NULL)
+	if (getHandle (transportId) != NULL) {
 	   return;
+	}
 	if (lastFlag)	{ // single header
 	   newEntry (transportId, bodySize,
 	             contentType, contentsubType, name);
 	   return;
 	}
 //	header segment contains header + segment data
-//	fprintf (stderr, "combined %d\n", bodySize);
+	fprintf (stderr, "combined %d\n", bodySize);
 	newEntry (transportId,
 	          bodySize,
 	          contentType,
@@ -141,6 +142,9 @@ int32_t	period		= (segment [6] << 16) |
 	                  (segment [7] <<  8) | segment [8];
 int16_t segSize		= ((segment [9] & 0x1F) << 8) | segment [10];
 
+	(void)lastFlag;
+	(void)period;
+	(void)segSize;
 	if ((theDirectory != NULL) &&
 	                (theDirectory -> transportId == transportId)) 
 	   return;		// already in!!
@@ -310,8 +314,9 @@ int16_t	i;
 //
 //	we have data for all directory entries
 void	motHandler::handleComplete (motElement *p) {
-//	if (p -> contentType != 2) {
-	if (true) {
+static motElement *old_picture = NULL;
+
+	if (p -> contentType != 2) {
 	   fprintf (stderr, "going to write file %s\n", (p ->  name). toLatin1 (). data ());
 	   checkDir (p -> name);
 	   FILE *x = fopen (((p -> name). toLatin1 (). data ()), "w");
@@ -325,9 +330,16 @@ void	motHandler::handleComplete (motElement *p) {
 	   if (p -> contentType != 2)
 	      return;
 	}
-	fprintf (stderr, "going to show picture %s\n",
+	else {
+	   int16_t i;
+	   fprintf (stderr, "going to show picture %s\n",
 	                                   (p -> name). toLatin1 (). data ());
-	the_picture (p -> body, p -> contentsubType);
+	   if (old_picture != NULL) 
+	      for (i = 0; i < old_picture ->  numofSegments; i ++)
+	         p -> marked [i] = false;
+	   old_picture = p;
+	   the_picture (p -> body, p -> contentsubType);
+	}
 }
 
 void	motHandler::checkDir (QString &s) {
@@ -363,8 +375,9 @@ int16_t	i;
 //
 //	we first look for the "free" MOT slides, then
 //	for the carrousel
-	for (i = 0; i < 16; i ++)
-	   if (table [i]. ordernumber != -1 && table [i]. transportId)
+	for (i = 0; i < 16; i ++) 
+	   if (table [i]. ordernumber != -1 &&
+	              (table [i]. transportId == transportId)) 
 	      return &table [i];
 	if (theDirectory == NULL)
 	   return NULL;
@@ -452,6 +465,8 @@ void	motHandler::process_mscGroup (uint8_t	*data,
 	                              uint16_t	transportId) {
 uint16_t segmentSize	= ((data [0] & 0x1F) << 8) | data [1];
 
+	fprintf (stderr, "grouptype = %d, transportId = %d, segment %d, last %d\n", 
+	                     groupType, transportId, segmentNumber, lastSegment);
 	if ((segmentNumber == 0) && (groupType == 3)) { // header
 	   uint32_t headerSize	= ((data [5] & 0x0F) << 9) |
 	                           (data [6])              |
@@ -482,9 +497,6 @@ uint16_t segmentSize	= ((data [0] & 0x1F) << 8) | data [1];
 	                     lastSegment);
 	else
 	if (groupType == 4) {
-//	   fprintf (stderr, "grouptype = %d, Ti = %d, sn = %d, ss = %d\n",
-//	                     groupType, transportId, segmentNumber, segmentSize);
-
 	   processSegment  (transportId,
 	                    &data [2],
 	                    segmentNumber,

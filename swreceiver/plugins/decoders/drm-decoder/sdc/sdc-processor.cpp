@@ -23,14 +23,12 @@
 #include	"sdc-processor.h"
 #include	"fac-data.h"
 #include	"prbs.h"
-#include	"checkcrc.h"
 #include	"sdc-include.h"
 #include	"sdc-streamer.h"
 #include	"qam16-metrics.h"
 #include	"qam4-metrics.h"
 #include	"msc-config.h"
 #include	"viterbi-drm.h"
-#include	"mapper.h"
 //
 //	the "processor" for extracting the SDC values from the
 //	(first) frame of a superframe encoded in QAM4/QAM16
@@ -79,14 +77,14 @@ int16_t	index;
 	                            uint8_t	Spectrum,
 	                            viterbi	*v,
 	                            facData	*my_facData,
-	                            int16_t 	nrCells) {
+	                            int16_t 	nrCells):
+	                                  theCRC (16, crcPolynome),
+	                                  Y13Mapper (2 * nrCells, 13),
+	                                  Y21Mapper (2 * nrCells, 21) {
 	this	-> Mode		= Mode;
 	this	-> Spectrum	= Spectrum;
 	this	-> my_facDB	= my_facData;
 	this	-> nrCells	= nrCells;
-	this	-> theCRC	= new checkCRC (16, crcPolynome);
-	this	-> Y13Mapper	= new Mapper (2 * nrCells, 13);
-	this	-> Y21Mapper	= new Mapper (2 * nrCells, 21);
 //
 //	default settings will be overruled later on
 	this	-> qammode	= mscConfig::QAM16;
@@ -95,9 +93,9 @@ int16_t	index;
 	this	-> deconvolver	= v;
 	my_qam16_metrics	= new qam16_metrics ();
 	stream_0		= new SDC_streamer (deconvolver,
-	                                            1, 3, Y13Mapper, nrCells);
+	                                            1, 3, &Y13Mapper, nrCells);
 	stream_1		= new SDC_streamer (deconvolver,
-	                                            2, 3, Y21Mapper, nrCells);
+	                                            2, 3, &Y21Mapper, nrCells);
 	lengthofSDC		= getLengthofSDC (Mode, Spectrum, getSDCmode ());
 	thePRBS			= new prbs (stream_0 -> lengthOut () +
 	                                    stream_1 -> lengthOut ());
@@ -107,9 +105,6 @@ int16_t	index;
 
 	sdcProcessor::~sdcProcessor (void) {
 	delete	thePRBS;
-	delete	theCRC;
-	delete	Y13Mapper;
-	delete	Y21Mapper;
 	delete	stream_0;
 	if (qammode == mscConfig::QAM16) {
 	   delete	my_qam16_metrics;
@@ -146,7 +141,7 @@ uint8_t	newSDCmode	= getSDCmode ();
 	if (qammode == mscConfig::QAM4) {
 	   my_qam4_metrics	= new qam4_metrics ();
 	   stream_0		= new SDC_streamer (deconvolver,
-	                                            1, 2, Y21Mapper, nrCells);
+	                                            1, 2, &Y21Mapper, nrCells);
 	   stream_1		= NULL;
 	   lengthofSDC		= getLengthofSDC (Mode, Spectrum, SDCmode);
 	   thePRBS		= new prbs (stream_0 -> lengthOut ());
@@ -155,9 +150,9 @@ uint8_t	newSDCmode	= getSDCmode ();
 	else {
 	   my_qam16_metrics	= new qam16_metrics ();
 	   stream_0		= new SDC_streamer (deconvolver,
-	                                            1, 3, Y13Mapper, nrCells);
+	                                            1, 3, &Y13Mapper, nrCells);
 	   stream_1		= new SDC_streamer (deconvolver,
-	                                            2, 3, Y21Mapper, nrCells);
+	                                            2, 3, &Y21Mapper, nrCells);
 	   lengthofSDC		= getLengthofSDC (Mode, Spectrum, SDCmode);
 	   thePRBS		= new prbs (stream_0 -> lengthOut () +
 	                                    stream_1 -> lengthOut ());
@@ -209,7 +204,7 @@ int32_t	i;
 	thePRBS -> doPRBS (&sdcBits [4]);
 
 	sdcBits [0] = sdcBits [1] = sdcBits [2] = sdcBits [3] = 0;
-	if (!theCRC -> doCRC (sdcBits, 4 + lengthofSDC)) {
+	if (!theCRC. doCRC (sdcBits, 4 + lengthofSDC)) {
 	   my_facDB	-> set_SDC_crc (false);
 	   return false;
 	}

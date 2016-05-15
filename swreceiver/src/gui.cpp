@@ -1284,8 +1284,8 @@ int32_t	vfo	= theDevice -> getVFOFrequency ();
 int32_t	lborder	= freq - vfo + getBand_lowend ();
 int32_t	hborder	= freq - vfo + getBand_highend ();
 
-	return  (lborder > - inputRate / 2 + Khz (5)) &&
-	        (hborder < inputRate / 2 - Khz (5));
+	return  (lborder > - inputRate / 2 + Khz (1)) &&
+	        (hborder < inputRate / 2 - Khz (1));
 }
 	   
 void	RadioInterface::setFrequency	(int32_t freq) {

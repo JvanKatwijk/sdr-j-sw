@@ -23,7 +23,6 @@
 //
 #include	"msc-handler-qam64.h"
 #include	"msc-streamer.h"
-#include	"qam64-metrics.h"
 #include	"msc-config.h"
 #include	<cmath>
 #include	<stdio.h>
@@ -36,12 +35,12 @@
 	QAM64_SM_Handler::QAM64_SM_Handler	(mscConfig *msc,
 	                                         int8_t	qam64Roulette,
 	                                         viterbi *v):
-	                                          mscHandler (msc) {
+	                                          mscHandler (msc),
+	                                          myDecoder () {
 int16_t	N1, N2;
 int16_t	RYlcm, i;
 float	denom	= 0;
 int32_t	highProtected, lowProtected;
-	myDecoder	= new qam64_metrics ();
 //
 	this	-> msc			= msc;
 	this	-> qam64Roulette	= qam64Roulette;
@@ -97,7 +96,6 @@ int32_t	highProtected, lowProtected;
 	delete	Y13mapper_low;
 	delete	Y21mapper_high;
 	delete	Y21mapper_low;
-	delete	myDecoder;
 }
 //
 //	we return the part of the Mux comprising the A and B parts
@@ -132,7 +130,6 @@ uint8_t	bits_2  [stream_2 -> highBits () + stream_2 -> lowBits ()];
 metrics Y0 [2 * msc -> muxSize ()];
 metrics Y1 [2 * msc -> muxSize ()];
 metrics Y2 [2 * msc -> muxSize ()];
-metrics	Y_test [2 * msc -> muxSize ()];
 int32_t	i;
 //
 uint8_t	level_0 [2 * msc -> muxSize ()];
@@ -140,17 +137,17 @@ uint8_t	level_1 [2 * msc -> muxSize ()];
 uint8_t	level_2 [2 * msc -> muxSize ()];
 
 	for (i = 0; i < qam64Roulette; i ++) {
-	   myDecoder	-> computemetrics (v, msc -> muxSize (),
+	   myDecoder. computemetrics (v, msc -> muxSize (),
 	                                   0, Y0,
 	                                   i > 0,
 	                                   level_0, level_1, level_2);
 	   stream_0	-> process (Y0, bits_0, level_0);
-	   myDecoder	-> computemetrics (v, msc -> muxSize (),
+	   myDecoder. computemetrics (v, msc -> muxSize (),
 	                                   1, Y1, 
 	                                   i > 0,
 	                                   level_0, level_1, level_2);
 	   stream_1	-> process (Y1, bits_1, level_1);
-	   myDecoder	-> computemetrics (v, msc -> muxSize (),
+	   myDecoder. computemetrics (v, msc -> muxSize (),
 	                                   2, Y2,
 	                                   true,
 	                                   level_0, level_1, level_2);	

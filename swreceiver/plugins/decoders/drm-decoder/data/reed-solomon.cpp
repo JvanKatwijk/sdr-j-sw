@@ -34,7 +34,7 @@
 	                          uint16_t fcr,
 	                          uint16_t prim,
 	                          uint16_t nroots):myGalois (symsize, gfpoly) {
-int i, j, sr,root,iprim;
+int i, j,root, iprim;
 
 	this	-> symsize 	= symsize;		// in bits
 	this	-> codeLength	= (1 << symsize) - 1;
@@ -111,7 +111,6 @@ void	reedSolomon::enc (const uint8_t *r, uint8_t *d, int16_t cutlen) {
 uint8_t rf [codeLength];
 uint8_t bb [nroots];
 int16_t i;
-int16_t	ret;
 
 	memset (rf, 0, cutlen * sizeof (rf [0]));
 	for (i = cutlen; i < codeLength; i++)
@@ -181,8 +180,8 @@ int16_t	i;
 	         num1	= myGalois. add_poly (num1, xx2);
 	      }
 	   }
-	   uint16_t xx3 = myGalois. divide_power (fcr, 1);
-	   uint16_t xx4 = myGalois. pow_power (rootTable [j], xx3);
+//	   uint16_t xx3 = myGalois. divide_power (fcr, 1);
+//	   uint16_t xx4 = myGalois. pow_power (rootTable [j], xx3);
 	   uint16_t xx5 = myGalois. multiply_power (
 	                              myGalois. pow_power (
 	                                     rootTable [j],
@@ -253,8 +252,8 @@ int16_t j;
 //
 //	use Horner to compute the syndromes
 bool	reedSolomon::computeSyndromes (uint8_t *data, uint8_t *syndromes) {
-int16_t i, j;
-uint16_t syn_error;
+int16_t i;
+uint16_t syn_error = 0;
 
 /* form the syndromes; i.e., evaluate data (x) at roots of g(x) */
 
@@ -272,7 +271,7 @@ uint16_t reedSolomon::computeLambda (uint8_t *syndromes, uint8_t *Lambda) {
 uint16_t K = 1, L = 0;
 uint8_t Corrector	[nroots + 1];
 int16_t  i;
-int16_t	deg_lambda;
+int16_t	deg_lambda = 0;
 
 	for (i = 0; i < nroots + 1; i ++)
 	   Corrector [i] = Lambda [i] = 0;

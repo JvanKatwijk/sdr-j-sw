@@ -52,12 +52,7 @@ complex<float> createExp (float s) {
 int16_t	carrier, tap, pilot;
 int16_t	next	= 0;
 
-	this ->	refFrame	= refFrame;
-	this	-> Mode		= Mode;
-	this	-> Spectrum	= Spectrum;
-	this	-> refSymbol	= refSymbol;
-	numberofCarriers	= Kmax (Mode, Spectrum) -
-	                          Kmin (Mode, Spectrum) + 1;
+	numberofCarriers	= K_max - K_min + 1;
 	numberofPilots		= getnrPilots (refSymbol);
 	numberofTaps		= Tg_of (Mode) - 1;
 
@@ -73,8 +68,7 @@ int16_t	next	= 0;
 //	we compute the indices of the pilots and at the same time
 //	we store the pilot values as the diagonal in the S_p
 	next	= 0;
-	for (carrier = Kmin (Mode, Spectrum);
-	     carrier <= Kmax (Mode, Spectrum); carrier ++)
+	for (carrier = K_min; carrier <= K_max; carrier ++)
 	   if (isPilotCell (Mode, refSymbol, carrier)) {
 	      pilotTable [next] = carrier;
 	      S_p (next, next) = getPilotValue (Mode, Spectrum,

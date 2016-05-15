@@ -18,17 +18,17 @@
 #include	"matrix2.h"
 #define   TINY 1.0e-20
 
-void	inverse	(float**,int);
-void	ludcmp	(float**, int, int*, float*);
-void	lubksb	(float**, int, int*, float*);
-float	**matrix	(int,int,int,int);
-float	*vector	(int,int);
-void	free_matrix(float**,int,int,int,int);
-void	free_vector(float*,int,int);
+void	inverse		(float**, int);
+void	ludcmp		(float**, int, int*, float*);
+void	lubksb		(float**, int, int*, float*);
+float	**matrix	(int, int, int, int);
+float	*vector		(int, int);
+void	free_matrix	(float**, int, int, int, int);
+void	free_vector	(float*, int, int);
 
 void inverse (float **mat, int dim) {
-int i,j,*indx;
-float **y,d,*col;
+int i, j, *indx;
+float **y, d, *col;
 
 	y = new float *[dim];
 	for (i = 0; i < dim; i ++)
@@ -56,7 +56,7 @@ float **y,d,*col;
 }
 
 void	ludcmp (float **a, int n, int *indx, float *d) {
-int i,imax,j,k;
+int i, imax = 0, j, k;
 float   big,dum,sum,temp;
 float   *vv;
 

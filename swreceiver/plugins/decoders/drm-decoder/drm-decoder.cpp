@@ -19,6 +19,9 @@
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+//	Simple drm decoder as a plugin for the sw software.
+//	
 #
 #include	<QSettings>
 #include	<QFrame>
@@ -37,7 +40,6 @@
  */
 QWidget	*drmDecoder::createPluginWindow (int32_t rate, QSettings *s) {
 QString	temp;
-int16_t	i;
 int16_t	symbs;
 
 	theRate		= rate;
@@ -69,12 +71,6 @@ int16_t	symbs;
 	                = drmSettings -> value ("qam64Roulette", 6). toInt ();
 	drmSettings	-> endGroup ();
 	validFlag	= true;
-	myIQDisplay	= new IQDisplay (iqDisplay, 2 * 322);
-	myScope		= new localScope (iqDisplay, 300, 20);
-	Y_values	= new double *[20];
-	for (i = 0; i < 20; i ++)
-	   Y_values [i] = new double [300];
-	currentS	= 0;
 	buffer		= new RingBuffer<DSPCOMPLEX> (12000);
 	connect (channel_1, SIGNAL (clicked (void)),
 	         this, SLOT (selectChannel_1 (void)));
@@ -97,7 +93,6 @@ int16_t	symbs;
 #else
 	drmName	-> setText ("drm 0.15 arma-2");
 #endif
-	pictureLabel		= NULL;
 	my_frameProcessor	-> start	();
 	return myFrame;
 }
@@ -112,11 +107,7 @@ int16_t	symbs;
 	   usleep (10);
 	delete	my_frameProcessor;
 	delete	buffer;
-	delete	myScope;
-	delete	myIQDisplay;
-	delete[] Y_values;
 	delete	myFrame;
-	delete	pictureLabel;
 }
 
 int32_t	drmDecoder::rateOut	(void) {
@@ -127,6 +118,8 @@ int16_t	drmDecoder::detectorOffset	(void) {
 	return 0;
 }
 //
+//	Basically a simple approach. The "frameProcessor" does the
+//	work, it will read from the buffer that is filled here
 void	drmDecoder::doDecode (DSPCOMPLEX z) {
 	if (!validFlag)
 	   return;
@@ -228,18 +221,6 @@ void	drmDecoder::execute_showSpectrum	(int l) {
 	   spectrumIndicator	-> setText (QString (char ('0' + l)));
 }
 
-//
-void	drmDecoder::showIQ (float x, float y) {
-static	int	phaseCounter = 0;
-
-float	phase	= phaseCounter / 322.0 * 2 * M_PI;
-	myIQDisplay	-> DisplayIQ (DSPCOMPLEX (sqrt (2.0) * cos (phase),
-	                                          sqrt (2.0) * sin (phase)),
-	                              40.0);
-	phaseCounter = (phaseCounter + 1) % 322;
-	myIQDisplay	-> DisplayIQ (DSPCOMPLEX (x, y), 40.0);
-}
-
 void	drmDecoder::show_channels	(int audio, int data) {
 	if (audio > 0)
 	   channel_1	-> show ();
@@ -260,36 +241,12 @@ void	drmDecoder::show_channels	(int audio, int data) {
 	   channel_3	-> hide ();
 }
 
-void	drmDecoder::show_frames		(int good, int bad) {
-	goodFrames	-> display (good);
-	badFrames	-> display (bad);
-}
-
 void	drmDecoder::show_audioMode	(QString s) {
 	audioModelabel	-> setText (s);
 }
 
 void	drmDecoder::sampleOut		(float re, float im) {
 	outputSample (re, im);
-}
-
-void	drmDecoder::newYvalue		(int n1, float z) {
-	Y_values [currentS] [n1] = z;
-}
-
-void	drmDecoder::showEq		(int n) {
-static	int oldN = 300;
-int16_t	i, j;
-	if (n != oldN) {
-	   delete myScope;
-	   myScope	= new localScope (iqDisplay, n, 20);
-	   oldN = n;
-	}
-	myScope	-> Show (Y_values, 100);
-	for (i = 1; i <= 19; i ++)
-	   for (j = 0; j < 300; j ++)
-	      Y_values [i - 1][j] = Y_values [i][j];
-	if (currentS < 19) currentS ++;
 }
 
 void	drmDecoder::showSNR		(float snr) {
@@ -344,8 +301,8 @@ void	drmDecoder::faadSuccess		(bool b) {
 //	the GUI may decide to ignore the data sent
 //	since data is only sent whenever a data channel is selected
 void	drmDecoder::showMOT		(QByteArray data, int subtype) {
-	if (running)
-	   pictureLabel	= new QLabel (NULL);
+	if (!running)
+	   return;
 
 	QPixmap p;
 	p. loadFromData (data, subtype == 0 ? "GIF" :

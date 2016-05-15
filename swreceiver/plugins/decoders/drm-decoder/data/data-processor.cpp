@@ -24,10 +24,7 @@
 #include	"drm-decoder.h"
 #include	"msc-config.h"
 #include	<stdio.h>
-#include	"drm-aacdecoder.h"
-#include	"message-processor.h"
 #include	"fec-handler.h"
-#include	"fir-filters.h"
 #include	<float.h>
 #include	<math.h>
 #include	"packet-assembler.h"
@@ -73,20 +70,21 @@ uint32_t y;
 }
 
 	dataProcessor::dataProcessor	(mscConfig *msc,
-	                                 drmDecoder *drm) {
+	                                 drmDecoder *drm):
+	                                      my_messageProcessor (drm) ,
+	                                      my_aacDecoder (),
+	                                      upFilter_24000 (5, 12000, 48000),
+	                                      upFilter_12000 (5, 6000, 48000) {
+	
 	this	-> msc			= msc;
 	this	-> drmMaster		= drm;
+	audioChannel			= 1;
+	dataChannel			= 3;
 //
 //	do not change the order of the next two initializations
 //	although here they are dummies
-	audioChannel			= 1;
-	dataChannel			= 3;
 	my_packetAssembler		= new packetAssembler (msc, drm, -1);
 	my_fecHandler			= new fecHandler (my_packetAssembler);
-	this	-> my_aacDecoder	= new DRM_aacDecoder ();
-	this	-> my_messageProcessor	= new messageProcessor (drm);
-	upFilter_12000			= new LowPassFIR (5, 6000, 48000);
-	upFilter_24000			= new LowPassFIR (5, 12000, 48000);
 	connect (this, SIGNAL (show_audioMode (QString)),
 	         drmMaster, SLOT (show_audioMode (QString)));
 	connect (this, SIGNAL (putSample (float, float)),
@@ -99,12 +97,8 @@ uint32_t y;
 }
 
 	dataProcessor::~dataProcessor	(void) {
-	delete	my_aacDecoder;
-	delete	my_messageProcessor;
 	delete my_fecHandler;
 	delete	my_packetAssembler;
-	delete	upFilter_12000;
-	delete	upFilter_24000;
 }
 
 //
@@ -141,7 +135,7 @@ int16_t	new_dataChannel	= drmMaster	-> getDataChannel ();
 	      process_audio (v, i,
 	                     startPosA, lengthA,
 	                     startPosB, lengthB);
-	      my_messageProcessor -> processMessage (v,
+	      my_messageProcessor.  processMessage (v,
 	                                       8 * (startPosB + lengthB - 4));
 	   }
 	   else
@@ -334,11 +328,11 @@ static	int	cnt	= 0;
 
 //	packetBuffer [0] contains the header
 	   uint8_t header	= packetBuffer [0];
-	   uint8_t firstBit	= (header & 0x80) >> 7;
-	   uint8_t lastBit	= (header & 0x40) >> 6;
+//	   uint8_t firstBit	= (header & 0x80) >> 7;
+//	   uint8_t lastBit	= (header & 0x40) >> 6;
 	   uint8_t packetId	= (header & 0x30) >> 4;
 	   uint8_t PPI		= (header & 0x8) >> 3;
-	   uint8_t CI		= header & 0x7;
+//	   uint8_t CI		= header & 0x7;
 //
 	   if ((packetId == 3) && (PPI == 0)) {
 	      my_fecHandler -> fec_packet (packetBuffer, packetLength);
@@ -363,7 +357,6 @@ void	dataProcessor::handle_packets (uint8_t *v, int16_t length,
 uint8_t *packetBuffer;
 int16_t	packetLength = msc -> streams [mscIndex]. packetLength + 3;
 int16_t	i;
-static	int	cnt	= 0;
 
 	for (i = 0; i < length / packetLength; i ++) {
 	   packetBuffer = &v [i * packetLength];
@@ -405,12 +398,12 @@ int16_t		payLoad_length = 0;
 	numFrames = msc -> streams [mscIndex]. audioSamplingRate == 1 ? 5 : 10;
 	headerLength = numFrames == 10 ? (9 * 12 + 4) / 8 : (4 * 12) / 8;
 
-	f [0]. startPos = startLow;
+//	startLow in bytes!!
+	f [0]. startPos = 0;
 	for (i = 1; i < numFrames; i ++) {
-	   f [i]. startPos = startLow + get_MSCBits (v,
+	   f [i]. startPos = get_MSCBits (v,
 	                                  startLow * 8 + 12 * (i - 1), 12);
 	}
-
 	for (i = 1; i < numFrames; i ++) {
 	   f [i - 1]. length = f [i]. startPos - f [i - 1]. startPos;
 	   if (f [i - 1]. length < 0 ||
@@ -428,7 +421,8 @@ int16_t		payLoad_length = 0;
 	   faadSuccess (false);
 	   return;
 	}
-
+//
+//	crc_start in bytes
 	crc_start	= startLow + headerLength;
 	for (i = 0; i < numFrames; i ++)
 	   f [i]. aac_crc = get_MSCBits (v, (crc_start + i) * 8, 8);
@@ -446,12 +440,12 @@ int16_t		payLoad_length = 0;
 }
 
 void	dataProcessor::playOut (int16_t	mscIndex) {
-int16_t	i, j;
+int16_t	i;
 uint8_t	audioSamplingRate	= msc -> streams [mscIndex]. audioSamplingRate;
 uint8_t	SBR_flag		= msc -> streams [mscIndex]. SBR_flag;
 uint8_t	audioMode		= msc -> streams [mscIndex]. audioMode;
 
-	if (!my_aacDecoder	->  checkfor (audioSamplingRate,
+	if (!my_aacDecoder.  checkfor (audioSamplingRate,
 	                                      SBR_flag, 
 	                                      audioMode)) {
 	   faadSuccess (false);
@@ -463,12 +457,11 @@ uint8_t	audioMode		= msc -> streams [mscIndex]. audioMode;
 	   bool		convOK;
 	   int16_t	cnt;
 	   int32_t	rate;
-	   my_aacDecoder -> decodeFrame ((uint8_t *)(&f [index]. aac_crc),
+	   my_aacDecoder.  decodeFrame ((uint8_t *)(&f [index]. aac_crc),
 	                                 f [index]. length + 1,
 	                                 &convOK,
 	                                 outBuffer,
 	                                 &cnt, &rate);
-//	   fprintf (stderr, "faad says %s\n", convOK ? "OK" : "fail");
 	   if (convOK) {
 	      faadSuccess (true);
 	      writeOut (outBuffer, cnt, rate);
@@ -544,17 +537,17 @@ int16_t	i;
 	   float lbuffer [4 * cnt];
 	   for (i = 0; i < cnt / 2; i ++) {
 	      DSPCOMPLEX help =
-	           upFilter_12000 -> Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
+	           upFilter_12000. Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
 	                                           buffer [2 * i + 1] / 32767.0));
 	      lbuffer [8 * i + 0] = real (help);
 	      lbuffer [8 * i + 1] = imag (help);
-	      help = upFilter_12000 -> Pass (DSPCOMPLEX (0, 0));
+	      help = upFilter_12000. Pass (DSPCOMPLEX (0, 0));
 	      lbuffer [8 * i + 2] = real (help);
 	      lbuffer [8 * i + 3] = imag (help);
-	      help = upFilter_12000 -> Pass (DSPCOMPLEX (0, 0));
+	      help = upFilter_12000. Pass (DSPCOMPLEX (0, 0));
 	      lbuffer [8 * i + 4] = real (help);
 	      lbuffer [8 * i + 5] = imag (help);
-	      help = upFilter_12000 -> Pass (DSPCOMPLEX (0, 0));
+	      help = upFilter_12000. Pass (DSPCOMPLEX (0, 0));
 	      lbuffer [8 * i + 6] = real (help);
 	      lbuffer [8 * i + 7] = imag (help);
 	   }
@@ -565,11 +558,11 @@ int16_t	i;
 	   float lbuffer [2 * cnt];
 	   for (i = 0; i < cnt / 2; i ++) {
 	      DSPCOMPLEX help =
-	           upFilter_24000 -> Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
+	           upFilter_24000. Pass (DSPCOMPLEX (buffer [2 * i] / 32767.0,
 	                                           buffer [2 * i + 1] / 32767.0));
 	      lbuffer [4 * i + 0] = real (help);
 	      lbuffer [4 * i + 1] = imag (help);
-	      help = upFilter_24000 -> Pass (DSPCOMPLEX (0, 0));
+	      help = upFilter_24000. Pass (DSPCOMPLEX (0, 0));
 	      lbuffer [4 * i + 2] = real (help);
 	      lbuffer [4 * i + 3] = imag (help);
 	   }

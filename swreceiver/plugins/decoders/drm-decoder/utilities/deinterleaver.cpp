@@ -27,19 +27,17 @@
 //	for the short one, the class is simple
 //	and essentially equal to the mapper
 
-	deInterleaver::deInterleaver (int16_t length) {
+	deInterleaver::deInterleaver (int16_t length):mapper (Length, 5) {
 	this	-> Length	= length;
-	this	-> mapper	= new Mapper (Length, 5);
 }
 
 	deInterleaver::~deInterleaver (void) {
-	delete mapper;
 }
 
 void	deInterleaver::deInterleave (theSignal *inp, theSignal *out) {
 int16_t	i;
 	for (i = 0; i < Length; i ++)
-	   out [mapper -> mapIn (i)] = inp [i];
+	   out [mapper. mapIn (i)] = inp [i];
 }
 
 //	long interleaver is a real extension
@@ -68,7 +66,7 @@ int16_t	j, k;
 //
 //	step 1: add the incoming samples to the buffer
 	for (j = 0; j < Length; j ++)
-	   buffer [(j % depth)][mapper -> mapIn (j)] = in [j];
+	   buffer [(j % depth)][mapper. mapIn (j)] = in [j];
 //
 //	step 2: copy the bottom row of the buffer to the output
 	for (j = 0; j < Length; j ++)

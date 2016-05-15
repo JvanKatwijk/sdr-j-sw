@@ -167,5 +167,6 @@ int16_t	i;
 }
 
 void	serviceParameters::DataCAindication (uint8_t *v) {
+	(void)v;
 }
 

@@ -159,38 +159,46 @@ void	channelParameters::ReconfigurationIndex (uint8_t *v) {
 
 void	channelParameters::Toggleflag (uint8_t *v) {
 //	just ignore for now
-;
+	(void)v;
 }
 
 //	starting with bit 20 (starting with 0)
 void	channelParameters::Serviceidentifier (uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 44
 void	channelParameters::ShortId	(uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 46
-void	channelParameters::AudioCAindication (uint8_t *) {
+void	channelParameters::AudioCAindication (uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 47
 void	channelParameters::Language	(uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 51
 void	channelParameters::AudioDataFlag	(uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 52
 void	channelParameters::ServiceDescriptor	(uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 57
 void	channelParameters::DataCAindication	(uint8_t *v) {
+	(void)v;
 }
 
 //	at bit 58
 void	channelParameters::rfa		(uint8_t *v) {
+	(void)v;
 }
 

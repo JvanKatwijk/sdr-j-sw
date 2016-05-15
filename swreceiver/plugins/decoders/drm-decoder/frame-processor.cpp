@@ -30,10 +30,7 @@
 #include	"ofdm-processor.h"
 #include	"referenceframe.h"
 #include	"basics.h"
-#include	"syncer.h"
 #include	"fac-tables.h"
-#include	"viterbi-drm.h"
-#include	"oscillator.h"
 
 //	The main driving class is the frameprocessor. It is
 //	implemented as a thread and will control:
@@ -42,19 +39,24 @@
 //	b. assembling the FAC and SDC,
 //	c. collecting Muxes and passing the Mux-es to the  MSC handler
 //
+//	windowDepth and qam64Roulette are just there to
+//	allow some fidling - without recompilation - with the
+//	size of the window used for equalization and the
+//	number of iterations for the multi-level decoding
 	frameProcessor::frameProcessor (drmDecoder	*mr,
 	                                RingBuffer<DSPCOMPLEX> *buffer,
 	                                int16_t length,
 	                                int8_t	windowDepth,
-	                                int8_t qam64Roulette) {
+	                                int8_t qam64Roulette):
+	                                     viterbiDecoder (0),
+	                                     my_Syncer (buffer, mr,
+	                                                       length * 320) {
 	this	-> mr 		= mr;
 	this	-> buffer	= buffer;
-	this	-> my_Syncer	= new Syncer (buffer, mr, length * 320);
 	this	-> windowDepth	= windowDepth;
 	this	-> qam64Roulette = qam64Roulette;
 //
 //	One viterbidecoder for all deconvolutions
-	viterbiDecoder		= new viterbi (0);
 //
 //	defaults, will be overruled almost immediately
 	this	-> Mode		= 1;
@@ -69,22 +71,14 @@
 	         mr, SLOT (executeFACSync (bool)));
 	connect (this, SIGNAL (setSDCSync (bool)),
 	         mr, SLOT (executeSDCSync (bool)));
-	connect (this, SIGNAL (show (float, float)),
-	         mr, SLOT (showIQ (float, float)));
 	connect (this, SIGNAL (show_Mode (int)),
 	         mr, SLOT (execute_showMode (int)));
 	connect (this, SIGNAL(show_Spectrum (int)),
 	         mr, SLOT (execute_showSpectrum (int)));
 	connect (this, SIGNAL (show_services (int, int)),
 	         mr, SLOT (show_channels (int, int)));
-	connect (this, SIGNAL (show_frames (int, int)),
-	         mr, SLOT (show_frames (int, int)));
 	connect (this, SIGNAL (show_audioMode (QString)),
 	         mr, SLOT (show_audioMode (QString)));
-	connect (this, SIGNAL (newYvalue (int, float)),
-	         mr, SLOT (newYvalue (int, float)));
-	connect (this, SIGNAL (showEq (int)),
-	         mr, SLOT (showEq (int)));
 	connect (this, SIGNAL (showSNR (float)),
 	         mr, SLOT (showSNR (float)));
 //
@@ -126,16 +120,16 @@ void	frameProcessor::createProcessors (void) {
 
 	my_facProcessor		= new facProcessor (Mode,
 	                                            Spectrum,
-	                                            viterbiDecoder);
+	                                            &viterbiDecoder);
 	my_sdcProcessor		= new sdcProcessor (Mode,
 	                                            Spectrum,
-	                                            viterbiDecoder,
+	                                            &viterbiDecoder,
 	                                            my_facData,
 	                                            sdcCells ());
 	my_mscProcessor		= new mscProcessor  (my_mscConfig,
 	                                             mr,
 	                                             qam64Roulette,
-	                                             viterbiDecoder);
+	                                             &viterbiDecoder);
 }
 
 //
@@ -176,7 +170,7 @@ int16_t		missers;
 	}
 
 	taskMayRun	= true;		// will be set from elsewhere to false
-	Spectrum	= 7;		// current default
+	Spectrum	= 7;		// current default, alway wrong
 //
 //	It is cruel, but alas. Task termination is quite complex
 //	in Qt (a task has to commit suicide on a notification from
@@ -200,22 +194,22 @@ restart:
 //
 //	First step: find mode and starting point
 	   modeInf. mode_indx = -1;
-
+//
 	   while ((modeInf. mode_indx == -1 ||
 	           modeInf. mode_indx == Mode_D) && taskMayRun) {
-	      my_Syncer -> shiftBuffer (Ts_of (Mode_A) / 2);
-	      my_Syncer	-> getMode (&modeInf);
+	      my_Syncer. shiftBuffer (Ts_of (Mode_A) / 2);
+	      my_Syncer. getMode (&modeInf);
 	   }
 	   if (!taskMayRun) throw (0);
-
-	   fprintf (stderr, "found 1: Mode = %d, time_offset = %f, sampleoff = %f freqoff = %f\n",
+	   fprintf (stderr, "found: Mode = %d, time_offset = %f, sampleoff = %f freqoff = %f\n",
 	        modeInf. mode_indx,
 	        modeInf. time_offset,
 	        modeInf. sample_rate_offset,
 	        modeInf. freq_offset_fract);
 //
+//	   
 //	adjust the bufferpointer:
-	   my_Syncer -> shiftBuffer (floor (modeInf. time_offset + 0.5));
+	   my_Syncer. shiftBuffer (floor (modeInf. time_offset + 0.5));
 	   Mode			= modeInf. mode_indx;
 	   int16_t time_offset_integer = floor (modeInf. time_offset + 0.5);
 //	fractional time offset:
@@ -223,12 +217,11 @@ restart:
 	                                         time_offset_integer;
 
 //	and create a reader/processor
-	   my_ofdmProcessor	= new ofdmProcessor (my_Syncer,
+	   my_ofdmProcessor	= new ofdmProcessor (&my_Syncer,
 	                                             Mode, Spectrum, mr);
 //	look for a spectrum
 	   int32_t intOffset;
-	   my_ofdmProcessor	-> frequencySync (my_Syncer,
-	                                          time_offset_fractional,
+	   my_ofdmProcessor	-> frequencySync (time_offset_fractional,
 	                                          &Spectrum,
 	                                          &intOffset);
 	   setTimeSync	(true);
@@ -247,7 +240,7 @@ restart:
 
 	      facTable		= getFacTableforMode (Mode);
 	      createProcessors ();
-	      my_ofdmProcessor	= new ofdmProcessor (my_Syncer,
+	      my_ofdmProcessor	= new ofdmProcessor (&my_Syncer,
 	                                             Mode, Spectrum, mr);
 	      oldSpectrum	= Spectrum;
 	      oldMode		= Mode;
@@ -263,17 +256,16 @@ restart:
 	   K_min		= Kmin (Mode, Spectrum);
 	   K_max		= Kmax (Mode, Spectrum);
 //
-//	we know that - when starting - we are not "in sync"
+//	we know that - when starting - we are not "in sync" yet
 	   inSync		= false;
 //
 //	start here with reading ofdm words until we have a
-//	match with the timesync. We start with reading in "symbolsinFrame"
-//	ofdm symbols
+//	match with the timesync.
+//	We start with reading in "symbolsinFrame" ofdm symbols
 	   for (i = 0; i < symbolsinFrame; i ++) {
 	      my_ofdmProcessor -> getWord (Mode,
 	                                   Spectrum,
 	                                   inbank [i],
-	                                   i == 0,
 	                                   intOffset,
 	                                   time_offset_fractional);
 	      corrBank [i] = getCorr (inbank [i]);
@@ -291,7 +283,6 @@ restart:
 	         my_ofdmProcessor -> getWord (Mode,
 	                                      Spectrum,
 	                                      inbank [lc],
-	                                      false,
 	                                      intOffset,
 	                                      time_offset_fractional);
 	         time_offset_fractional -=  Ts_of (Mode) *
@@ -311,8 +302,9 @@ restart:
 	         (void) my_Equalizer ->
 	            equalize (inbank [(lc + symbol_no) % symbolsinFrame],
 	                   symbol_no, outbank);
-//
-//	Once here, we are waiting for the equalizer to signal that a full
+//	The synchronizer needs some lookahead, so we know
+//	that at this point there is no frame fully synchronized.
+//	We are waiting for the equalizer to signal that a full
 //	frame is equalized. Since we did exactly symbolsinFrame symbols,
 //	symbol_no is set to 0 again
 	      lc		= (lc + symbol_no) % symbol_no;
@@ -323,7 +315,6 @@ restart:
 	              getWord (Mode,
 	                       Spectrum,
 	                       inbank [lc],
-	                       false,
 	                       intOffset,
 	                       time_offset_fractional);
 	         time_offset_fractional -=  Ts_of (Mode) *
@@ -337,10 +328,8 @@ restart:
 	      }
 
 //	so here, we might expect that "lc" indicates the location in
-//	the inputbank to store the next word, while symbol_no denotes
+//	the inputbank to store the next word, while "symbol_no" denotes
 //	the next symbol in the output bank
-//	      showEq_data (1);
-	      showEq_data (2);
 //
 //	when we are here, we do have a full "frame".
 //	so, we will be convinced that we are OK when we have a decent FAC
@@ -359,35 +348,29 @@ restart:
 	   if (!taskMayRun)
 	      throw (21);
 //
-//	when here, it feels like we have passed an exam,
+//	when here, it feels like we have passed a serious exam,
 //	we have in the buffer an equalized frame (the first we met)
 //	ready for further processing
 //
-//	Loop is such that when we are here, we have
-//	decent FAC data
 	float	offsetFractional	= 0;	//
 	int16_t	offsetInteger		= 0;
 	float	deltaFreqOffset		= 0;
 	float	sampleclockOffset	= 0;
 	   while (taskMayRun) {
 	      setFACSync (true);
-//	this should not happen really
-//	      if (getSpectrum (my_facData) != Spectrum) {
-//	         fprintf (stderr, "Ik snap er nix van\n");
-//	         goto restart;
-//	      }
 //	when we are here, we can start thinking about  SDC's and superframes
 //	The first frame of a superframe has an SDC part
 	      if (isFirstFrame (my_facData)) {
 	         bool sdcOK;
 	         theSignal sdcVector [sdcCells ()];
-	         int16_t nSDC = extractSDC (outbank, sdcVector);
+	         (void)extractSDC (outbank, sdcVector);
 //	if needed create a new sdcProcessor
 	         if (my_facData -> myChannelParameters. getSDCmode () !=
 	                               my_sdcProcessor -> getSDCmode ()) {
 	            delete my_sdcProcessor;
-	            my_sdcProcessor = new sdcProcessor (Mode, Spectrum, 
-	                                                viterbiDecoder,
+	            my_sdcProcessor = new sdcProcessor (Mode,
+	                                                Spectrum, 
+	                                                &viterbiDecoder,
 	                                                my_facData,
 	                                                sdcCells ());
 	         }
@@ -403,7 +386,6 @@ restart:
 	               
 	         show_services (my_mscConfig -> getnrAudio (),
 	                        my_mscConfig -> getnrData ());
-	         show_frames (goodFrames, badFrames);
 
 	         if (sdcOK) 
 	            my_mscProcessor -> check_mscConfig (my_mscConfig);
@@ -428,7 +410,6 @@ restart:
 	              getWord (Mode, Spectrum,
 	                       inbank [(lc + i) % symbolsinFrame],
 	                       intOffset,	// initial value
-	                       time_offset_fractional,	// initial value
 	                       firstTime,
 	                       offsetFractional,	// tracking value
 	                       deltaFreqOffset,		// tracking value
@@ -447,8 +428,6 @@ restart:
 	                                            &sampleclockOffset);
 	      }
 
-	      showEq_data (0);
-	      showEq_data (symbolsinFrame - 1);
 //	OK, let us check the FAC
 	      if (!getFACdata (outbank,
 	                       my_facData,
@@ -752,15 +731,5 @@ float	WMERFAC;
 	   goodcount = 0;
 	}
 	return result;
-}
-
-void	frameProcessor::showEq_data (int16_t first) {
-int16_t	i;
-DSPCOMPLEX	eqVec [400];
-
-	my_Equalizer	-> getEq (first, eqVec);
-	for (i = 0; i < carriersinSymbol; i ++)
-	   newYvalue (i, abs (eqVec [i]));
-	showEq (carriersinSymbol);
 }
 

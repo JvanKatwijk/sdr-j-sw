@@ -86,14 +86,13 @@
 //	Phi (m) is minimal
 //
 void	Syncer::getMode (smodeInfo	*result) {
-DSPCOMPLEX	gamma		[320];
+DSPCOMPLEX	gamma		[320];	// large enough
 float		squareTerm	[320];
 float	list_gammaRelative 	[]	= {0.0, 0.0, 0.0, 0.0};
 float	gammaRelative;
 float	list_epsilon		[]	= {0.0, 0.0, 0.0, 0.0};
 int16_t	list_Offsets 		[]	= {0,   0,   0,   0};
 int16_t	Ts, Tu, Tg;
-int32_t t_smp;
 int16_t mode;
 int32_t i, j, theOffset;
 //float	a [symbols_to_check (Mode_A)];
@@ -160,8 +159,7 @@ int16_t	theMode;
 	}
 //
 //	when here, we have collected for all modes the gamma and the theta
-
-//	now decide for the mode to be detected */
+//	now decide for the mode to be detected 
 	theMode	= Mode_B;		// default
 	gammaRelative = -1.0E20;
 	for (i = Mode_A; i <= Mode_D; i++) {
@@ -191,7 +189,7 @@ int16_t	theMode;
 	}
 
 //
-//	OK, we seem to have a mode "mode". The offset indicates the
+//	OK, we seem to have a mode "theMode". The offset indicates the
 //	offset in the buffer, and therefore the timeoffset.
 
 	Ts = Ts_of (theMode);
@@ -220,13 +218,13 @@ int16_t	theMode;
 	}
 //
 //	OK, the terms are computed, now find the minimum
-	t_smp = Tg + averageOffset + Ts / 2;
+	int16_t index = Tg + averageOffset + Ts / 2;
 	for (j = 0; j < (symbols_to_check (theMode) - 1); j++) {
 	   float minValue	= 1000000.0;
 	   for (i = 0; i < Ts; i++) {
-	      gamma [i] = summedCorrelations [(t_smp + i)];
+	      gamma [i] = summedCorrelations [(index + i)];
               squareTerm [i] = (float) (0.5 * (EPSILON +
-	                                 summedSquares [t_smp + i]));
+	                                 summedSquares [index + i]));
 
 	      float mmse = squareTerm [i] - 2 * abs (gamma [i]);
 	      if (mmse < minValue) {
@@ -235,10 +233,10 @@ int16_t	theMode;
 	         b [j] = i;
 	      }
 	   }
-	   t_smp += Ts;
+	   index += Ts;
 	}
 
-//	Now least squares to 0...symbols_to_check and b[0] .. */
+//	Now least squares to 0...symbols_to_check and b [0] .. */
 	float	sumx	= 0.0;
 	float	sumy	= 0.0;
 	float	sumxx	= 0.0;

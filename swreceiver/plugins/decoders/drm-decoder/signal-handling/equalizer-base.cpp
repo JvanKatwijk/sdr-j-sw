@@ -134,6 +134,7 @@ bool	equalizer_base::equalize (DSPCOMPLEX *testRow, int16_t index,
 	(void) outFrame; 
 	*intout		= 0;
 	*fractout	= 0;
+	*freqOut	= 0;
 	*sampleclockOffset	= 0;
 	return false;
 }

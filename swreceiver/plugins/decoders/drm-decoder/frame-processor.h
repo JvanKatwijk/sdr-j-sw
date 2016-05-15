@@ -29,8 +29,9 @@
 #include	"ringbuffer.h"
 #include	"drm-decoder.h"
 #include	"basics.h"
+#include	"syncer.h"
+#include	"viterbi-drm.h"
 
-class	Syncer;
 class	ofdmProcessor;
 class	equalizer_base;
 class	facData;
@@ -40,7 +41,6 @@ class	sdcProcessor;
 class	mscProcessor;
 class	drmDecoder;
 class	mscConfig;
-class	viterbi;
 
 struct facElement {
 	int16_t	symbol;
@@ -87,11 +87,10 @@ private:
 	                                 float, DSPCOMPLEX **);
 	void		addtoSuperFrame	(int16_t);
 	bool		isDatacell	(int16_t, int16_t, int16_t);
-	void		showEq_data	(int16_t);
 	struct facElement *facTable;
-	viterbi		*viterbiDecoder;
+	viterbi		viterbiDecoder;
 
-	Syncer		*my_Syncer;
+	Syncer		my_Syncer;
 	ofdmProcessor	*my_ofdmProcessor;
 	referenceFrame	*my_referenceFrame;
 	facProcessor	*my_facProcessor;
@@ -115,13 +114,10 @@ signals:
 	void		setTimeSync	(bool);
 	void		setFACSync	(bool);
 	void		setSDCSync	(bool);
-	void		show		(float, float);
 	void		show_Mode	(int);
 	void		show_Spectrum	(int);
 	void		show_services	(int, int);
-	void		show_frames	(int, int);
 	void		show_audioMode	(QString);
-	void		newYvalue	(int, float);
 	void		showEq		(int);
 	void		showSNR		(float);
 	void		show_freq2	(float);

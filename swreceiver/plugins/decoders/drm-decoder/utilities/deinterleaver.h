@@ -39,7 +39,7 @@ virtual	void	deInterleave	(theSignal *, theSignal *);
 private:
 protected:
 	int16_t	Length;
-	Mapper	*mapper;
+	Mapper	mapper;
 };
 //
 

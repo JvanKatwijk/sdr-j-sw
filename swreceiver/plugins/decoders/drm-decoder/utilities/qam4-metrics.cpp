@@ -22,6 +22,12 @@
 #
 #include	"qam4-metrics.h"
 
+static
+const double rTableQAM4[2][2] = {
+    { 0.7071067811f,  0.7071067811f},
+    {-0.7071067811f, -0.7071067811f}
+};
+
 	qam4_metrics::qam4_metrics	(void) {
 }
 

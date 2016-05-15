@@ -25,9 +25,9 @@
 
 #include	"swradio-constants.h"
 #include	"msc-handler.h"
+#include	"qam16-metrics.h"
 
 class	mscConfig;
-class	qam16_metrics;
 class	MSC_streamer;
 class	viterbi;
 class	Mapper;
@@ -38,7 +38,7 @@ public:
 		~QAM16_SM_Handler	(void);
 	void	process			(theSignal *, uint8_t *);
 private:
-	qam16_metrics	*myDecoder;
+	qam16_metrics	myDecoder;
 	mscConfig	*msc;
 	int16_t		lengthA;
 	int16_t		lengthB;

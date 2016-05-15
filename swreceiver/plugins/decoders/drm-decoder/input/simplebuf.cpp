@@ -64,7 +64,7 @@ int32_t		contents	= Contents ();
 	   return;
 	tobeRead	= amount - contents;
 	while (ringBuffer -> GetRingBufferReadAvailable () < tobeRead) {
-	   usleep (100);
+	   usleep (1000);
 	   if (master -> haltSignal ())
 	      throw (1);
 	}

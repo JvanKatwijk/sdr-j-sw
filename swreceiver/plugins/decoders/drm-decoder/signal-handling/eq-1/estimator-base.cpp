@@ -27,14 +27,13 @@
 
 //
 //	We create a single "estimator" for each of the symbols
-//	of a frame. We do, however, share he knowledge gained
-//	from one symbol to the next one by passing on the channel
-//	obtained in the time domain
+//	of a frame.
 //
 	estimatorBase::estimatorBase (DSPCOMPLEX 	**refFrame,
 	                              uint8_t	Mode,
 	                              uint8_t	Spectrum,
 	                              int16_t	refSymbol) {
+	this	-> refFrame	= refFrame;
 	this	-> Mode		= Mode;
 	this	-> Spectrum	= Spectrum;
 	this	-> refSymbol	= refSymbol;
@@ -46,6 +45,7 @@
 }
 //
 void	estimatorBase::estimate (DSPCOMPLEX *testRow, DSPCOMPLEX *resultRow) {
+	(void)testRow; (void)resultRow;
 }
 
 int16_t	estimatorBase::indexFor (int16_t carrier) {

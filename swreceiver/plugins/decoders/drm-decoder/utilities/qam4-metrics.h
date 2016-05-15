@@ -32,12 +32,6 @@ public:
 		~qam4_metrics		(void);
 	void	computemetrics		(theSignal *, int32_t, metrics *);
 private:
-
-
-const double rTableQAM4[2][2] = {
-    { 0.7071067811f,  0.7071067811f},
-    {-0.7071067811f, -0.7071067811f}
-};
 };
 
 #endif

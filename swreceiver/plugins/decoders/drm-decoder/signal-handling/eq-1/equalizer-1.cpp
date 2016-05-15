@@ -45,7 +45,8 @@
  *
  *	The Wiener algorithm used in this implementation is written 
  *	in C++  and is a translation of the algorithm as given in
- *	diorama 1.1, (inspired by the translitteration as done for RXAMADRM) 
+ *	diorama 1.1, and inspired by the translitteration
+ *	of the Matlab specification of that algorithm as done in RXAMADRM
  */
 #
 #include	<QDebug>
@@ -75,6 +76,7 @@ float	**PHI;
 float	*THETA;
 //	Based on table 92 ETSI ES 201980
 //
+//	Just for experimentation, we added some alternatives
 int16_t		symbols_per_window_list_0 []	= {6, 4, 4, 6};
 int16_t		symbols_per_window_list_1 []	= {10, 6, 8, 6};
 int16_t		symbols_per_window_list_2 []	= {12, 8, 8, 6};

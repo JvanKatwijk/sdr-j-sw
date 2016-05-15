@@ -26,9 +26,9 @@
 #include	"swradio-constants.h"
 #include	"msc-handler.h"
 #include	"basics.h"
+#include	"qam64-metrics.h"
 
 class	mscConfig;
-class	qam64_metrics;
 class	MSC_streamer;
 class	viterbi;
 class	Mapper;
@@ -44,7 +44,7 @@ private:
 	int8_t		qam64Roulette;
 	int16_t		lengthA;
 	int16_t		lengthB;
-	qam64_metrics	*myDecoder;
+	qam64_metrics	myDecoder;
 	uint8_t		*out;
 	MSC_streamer	*stream_0;
 	MSC_streamer	*stream_1;

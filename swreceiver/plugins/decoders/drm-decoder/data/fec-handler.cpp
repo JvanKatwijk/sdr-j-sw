@@ -30,6 +30,7 @@
 int16_t i;
 	my_packetAssembler	= p;
 	this	-> mscIndex	= 0;
+//	dummies for initialization
 	this	-> Rows		= 4;
 	this	-> Columns	= 2;
 	this	-> table_i	= new uint8_t *[Rows];
@@ -83,12 +84,13 @@ int16_t	i;
 void	fecHandler::fec_packet		(uint8_t *v, int16_t l) {
 int16_t	i, j;
 
+	(void)l;
 	if (packetCount != inCount) {
 	   packetCount = 0;
 	   return;
 	}
 //
-//	first, we fill the remaining slots with 0
+//	first, we fill the remaining slots - if any - with 0
 	for (i = packetCount * packetLength;
 	     i < Rows * Columns; i ++) 
 	   table_i [i % Rows][ i / Rows] = 0;
@@ -113,7 +115,7 @@ int16_t	i, j;
 	if (!good) 
 	   return;		// sorry
 //
-//	extracting the packets
+//	extracting the packets and passing them on
 	for (i = 0; i < inCount; i ++) {
 	   uint8_t packetBuffer [packetLength];
 	   for (j = 0; j < packetLength; j ++) {
@@ -129,6 +131,7 @@ int16_t	i, j;
 
 void	fecHandler::data_packet		(uint8_t *v, int16_t l) {
 int16_t	i;
+	(void)l;
 	fecPackets	= 0;
 	if (packetCount >= inCount)
 	   return;		// something is rotten

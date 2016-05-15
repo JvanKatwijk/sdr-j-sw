@@ -28,11 +28,11 @@
 
 #include	"swradio-constants.h"
 #include	"basics.h"
+#include	"mapper.h"
+#include	"checkcrc.h"
 
-class	Mapper;
 class	facData;
 class	prbs;
-class	checkCRC;
 class	SDC_streamer;
 class	qam4_metrics;
 class	qam16_metrics;
@@ -56,8 +56,9 @@ private:
 	void		checkConfig	(void);
 	SDC_streamer	*stream_0;
 	SDC_streamer	*stream_1;
-	Mapper		*Y13Mapper;
-	Mapper		*Y21Mapper;
+	checkCRC	theCRC;
+	Mapper		Y13Mapper;
+	Mapper		Y21Mapper;
 	viterbi		*deconvolver;
 	uint8_t		Mode;
 	uint8_t		Spectrum;
@@ -66,7 +67,6 @@ private:
 	int16_t		lengthofSDC;
 	uint8_t		*sdcBits;
 	prbs		*thePRBS;
-	checkCRC	*theCRC;
 	uint8_t		qammode;
 	uint8_t		rmFlag;
 	uint8_t		SDCmode;
