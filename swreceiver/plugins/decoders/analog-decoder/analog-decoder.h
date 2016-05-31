@@ -30,12 +30,14 @@
 #include	<QFrame>
 #include 	"decoder-interface.h"
 #include	"ui_widget.h"
+#include	"fir-filters.h"
 
 class	QSettings;
 class	pllC;
 class	squelch;
 class	HilbertFilter;
 class	adaptiveFilter;
+class	decoderBase;
 
 class analogDecoder :public decoderInterface, public Ui_Form {
 Q_OBJECT
@@ -72,23 +74,11 @@ private slots:
 private:
 	void	setup_analogDecoder		(int32_t);
 	void	showDetectorType		(void);
-	DSPCOMPLEX	fmDecoder		(DSPCOMPLEX, double);
-	DSPCOMPLEX	usbDecoder		(DSPCOMPLEX, double);
-	DSPCOMPLEX	lsbDecoder		(DSPCOMPLEX, double);
-	DSPCOMPLEX	isbDecoder		(DSPCOMPLEX, double);
-	DSPCOMPLEX	amDecoder		(DSPCOMPLEX, double);
-	DSPCOMPLEX	syncDecoder		(DSPCOMPLEX, double);
 	int32_t		theRate;
 	QSettings	*analogSettings;
 	DSPFLOAT	analog_IF;
 	uint16_t	CycleCount;
-
-	DSPFLOAT	NcoPhase;
-	DSPFLOAT	NcoPhaseIncr;
-	DSPFLOAT	Imin1;
-	DSPFLOAT	Imin2;
-	DSPFLOAT	Qmin1;
-	DSPFLOAT	Qmin2;
+	decoderBase	*ourDecoder;
 	adaptiveFilter	*adaptive;
 	HilbertFilter	*SSB_Filter;
 	int16_t		adaptiveFiltersize;
@@ -96,14 +86,9 @@ private:
 	bool		adaptiveFiltering;
 	int16_t		detectorType;
 	int16_t		analog_Volume;
-	int16_t		analog_LowPass;
-	int16_t		analog_HighPass;
-
-	pllC		*am_pll;
+	LowPassFIR	*lowpass;
+	pllC		*the_pll;
 	DSPFLOAT	currLock;
-	DSPFLOAT	prevLock;
-	DSPFLOAT	amDc;
-	DSPFLOAT	amSmooth;
 	bool		squelchON;
 	squelch		*mySquelch;
 //

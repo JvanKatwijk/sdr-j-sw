@@ -47,17 +47,15 @@
 	                                RingBuffer<DSPCOMPLEX> *buffer,
 	                                int16_t length,
 	                                int8_t	windowDepth,
-	                                int8_t qam64Roulette):
-	                                     viterbiDecoder (0),
-	                                     my_Syncer (buffer, mr,
-	                                                       length * 320) {
+	                                int8_t qam64Roulette) {
 	this	-> mr 		= mr;
 	this	-> buffer	= buffer;
+	my_Syncer		= new Syncer (buffer, mr, length * 320);
 	this	-> windowDepth	= windowDepth;
 	this	-> qam64Roulette = qam64Roulette;
 //
 //	One viterbidecoder for all deconvolutions
-//
+	viterbiDecoder		= new viterbi (0);
 //	defaults, will be overruled almost immediately
 	this	-> Mode		= 1;
 	this	-> Spectrum	= 3;
@@ -93,6 +91,8 @@
 	while (isRunning ())
 	   usleep (100);
 	deleteProcessors	(Mode);	//	need to be addressed!!!
+	delete viterbiDecoder;
+	delete my_Syncer;
 }
 
 void	frameProcessor::stop (void) {
@@ -120,16 +120,16 @@ void	frameProcessor::createProcessors (void) {
 
 	my_facProcessor		= new facProcessor (Mode,
 	                                            Spectrum,
-	                                            &viterbiDecoder);
+	                                            viterbiDecoder);
 	my_sdcProcessor		= new sdcProcessor (Mode,
 	                                            Spectrum,
-	                                            &viterbiDecoder,
+	                                            viterbiDecoder,
 	                                            my_facData,
 	                                            sdcCells ());
 	my_mscProcessor		= new mscProcessor  (my_mscConfig,
 	                                             mr,
 	                                             qam64Roulette,
-	                                             &viterbiDecoder);
+	                                             viterbiDecoder);
 }
 
 //
@@ -197,8 +197,8 @@ restart:
 //
 	   while ((modeInf. mode_indx == -1 ||
 	           modeInf. mode_indx == Mode_D) && taskMayRun) {
-	      my_Syncer. shiftBuffer (Ts_of (Mode_A) / 2);
-	      my_Syncer. getMode (&modeInf);
+	      my_Syncer -> shiftBuffer (Ts_of (Mode_A) / 2);
+	      my_Syncer -> getMode (&modeInf);
 	   }
 	   if (!taskMayRun) throw (0);
 	   fprintf (stderr, "found: Mode = %d, time_offset = %f, sampleoff = %f freqoff = %f\n",
@@ -209,7 +209,7 @@ restart:
 //
 //	   
 //	adjust the bufferpointer:
-	   my_Syncer. shiftBuffer (floor (modeInf. time_offset + 0.5));
+	   my_Syncer -> shiftBuffer (floor (modeInf. time_offset + 0.5));
 	   Mode			= modeInf. mode_indx;
 	   int16_t time_offset_integer = floor (modeInf. time_offset + 0.5);
 //	fractional time offset:
@@ -217,7 +217,7 @@ restart:
 	                                         time_offset_integer;
 
 //	and create a reader/processor
-	   my_ofdmProcessor	= new ofdmProcessor (&my_Syncer,
+	   my_ofdmProcessor	= new ofdmProcessor (my_Syncer,
 	                                             Mode, Spectrum, mr);
 //	look for a spectrum
 	   int32_t intOffset;
@@ -240,7 +240,7 @@ restart:
 
 	      facTable		= getFacTableforMode (Mode);
 	      createProcessors ();
-	      my_ofdmProcessor	= new ofdmProcessor (&my_Syncer,
+	      my_ofdmProcessor	= new ofdmProcessor (my_Syncer,
 	                                             Mode, Spectrum, mr);
 	      oldSpectrum	= Spectrum;
 	      oldMode		= Mode;
@@ -370,7 +370,7 @@ restart:
 	            delete my_sdcProcessor;
 	            my_sdcProcessor = new sdcProcessor (Mode,
 	                                                Spectrum, 
-	                                                &viterbiDecoder,
+	                                                viterbiDecoder,
 	                                                my_facData,
 	                                                sdcCells ());
 	         }

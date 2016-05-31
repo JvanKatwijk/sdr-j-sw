@@ -27,7 +27,7 @@
 //	for the short one, the class is simple
 //	and essentially equal to the mapper
 
-	deInterleaver::deInterleaver (int16_t length):mapper (Length, 5) {
+	deInterleaver::deInterleaver (int16_t length):mapper (length, 5) {
 	this	-> Length	= length;
 }
 

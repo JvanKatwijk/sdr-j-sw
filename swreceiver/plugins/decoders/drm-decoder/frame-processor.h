@@ -1,4 +1,4 @@
-#
+
 /*
  *    Copyright (C) 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -88,9 +88,9 @@ private:
 	void		addtoSuperFrame	(int16_t);
 	bool		isDatacell	(int16_t, int16_t, int16_t);
 	struct facElement *facTable;
-	viterbi		viterbiDecoder;
+	viterbi		*viterbiDecoder;
 
-	Syncer		my_Syncer;
+	Syncer		*my_Syncer;
 	ofdmProcessor	*my_ofdmProcessor;
 	referenceFrame	*my_referenceFrame;
 	facProcessor	*my_facProcessor;

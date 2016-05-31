@@ -23,41 +23,70 @@
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__PLL_CH
-#define	__PLL_CH
+#ifndef	__PLL_FILTER
+#define	__PLL_FILTER
 /*
- *	This pll was found to give reasonable results.
- *	source DTTSP, all rights acknowledged
  */
-//#include	"jff-include.h"
-#include	"sincos.h"
+#include	<math.h>
 
-class	pllC {
+class	Lowpass_biquad {
 private:
-	DSPFLOAT	NcoPhase;
-	DSPFLOAT	phaseIncr;
-	DSPFLOAT	NcoHLimit;
-	DSPFLOAT	NcoLLimit;
-	DSPFLOAT	pll_Alpha;
-	DSPFLOAT	pll_Beta;
-	DSPCOMPLEX	pll_Delay;
-	SinCos		*mySinCos;
-	DSPFLOAT	phaseError;
-	SinCos		*Table;
-	DSPCOMPLEX	oldNcoSignal;
+	float	freq;
+	int	rate;
+	float	Q;
+
+	double	omega;
+	double	sn;
+	double	cs;
+	double	Alpha;
+
+	double	b0, b1, b2;
+	double	a0, a1, a2;
+
+	double	x1, x2;
+	double	y1, y2;
 public:
-			pllC (int32_t	rate,
-	                DSPFLOAT freq, DSPFLOAT lofreq, DSPFLOAT hifreq,
-	                DSPFLOAT bandwidth,
-	                SinCos *Table	= NULL);
+		Lowpass_biquad	(int rate,
+	                         float freq,
+	                         float Q) {
+	this	-> rate		= rate;
+	this	-> freq		= freq;
+	this	-> Q		= Q;
 
-		        ~pllC (void);
+	omega	= 2 * M_PI * freq / rate;
+	sn	= sin (omega);
+	cs	= cos (omega);
+	Alpha	= sn / (2 * Q);
 
-	void		do_pll 		(DSPCOMPLEX signal, int16_t sign);
-	DSPCOMPLEX	getDelay	(void);
-	DSPFLOAT	getPhaseIncr	(void);
-	DSPFLOAT	getNco		(void);
-	DSPFLOAT	getPhaseError	(void);
+	b0	= (1 - cs) / 2;
+	b1	= 1 - cs;
+	b2	= (1 - cs) / 2;
+	a0	= 1 + Alpha;
+	a1	= -2 * cs;
+	a2	= 1 - Alpha;
+//	and scale
+	b0	/= a0;
+	b1	/= a0;
+	b2	/= a0;
+	a1	/= a0;
+	a2	/= a0;
+
+	x1	= 0;
+	x2	= 0;
+	y1	= 0;
+	y2	= 0;
+}
+
+float	Pass	(float x) {
+float	y;
+static int cnt	= 0;
+	y	= b0 * x + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+	x2	= x1;
+	x1	= x;
+	y2	= y1;
+	y1	= y;
+	return y;
+}
 };
 
 #endif

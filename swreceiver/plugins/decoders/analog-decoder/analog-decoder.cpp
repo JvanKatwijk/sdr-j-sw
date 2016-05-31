@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013, 2014
+ *    Copyright (C) 2013, 2014, 2015
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -20,26 +20,49 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#include	"analog-decoder.h"
 #include	<QPushButton>
 #include	<QObject>
 #include	<QSettings>
 #include	<stdio.h>
+#include	"analog-decoder.h"
 #include	"fir-filters.h"
-#include	"iir-filters.h"
 #include	"pllC.h"
 #include	"squelchClass.h"
+
+#include	"decoders.h"
 
 QWidget *analogDecoder::createPluginWindow (int32_t rate,
 	                                    QSettings *s) {
 QString h;
 int32_t	k;
+int32_t	squelchFreq;
+
 	theRate		= rate;
 	analogSettings	= s;
+
 	myFrame		= new QFrame;
 	setupUi (myFrame);
 	fprintf (stderr, "Analog Decoder is loaded\n");
-	setup_analogDecoder (rate);
+
+	lowpass			= new LowPassFIR (5, 0.45 * rate, rate);
+	adaptiveFiltersize	= 15;		/* the default	*/
+	adaptive		= new adaptiveFilter (adaptiveFiltersize, 0.2);
+	analog_Volume		= 30;
+	ourDecoder		= new decoderBase (theRate);
+	adaptiveFiltering 	= false;
+	CycleCount		= 0;
+	analog_IF		= 0;
+/*
+ *	for the decoders we need:
+ */
+	if (theRate <= 8000)
+	   squelchFreq = theRate / 3;
+	else
+	   squelchFreq = 3000;
+	mySquelch		= new squelch (1, squelchFreq,
+	                                       theRate / 20, theRate);
+	currLock		= 0.5;
+	set_decoder		(analogDecoderSelect -> currentText ());
 //
 //	first set the sliders to the previous settings
 	analogSettings	-> beginGroup ("analogDecoder");
@@ -59,7 +82,6 @@ int32_t	k;
 	connect (adaptiveFilterslider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_adaptiveFiltersize (int)));
 	adaptiveFiltering	= false;
-
 	return myFrame;
 }
 
@@ -72,51 +94,11 @@ int32_t	k;
 	                              analogDecoderSelect -> currentText ());
 	analogSettings	-> endGroup ();
 	delete	adaptive;
-	delete	SSB_Filter;
-	delete	am_pll;
 	delete	mySquelch;
+	delete	myFrame;
+	delete	lowpass;
 }
 
-void	analogDecoder::setup_analogDecoder	(int32_t rate) {
-int16_t squelchFreq;
-
-	theRate			= rate;
-	adaptiveFiltersize	= 15;		/* the default	*/
-	adaptive		= new adaptiveFilter (adaptiveFiltersize, 0.2);
-	analog_Volume		= 30;
-/*
- *	for the FM decoder we need:
- */
-	Imin1			= 1;
-	Imin2			= 1;
-	Qmin1			= 1;
-	Qmin2			= 1;
-
-	detectorType		= AM_DECODER;
-	SSB_Filter		= new HilbertFilter (31, 0.25, theRate);
-
-	am_pll			= new pllC (theRate,
-	                                   0,		// center frequency
-	                                   - 500,	// low offset
-	                                   + 500,	// high offset
-	                                   0.9 * theRate);	// bandwidth
-
-	if (theRate <= 8000)
-	   squelchFreq = theRate / 3;
-	else
-	   squelchFreq = 3000;
-	mySquelch		= new squelch (1, squelchFreq,
-	                                       theRate / 20, theRate);
-	currLock		= 0.5;
-	prevLock		= 1.0;
-	amDc			= 0;
-	amSmooth		= 0;
-	detectorType		= AM_DECODER;
-        showDetectorType ();
-	adaptiveFiltering 	= false;
-	CycleCount		= 0;
-	analog_IF		= 0;
-}
 
 bool	analogDecoder::initforRate	(int32_t workingRate) {
 int16_t	squelchFreq;
@@ -128,22 +110,12 @@ int16_t	squelchFreq;
 //	change some filters
 	delete	adaptive;
 	adaptive	= new adaptiveFilter	(adaptiveFiltersize, 0.2);
-
-	delete	SSB_Filter;
-	SSB_Filter		= new HilbertFilter (11, 0.45, theRate);
-
-	delete	am_pll;
-	am_pll			= new pllC (theRate,
-	                                   0,
-	                                   - 500,
-	                                   + 500,
-	                                   0.9 * theRate);
-
-	squelchON		= true;
+	squelchON		= false;
 	squelchFreq		= theRate <= 8000 ?
 	                                       theRate / 3 : 3000;
 	mySquelch		= new squelch (0.1,
 	                                       squelchFreq, 512, theRate);
+	set_decoder (analogDecoderSelect -> currentText ());
 	CycleCount		= theRate / 10;
 	return true;
 }
@@ -158,25 +130,41 @@ int16_t	analogDecoder::detectorOffset	(void) {
 
 void	analogDecoder::set_decoder (const QString &s) {
 int16_t	d;
-	if (s == "am")
+	delete ourDecoder;
+
+	if (s == "am") {
 	   d	= analogDecoder::AM_DECODER;
+	   ourDecoder	= new amDecoder (theRate);
+	}
 	else
-	if (s == "fm")
+	if (s == "fm") {
 	   d	= analogDecoder::FM_DECODER;
+	   ourDecoder	= new fmDecoder (theRate, mySquelch);
+	}
 	else
-	if (s == "usb")
+	if (s == "usb") {
 	   d	= analogDecoder::USB_DECODER;
+	   ourDecoder	= new usbDecoder (theRate);
+	}
 	else
-	if (s == "lsb")
+	if (s == "lsb") {
 	   d	= analogDecoder::LSB_DECODER;
+	   ourDecoder	= new lsbDecoder (theRate);
+	}
 	else
-	if (s == "isb")
+	if (s == "isb") {
 	   d	= analogDecoder::ISB_DECODER;
+	   ourDecoder	= new isbDecoder (theRate);
+	}
 	else
-	if (s == "coherent")
+	if (s == "coherent") {
 	   d	= analogDecoder::COHERENT;
-	else
+	   ourDecoder	= new syncDecoder (theRate);
+	}
+	else {
 	   d	= analogDecoder::AM_DECODER;
+	   ourDecoder	= new amDecoder (theRate);
+	}
 
 	detectorType	= d;
 	this -> showDetectorType ();
@@ -247,106 +235,23 @@ DSPCOMPLEX	lf;
 	      analogStrength = 0;
 
 	   signalStrength-> display (analogStrength);
+
 	   if (detectorType == COHERENT)
 	      showIF -> display	(currLock);
 	   else
 	      showIF -> display	(0);
 	}
 
-	switch (detectorType) {
-	   case AM_DECODER:
-	   default:
-	      lf = amDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   case FM_DECODER:
-	      lf = fmDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   case USB_DECODER:
-	      lf = usbDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   case LSB_DECODER:
-	      lf = lsbDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   case ISB_DECODER:
-	      lf = isbDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-
-	   case COHERENT:
-	      lf = syncDecoder (z, (float)analog_Volume / 10.0);
-	      break;
-	}
+	lf	= ourDecoder -> decode (z, (float)analog_Volume / 10.0);
 
 	if (adaptiveFiltering)
 	   lf	= adaptive	-> Pass (lf);
+	else
+	   lf	= lowpass	->  Pass (lf);
 	outputSample (real (lf), imag (lf));
 }
 /*
  */
-DSPCOMPLEX	analogDecoder::fmDecoder (DSPCOMPLEX z, double Vol) {
-DSPFLOAT	res;
-double	I	= real (z);
-double	Q	= imag (z);
-
-	res		= Imin1 * (Q - Qmin2) - Qmin1 * (I - Imin2);
-	res		/= Imin1 * Imin1 + Qmin1 * Qmin1 ;
-	Imin2		= Imin1;
-	Qmin2		= Qmin1;
-	Imin1		= I;
-	Qmin1		= Q;
-	res		= mySquelch -> do_squelch (res);
-	return 	DSPCOMPLEX (Vol * res, Vol * res);
-}
-
-DSPCOMPLEX	analogDecoder::usbDecoder (DSPCOMPLEX z, double Vol) {
-DSPCOMPLEX H;
-	z	= SSB_Filter	-> Pass (z);
-	H	= DSPCOMPLEX (Vol * (real (z) - imag (z)),
-		              Vol * (real (z) - imag (z)));
-	return H;
-}
-
-DSPCOMPLEX	analogDecoder::lsbDecoder (DSPCOMPLEX z, double Vol) {
-DSPCOMPLEX H;
-	z	= SSB_Filter	-> Pass (z);
-	H	= DSPCOMPLEX (Vol * (real (z) + imag (z)),
-			      Vol * (real (z) + imag (z)));
-	return H;
-}
-
-DSPCOMPLEX	analogDecoder::isbDecoder (DSPCOMPLEX z, double Vol) {
-DSPCOMPLEX H;
-	z	= SSB_Filter -> Pass (z);
-	H	= DSPCOMPLEX (Vol * (real (z) - imag (z)),
-	                      Vol * (real (z) + imag (z)));
-	return H;
-}
-
-#define	DC_ALPHA	0.85
-
-DSPCOMPLEX	analogDecoder::amDecoder (DSPCOMPLEX z, double Vol) {
-	currLock	= Vol * abs (z);
-	amDc		= 0.9999f * amDc + 0.0001f * currLock;
-	amSmooth	= 0.5 * amSmooth + 0.5 * (currLock - amDc);
-	return DSPCOMPLEX (amSmooth, amSmooth);
-}
-//
-//	
-DSPCOMPLEX	analogDecoder::syncDecoder (DSPCOMPLEX z, double Vol) {
-DSPFLOAT	res;
-
-	am_pll		-> do_pll (z);
-	currLock	= 0.999 * currLock +
-	                  0.001 * fabs (imag (am_pll -> getDelay ()));
-	prevLock	= currLock;
-	amDc		= 0.9999 * amDc + 0.0001 * real (am_pll -> getDelay ());
-	res		= Vol * (real (am_pll -> getDelay ()) - amDc);
-	return DSPCOMPLEX (res, res);
-}
-
 void		analogDecoder::set_squelch (int n) {
 	if (n < 2)
 	   return;

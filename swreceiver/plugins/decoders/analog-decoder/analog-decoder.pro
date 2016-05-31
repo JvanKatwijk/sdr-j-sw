@@ -15,6 +15,7 @@ HEADERS     = ../decoder-interface.h \
 	      ./analog-decoder.h \
 	      ./squelchClass.h \
 	      ../decoder-utils/pllC.h \
+	      ../decoder-utils/filter.h \
 	      ../../../includes/filters/fir-filters.h \
 	      ../../../includes/filters/iir-filters.h \
 	      ../../../includes/various/sincos.h \

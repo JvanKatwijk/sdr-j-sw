@@ -37,55 +37,49 @@
 //	kept in between,
 //	bandwidth the bandwidth of the signal to be received
 
-		pllC::pllC (int32_t rate,
-	                    DSPFLOAT freq,
-	                    DSPFLOAT lofreq, DSPFLOAT hifreq,
-	                    DSPFLOAT bandwidth,
-	                    SinCos *Table) {
-DSPFLOAT	fac	= 2.0 * M_PI / rate;
+		pllC::pllC (int32_t	rate,
+	                    DSPFLOAT	freq,
+	                    DSPFLOAT	lofreq, DSPFLOAT hifreq,
+	                    DSPFLOAT	bandwidth,
+	                    SinCos	*Table) {
+float	fac		= 2 * M_PI / rate;
+float	Chi		= 0.7;
+	NcoPhase	= 0;			// initial phase Nco
+	phaseError	= 0;
+	phaseIncr	= freq * fac ;		// this will change during runs
 
-	omega		= freq * fac;
-	NcoPhaseIncr	= freq * fac ;		// this will change during runs
+	pll_Alpha	= Chi * bandwidth * fac;
+	pll_Beta	= pll_Alpha * pll_Alpha;
 	NcoLLimit	= lofreq * fac;		// boundary for changes
 	NcoHLimit	= hifreq * fac;
-
-	pll_Alpha	= 0.125 * bandwidth * fac;	// pll bandwidth
-	pll_Beta	= (pll_Alpha * pll_Alpha) / 4.0; // second order term
-	NcoPhase	= 0;
-	this	-> mySinCos	= Table;
-	phzError	= 0;
-
-	oldNcoSignal	= 0;
-	pll_lock	= 0;
+	this	-> Table	= new SinCos (rate);
 }
 //
 		pllC::~pllC (void) {
+	delete Table;
 }
 //
 //	It turned out that under Fedora we had from time
 //	to time an infinite value for signal. Still have
 //	to constrain this value
-void		pllC::do_pll (DSPCOMPLEX signal) {
+void		pllC::do_pll (DSPCOMPLEX signal, int16_t sign) {
 DSPCOMPLEX	NcoSignal;
-DSPCOMPLEX	quadRef;
 
-	NcoSignal = (mySinCos != NULL) ?
-	                  mySinCos -> getComplex (NcoPhase) : 
-                          DSPCOMPLEX (cos (NcoPhase), sin (NcoPhase));
-	    
-	pll_Delay	= NcoSignal * signal;
-	phzError	= - atan2 (imag (pll_Delay), real (pll_Delay));
-	NcoPhaseIncr	+= pll_Beta * phzError;
-	if (NcoPhaseIncr < NcoLLimit)
-	   NcoPhaseIncr = NcoLLimit;
-	if (NcoPhaseIncr > NcoHLimit)
-	   NcoPhaseIncr = NcoHLimit;
+	NcoSignal	= Table -> getComplex (NcoPhase);
+	pll_Delay	= signal * NcoSignal;
+	phaseError	= sign * atan2 (imag (pll_Delay), real (pll_Delay));
+	phaseIncr	+= pll_Beta * phaseError;
+	if (phaseIncr < NcoLLimit)
+	   phaseIncr = NcoLLimit;
+	if (phaseIncr > NcoHLimit)
+	   phaseIncr = NcoHLimit;
 
-	NcoPhase	+= NcoPhaseIncr + pll_Alpha * phzError;
+	NcoPhase	+= phaseIncr + pll_Alpha * phaseError;
 	if (NcoPhase >= 2 * M_PI)
 	   NcoPhase = fmod (NcoPhase, 2 * M_PI);
 	while (NcoPhase < 0)
 	   NcoPhase += 2 * M_PI;
+	oldNcoSignal	= NcoSignal;
 }
 
 DSPCOMPLEX	pllC::getDelay (void) {
@@ -93,7 +87,7 @@ DSPCOMPLEX	pllC::getDelay (void) {
 }
 
 DSPFLOAT	pllC::getPhaseIncr(void) {
-	return NcoPhaseIncr;
+	return phaseIncr;
 }
 
 DSPFLOAT	pllC::getNco (void) {
@@ -101,6 +95,6 @@ DSPFLOAT	pllC::getNco (void) {
 }
 
 DSPFLOAT	pllC::getPhaseError (void) {
-	return phzError;
+	return phaseError;
 }
 
