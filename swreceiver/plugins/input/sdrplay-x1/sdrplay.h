@@ -24,49 +24,51 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __MIRICS_SERVER
-#define	__MIRICS_SERVER
+#ifndef __SDRPLAY
+#define	__SDRPLAY
 
 #include	<QObject>
-#include	<QDialog>
+#include	<QFrame>
 #include	"swradio-constants.h"
+#include	"rig-interface.h"
 #include	"ringbuffer.h"
 #include	"ui_widget.h"
 #include	<libusb-1.0/libusb.h>
-#include	<QByteArray>
-#include	<QHostAddress>
-#include	<QtNetwork>
-#include	<QTcpServer>
-#include	<QTcpSocket>
-#include	<QTimer>
+
+class	QSettings;
 class	sdrplayWorker;
 class	sdrplayLoader;
 
-class	miricsServer: public QDialog, private Ui_Form {
+class	sdrplay: public rigInterface, public Ui_Form {
 Q_OBJECT
+#if QT_VERSION >= 0x050000
+Q_PLUGIN_METADATA(IID "sdrplay")
+#endif
+Q_INTERFACES (rigInterface)
 
 public:
-		miricsServer		(int32_t, QWidget *parent = NULL);
-		~miricsServer		(void);
-private:
-	void	setVFOFrequency		(QByteArray);
+	QWidget	*createPluginWindow	(int32_t, QSettings *);
+		~sdrplay		(void);
+	int32_t	getRate			(void);
+	void	setVFOFrequency		(int32_t);
+	int32_t	getVFOFrequency		(void);
 	bool	legalFrequency		(int32_t);
 	int32_t	defaultFrequency	(void);
 
 	bool	restartReader		(void);
 	void	stopReader		(void);
+	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
+	int32_t	Samples			(void);
 	int16_t	bitDepth		(void);
-private slots:
-	void	sendSamples		(int);
-public slots:
-	void	processCommand		(void);
-	void	acceptConnection	(void);
-	void	handleReset		(void);
-	void	handleQuit		(void);
-	void	checkConnection		(void);
+	void	exit			(void);
+	bool	isOK			(void);
+private	slots:
+	void	setExternalGain		(int);
+	void	setCorrection		(int);
+	void	setKhzOffset		(int);
+	void	set_rateSelector	(const QString &);
 private:
-	void		setAttenuation	(QByteArray);
-	void		setRate		(QByteArray);
+	QSettings	*sdrplaySettings;
 	bool		deviceOK;
 	sdrplayLoader	*theLoader;
 	sdrplayWorker	*theWorker;
@@ -80,12 +82,6 @@ private:
 	int32_t		vfoFrequency;
 	int32_t		vfoOffset;
 	int16_t		currentGain;
-	QTcpServer	server;
-	QTcpServer	streamer;
-	QTcpSocket	*client;
-	QTcpSocket	*streamerAddress;
-	QTimer		watchTimer;
-	bool		notConnected;
 };
 #endif
 

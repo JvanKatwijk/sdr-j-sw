@@ -47,6 +47,7 @@ LIBS	+= -lwinmm
 
 unix {
 DESTDIR     = ../../../../linux-bin/decoder-plugins
+INCLUDEPATH	+= /usr/include/qt5/qwt
 #LIBS	+= -lfftw3f -lqwt			# ubuntu 15.04
 LIBS	+= -lfftw3f -lqwt-qt5			# fedora 21
 }

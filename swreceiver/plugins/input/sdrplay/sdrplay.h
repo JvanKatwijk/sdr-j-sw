@@ -32,14 +32,60 @@
 #include	"swradio-constants.h"
 #include	"rig-interface.h"
 #include	"ringbuffer.h"
-#include	"ui_widget.h"
+#include	"fir-filters.h"
+#include	"mirsdrapi-rsp.h"
+#include	"ui_sdrplay-widget.h"
 #include	<libusb-1.0/libusb.h>
 
 class	QSettings;
-class	sdrplayWorker;
-class	sdrplayLoader;
 
-class	sdrplay: public rigInterface, public Ui_Form {
+typedef void (*mir_sdr_StreamCallback_t)(int16_t	*xi,
+	                                 int16_t	*xq,
+	                                 uint32_t	firstSampleNum, 
+	                                 int32_t	grChanged,
+	                                 int32_t	rfChanged,
+	                                 int32_t	fsChanged,
+	                                 uint32_t	numSamples,
+	                                 uint32_t	reset,
+	                                 void		*cbContext);
+typedef	void	(*mir_sdr_GainChangeCallback_t)(uint32_t	gRdB,
+	                                        uint32_t	lnaGRdB,
+	                                        void		*cbContext);
+
+#ifdef __MINGW32__
+#define	GETPROCADDRESS	GetProcAddress
+#else
+#define	GETPROCADDRESS	dlsym
+#endif
+
+// Dll and ".so" function prototypes
+typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamInit) (int *gRdB, double fsMHz,
+double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAEnable, int *gRdBsystem, int useGrAltMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext); 
+
+typedef mir_sdr_ErrT (*pfn_mir_sdr_Reinit) (int *gRdB, double fsMHz,
+double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType,
+mir_sdr_LoModeT, int, int*, int, int*, mir_sdr_ReasonForReinitT);
+
+typedef mir_sdr_ErrT (*pfn_mir_sdr_Uninit)(void);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetRf)(double drfHz, int abs, int syncUpdate);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetFs)(double dfsHz, int abs, int syncUpdate, int reCal);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetGr)(int gRdB, int abs, int syncUpdate);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetGrParams)(int minimumGr, int lnaGrThreshold);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDcMode)(int dcCal, int speedUp);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDcTrackTime)(int trackTime);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetSyncUpdateSampleNum)(unsigned int sampleNum);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetSyncUpdatePeriod)(unsigned int period);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_ApiVersion)(float *version);   
+typedef mir_sdr_ErrT (*pfn_mir_sdr_ResetUpdateFlags)(int resetGainUpdate, int resetRfUpdate, int resetFsUpdate);   
+typedef mir_sdr_ErrT (*pfn_mir_sdr_AgcControl)(uint32_t, int, int, uint32_t,
+	                                       uint32_t, int, int);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_DCoffsetIQimbalanceControl) (uint32_t, uint32_t);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_SetPpm)(double);   
+typedef mir_sdr_ErrT (*pfn_mir_sdr_DebugEnable)(uint32_t);   
+
+
+
+class	sdrplay: public rigInterface, public Ui_sdrplayWidget {
 Q_OBJECT
 #if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA(IID "sdrplay")
@@ -60,28 +106,56 @@ public:
 	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
 	int32_t	Samples			(void);
 	int16_t	bitDepth		(void);
+	int16_t	maxGain			(void);
 	void	exit			(void);
 	bool	isOK			(void);
-private	slots:
-	void	setExternalGain		(int);
-	void	setCorrection		(int);
-	void	setKhzOffset		(int);
-	void	set_rateSelector	(const QString &);
-private:
-	QSettings	*sdrplaySettings;
-	bool		deviceOK;
-	sdrplayLoader	*theLoader;
-	sdrplayWorker	*theWorker;
 	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
 	int32_t		inputRate;
-	int32_t		outputRate;
+	void	sendSignal		(void);
+private:
+	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
+	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;
+	pfn_mir_sdr_Uninit	my_mir_sdr_Uninit;
+	pfn_mir_sdr_SetRf	my_mir_sdr_SetRf;
+	pfn_mir_sdr_SetFs	my_mir_sdr_SetFs;
+	pfn_mir_sdr_SetGr	my_mir_sdr_SetGr;
+	pfn_mir_sdr_SetGrParams	my_mir_sdr_SetGrParams;
+	pfn_mir_sdr_SetDcMode	my_mir_sdr_SetDcMode;
+	pfn_mir_sdr_SetDcTrackTime my_mir_sdr_SetDcTrackTime;
+	pfn_mir_sdr_SetSyncUpdateSampleNum
+	                        my_mir_sdr_SetSyncUpdateSampleNum;
+	pfn_mir_sdr_SetSyncUpdatePeriod
+	                        my_mir_sdr_SetSyncUpdatePeriod;
+	pfn_mir_sdr_ApiVersion	my_mir_sdr_ApiVersion;
+	pfn_mir_sdr_ResetUpdateFlags
+	                        my_mir_sdr_ResetUpdateFlags;
+	pfn_mir_sdr_AgcControl	my_mir_sdr_AgcControl;
+	pfn_mir_sdr_DCoffsetIQimbalanceControl
+	                        my_mir_sdr_DCoffsetIQimbalanceControl;
+	pfn_mir_sdr_SetPpm	my_mir_sdr_SetPpm;
+	pfn_mir_sdr_DebugEnable	my_mir_sdr_DebugEnable;
 	QFrame		*myFrame;
+	DecimatingFIR   *d_filter;
+	int16_t		decimationFactor;
+	bool		loadFunctions	(void);
+	QSettings	*sdrplaySettings;
+	bool		deviceOK;
+	int32_t		outputRate;
 	bool		isValidRate	(int32_t);
-	int32_t		getBandwidth	(int32_t);
+	mir_sdr_Bw_MHzT	getBandwidth	(int32_t);
 	int32_t		getInputRate	(int32_t);
 	int32_t		vfoFrequency;
-	int32_t		vfoOffset;
-	int16_t		currentGain;
+	int32_t		currentGain;
+	bool		libraryLoaded;
+	bool		running;
+	HINSTANCE	Handle;
+	bool		agcMode;
+private slots:
+	void		setExternalGain		(int);
+	void		set_rateSelector	(const QString &);
+	void		agcControl_toggled	(int);
+	void		set_ppmControl		(int);
+	void		set_debugBox	(int);
 };
 #endif
 

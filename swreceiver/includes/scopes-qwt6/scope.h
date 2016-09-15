@@ -24,10 +24,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__SCOPES__
-#define	__SCOPES__
+#ifndef	__SCOPES
+#define	__SCOPES
 
-#include	"swradio-constants.h"
 #include	<QObject>
 #include	<QStackedWidget>
 #include	<qwt.h>
@@ -43,6 +42,7 @@
 #include	<qwt_scale_widget.h>
 #include	<QBrush>
 #include	<QTimer>
+#include	<stdint.h>
 #include	"spectrogramdata.h"
 
 class	SpectrumViewer;
@@ -63,11 +63,7 @@ Q_OBJECT
 public:
 	Scope (QwtPlot *, uint16_t, uint16_t);
 	~Scope (void);
-void	Display 	(double *,
-	                 double *,
-	                 double,
-	                 int32_t,
-	                 int32_t);
+void	Display 	(double *, double *, double, int32_t);
 void	SelectView	(uint8_t);
 void	setBitDepth	(int16_t);
 private:
@@ -98,7 +94,6 @@ public:
 void	ViewWaterfall 		(double *,
 	                         double *,
 	                         double,
-	                         int32_t,
 	                         int32_t);
 private:
 	SpectrogramData	*WaterfallData;
@@ -106,10 +101,9 @@ private:
 	uint16_t	Displaysize;
 	uint16_t	Rastersize;
 	double		*plotData;
-	QwtPlotMarker	*leftMarker;
-	QwtText		leftMarkerLabel;
-	QwtPlotMarker	*rightMarker;
-	uint16_t	indexforMarker;
+	QwtPlotMarker	*Marker;
+	int16_t		indexforMarker;
+	int16_t		old_marker;
 	QwtPlotPicker	*lm_picker;
 	uint8_t		OneofTwo;
 	QwtLinearColorMap	*colorMap;
@@ -127,28 +121,22 @@ Q_OBJECT
 public:
 	SpectrumViewer 	(QwtPlot *, uint16_t);
 	~SpectrumViewer	(void);
-void	ViewSpectrum	(double *,
-	                 double *,
-	                 double,
-	                 int32_t,
-	                 int32_t);
+void	ViewSpectrum	(double *, double *, double, int32_t);
 void	setBitDepth	(int16_t);
 private:
 	QwtPlot		*plotgrid;
 	uint16_t	Displaysize;
 	QwtPlotGrid	*grid;
 	QwtPlotCurve	*SpectrumCurve;
-	QwtPlotMarker	*leftMarker;
-	QwtText		leftMarkerLabel;
-	QwtPlotMarker	*rightMarker;
-	uint32_t	indexforMarker;
+	QwtPlotMarker	*Marker;
+	int32_t		indexforMarker;
+	int16_t		old_marker;
 	QwtPlotPicker	*lm_picker;
 	QwtPlotPicker	*rm_picker;
 	QBrush		*ourBrush;
 	int16_t		bitDepth;
 	int32_t		normalizer;
 	float		get_db		(float);
-	int32_t		old_marker_left;
 private slots:
 	void	leftMouseClick (const QPointF &);
 	void	rightMouseClick (const QPointF &);

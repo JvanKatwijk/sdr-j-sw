@@ -433,6 +433,7 @@ void	RadioInterface::abortSystem (int d) {
 //	be renewed.
 void	RadioInterface::set_inputRate (int32_t newInputRate) {
 
+	fprintf (stderr, "new inputrate = %d\n", newInputRate);
 	if (inputRate == newInputRate)
 	   return;
 

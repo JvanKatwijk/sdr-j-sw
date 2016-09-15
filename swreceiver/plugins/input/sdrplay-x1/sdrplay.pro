@@ -13,12 +13,16 @@ INCLUDEPATH += . \
 HEADERS     = ../rig-interface.h \
 	      ../../../includes/swradio-constants.h \
 	      ./sdrplay.h \
+	      ./sdrplay-worker.h \
+	      ./sdrplay-loader.h \
 	      ../../../includes/filters/fir-filters.h \
 	      ../../../includes/various/ringbuffer.h
 SOURCES     =  ./sdrplay.cpp \
+	       ./sdrplay-worker.cpp \
+	       ./sdrplay-loader.cpp \
 	       ../../../src/filters/fir-filters.cpp
 TARGET      = $$qtLibraryTarget(device_sdrPlay)
-FORMS	+= ./sdrplay-widget.ui
+FORMS	+= ./widget.ui
 
 #for 32 bits windows we use
 win32 {
@@ -32,7 +36,7 @@ LIBS		+= -lusb-1.0
 }
 
 unix{
-DESTDIR     = ../../../../../linux-bin/input-plugins-sw
+DESTDIR     = ../../../../linux-bin/input-plugins-sw
 LIBS	+= -lusb-1.0 -ldl
 }
 

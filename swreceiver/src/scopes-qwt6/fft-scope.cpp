@@ -173,7 +173,6 @@ void	fft_scope::showSpectrum (void) {
 	Scope::Display (X_axis,
 	                displayBuffer,
 	                amplification,
-	                ((int32_t)vfo + left_needle + 0.5 * scale) / (int32_t)scale,
 	                ((int32_t)vfo + right_needle + 0.5 * scale) / (int32_t)scale);
 }
 

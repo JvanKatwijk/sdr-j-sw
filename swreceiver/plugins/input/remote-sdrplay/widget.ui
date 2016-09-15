@@ -41,7 +41,7 @@
      <string>remote sdrplay</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="hzOffset">
+   <widget class="QSpinBox" name="ppmControl">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -50,8 +50,11 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="minimum">
+     <number>-99</number>
+    </property>
     <property name="maximum">
-     <number>999</number>
+     <number>99</number>
     </property>
    </widget>
    <widget class="QComboBox" name="rateSelector">
@@ -137,7 +140,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>141</y>
+      <y>120</y>
       <width>91</width>
       <height>20</height>
      </rect>
@@ -188,6 +191,19 @@
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="agcControl">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>150</y>
+      <width>51</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>agc</string>
     </property>
    </widget>
   </widget>

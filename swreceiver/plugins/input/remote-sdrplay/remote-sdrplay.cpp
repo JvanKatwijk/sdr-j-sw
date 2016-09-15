@@ -42,7 +42,6 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	setupUi (theFrame);
 
     //	setting the defaults and constants
-	vfoOffset	= 0;
 	remoteSettings	-> beginGroup ("remote-sdrPlay");
 	theGain		= remoteSettings ->
 	                          value ("remote-gain", 50). toInt ();
@@ -53,6 +52,9 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	if (k != -1) 
 	   rateSelector -> setCurrentIndex (k);
 	theRate		= rateSelector	-> currentText (). toInt ();
+	ppm		= remoteSettings ->
+	                           value ("remote-ppm", 0). toInt ();
+	ppmControl	-> setValue (ppm);
 	remoteSettings	-> endGroup ();
 
 	vfoFrequency	= DEFAULT_FREQUENCY;
@@ -63,12 +65,15 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	         this, SLOT (wantConnect (void)));
 	connect (disconnectButton, SIGNAL (clicked (void)),
 	         this, SLOT (setDisconnect (void)));
-	connect (hzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (setOffset (int)));
 	connect (gainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (sendGain (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (setRate (const QString &)));
+	connect (agcControl, SIGNAL (stateChanged (int)),
+                 this, SLOT (set_agcControl (int)));
+        connect (ppmControl, SIGNAL (valueChanged (int)),
+                 this, SLOT (set_ppmControl (int)));
+
 	state	-> setText ("waiting to start");
 	return theFrame;
 }
@@ -93,6 +98,7 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	   toServer. waitForBytesWritten ();
 	}
 	remoteSettings -> setValue ("remote-gain", theGain);
+	remoteSettings -> setValue ("remote-ppm", ppmControl -> value ());
 	remoteSettings -> endGroup ();
 	toServer. close ();
 	delete	_I_Buffer;
@@ -162,6 +168,8 @@ QHostAddress theAddress	= QHostAddress (s);
 	connected	= true;
 	sendGain (theGain);
 	sendRate (theRate);
+	sendPpm  (ppm);
+	
 	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
 	toServer. waitForBytesWritten ();
 	state -> setText ("Connected");
@@ -189,6 +197,21 @@ int32_t	localRate	= s. toInt ();
 	   sendRate (theRate);
 }
 
+void	remote::set_ppmControl	(int c) {
+//
+//	communicate change in ppm setting to the device
+	if (connected) {
+	   sendPpm (c);
+	   sendVFO (vfoFrequency);
+	}
+}
+
+void	remote::set_agcControl	(int f) {
+	(void)f;
+	if (connected)
+	   sendAgc (agcControl -> isChecked ());
+}
+
 bool	remote::legalFrequency (int32_t f) {
 	(void)f;
 	return true;
@@ -202,13 +225,13 @@ void	remote::setVFOFrequency	(int32_t newFrequency) {
 	if (!connected)
 	   return;
 //	here the command to set the frequency
-	vfoFrequency = newFrequency + vfoOffset;
+	vfoFrequency = newFrequency;
 //	fprintf (stderr, "We gaan naar %d\n", vfoFrequency);
 	sendVFO (vfoFrequency);
 }
 
 int32_t	remote::getVFOFrequency	(void) {
-	return vfoFrequency - vfoOffset;
+	return vfoFrequency;
 }
 
 bool	remote::restartReader	(void) {
@@ -274,11 +297,6 @@ int16_t	remote::bitDepth	(void) {
 }
 
 //
-//	the offset is in Hz
-void	remote::setOffset	(int k) {
-	vfoOffset	= k;
-}
-//
 //	Slots, will not be called as long as there is no connection
 void	remote::readControl	(void) {
 QByteArray d;
@@ -337,7 +355,6 @@ int16_t	i = 0;
 	ii = (i0 << 8) | i1;
 	qq = (q0 << 8) | q1;
 
-//	return  DSPCOMPLEX ((float (ii)) / 32768.0, (float (qq)) / 32768.0);
 	return  DSPCOMPLEX ((float (ii)) / 4096.0, (float (qq)) / 4096.0);
 }
 
@@ -358,7 +375,8 @@ int	size	= 0;
 	   size ++;
 	}
 	_I_Buffer -> putDataIntoBuffer (buffer, size);
-	if (_I_Buffer -> GetRingBufferReadAvailable () > theRate / 10)
+	if (_I_Buffer -> GetRingBufferReadAvailable () >
+	                                  uint32_t (theRate / 10))
 	   emit samplesAvailable (theRate / 10);
 }
 //
@@ -373,6 +391,28 @@ QByteArray datagram;
 	datagram [2] = (theRate >> 16) & 0xFF;
 	datagram [1] = (theRate >> 24) & 0xFF;
 
+	toServer. write (datagram. data (), datagram. size ());
+}
+
+void	remote::sendPpm (int32_t ppm) {
+QByteArray datagram;
+
+	datagram. resize (5);
+	datagram [0] = 0176;
+	datagram [4] = ppm & 0xFF;  //lsb last
+	datagram [3] = (ppm >> 8) & 0xFF;
+	datagram [2] = (ppm >> 16) & 0xFF;
+	datagram [1] = (ppm >> 24) & 0xFF;
+
+	toServer. write (datagram. data (), datagram. size ());
+}
+
+void	remote:: sendAgc (uint8_t f) {
+QByteArray datagram;
+
+	datagram. resize (5);
+	datagram [0] = 0175;
+	datagram [1] = f;
 	toServer. write (datagram. data (), datagram. size ());
 }
 

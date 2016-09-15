@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
@@ -35,7 +34,6 @@ SpectrogramData	*IQData	= NULL;
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
 	                                QwtPlotSpectrogram () {
 QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
-int32_t	i, j;
 
 	setRenderThreadCount	(1);
 	Radius		= 100;
@@ -68,35 +66,37 @@ int32_t	i, j;
 //	delete		IQData;
 }
 
-void	IQDisplay::DisplayIQ (DSPCOMPLEX z, float scale) {
-int	x, y;
-int	i;
+void	IQDisplay::DisplayIQ (DSPCOMPLEX *z, float scale) {
+int16_t	i;
 
-        x = (int)(scale * real (z));
-        y = (int)(scale * imag (z));
-	if (x >= Radius)
-	   x = Radius - 1;
-	if (y >= Radius)
-	   y = Radius - 1;
+	for (i = 0; i < x_amount; i ++) {
+	   int a	= real (Points [i]);
+	   int b	= imag (Points [i]);
+	   plotData [(a + Radius - 1) * 2 * Radius + b + Radius - 1] = 0;
+	}
+	for (i = 0; i < x_amount; i ++) {
+           int x = (int)(scale * real (z [i]));
+           int y = (int)(scale * imag (z [i]));
 
-	if (x <= - Radius)
-	   x = -(Radius - 1);
-	if (y <= - Radius)
-	   y = -(Radius - 1);
+	   if (x >= Radius)
+	      x = Radius - 1;
+	   if (y >= Radius)
+	      y = Radius - 1;
 
-	Points [CycleCount] = DSPCOMPLEX (x, y);
-	plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 50;
+	   if (x <= - Radius)
+	      x = -(Radius - 1);
+	   if (y <= - Radius)
+	      y = -(Radius - 1);
 
-	if (++ CycleCount < x_amount)
-	   return;
+	   Points [i] = DSPCOMPLEX (x, y);
+	   plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 100;
+	}
 
-	memcpy (plot2, plotData, 2 * 2 * Radius * Radius * sizeof (double));
+	memcpy (plot2, plotData,
+	        2 * 2 * Radius * Radius * sizeof (double));
 	this		-> detach	();
 	this		-> setData	(IQData);
-	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, false);
+	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	this		-> attach     (plotgrid);
 	plotgrid	-> replot();
-
-	memset (plotData, 0, 2 * 2 * Radius * Radius * sizeof (double));
-	CycleCount	= 0;
 }

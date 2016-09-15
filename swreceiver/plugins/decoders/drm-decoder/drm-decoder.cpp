@@ -68,7 +68,7 @@ int16_t	symbs;
 	int8_t windowDepth
 	                = drmSettings -> value ("windowDepth", 2). toInt ();
 	int8_t qam64Roulette
-	                = drmSettings -> value ("qam64Roulette", 6). toInt ();
+	                = drmSettings -> value ("qam64Roulette", 5). toInt ();
 	drmSettings	-> endGroup ();
 	validFlag	= true;
 	buffer		= new RingBuffer<DSPCOMPLEX> (12000);

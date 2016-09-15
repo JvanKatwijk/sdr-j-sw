@@ -68,6 +68,8 @@ public:
 	void		sendStop	(void);
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
+	void		sendPpm		(int32_t);
+	void		sendAgc		(uint8_t);
 private	slots:
 	void		sendGain	(int);
 	void		setOffset	(int);
@@ -78,6 +80,8 @@ private	slots:
 	void		wantConnect	(void);
 	void		setDisconnect	(void);
 	void		setRate		(const QString &);
+	void		set_ppmControl	(int);
+	void		set_agcControl	(int);
 private:
 	bool		isvalidRate	(int32_t);
 	QSettings	*remoteSettings;
@@ -85,6 +89,8 @@ private:
 	int32_t		vfoOffset;
 	int32_t		theRate;
 	int32_t		vfoFrequency;
+	int32_t		ppm;
+	uint8_t		agcMode;
 	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
 	bool		connected;
 	int16_t		theGain;

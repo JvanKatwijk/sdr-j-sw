@@ -27,10 +27,7 @@
 #ifndef	__IQDISPLAY
 #define	__IQDISPLAY
 
-#ifndef	QT_STATIC_CONST
-#define	QT_STATIC_CONST
-#endif
-
+#include	"swradio-constants.h"
 #include	<qwt.h>
 #include	<qwt_slider.h>
 #include	<qwt_plot.h>
@@ -41,13 +38,12 @@
 #include	<qwt_dial_needle.h>
 #include	<qwt_plot_spectrogram.h>
 #include	<qwt_color_map.h>
+#include	<qwt_plot_spectrogram.h>
 #include	<qwt_scale_widget.h>
 #include	<qwt_scale_draw.h>
 #include	<qwt_plot_zoomer.h>
 #include	<qwt_plot_panner.h>
 #include	<qwt_plot_layout.h>
-#include	"swradio-constants.h"
-
 /*
  *	for the waterfall display
  */
@@ -57,7 +53,7 @@ Q_OBJECT
 public:
 	IQDisplay	(QwtPlot *, int16_t);
 	~IQDisplay	(void);
-void	DisplayIQ	(DSPCOMPLEX, float);
+void	DisplayIQ	(DSPCOMPLEX *, float);
 private:
 	int32_t		x_amount;
 	double		*plotData;
