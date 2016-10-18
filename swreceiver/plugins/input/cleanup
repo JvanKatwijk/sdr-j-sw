@@ -13,6 +13,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo extio-handler
 	cd extio-handler
@@ -20,6 +21,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo pmsdr
 	cd pmsdr
@@ -27,6 +29,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo sdrplay
 	cd sdrplay
@@ -34,6 +37,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo filereader
 	cd filereader
@@ -41,6 +45,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo cardReader
 	cd cardreader
@@ -48,6 +53,7 @@
 	make clean
 	mingw32-qmake-qt5
 	make clean
+	-rm -rf debug release 
 	cd ..
 	echo "done"
 

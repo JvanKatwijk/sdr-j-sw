@@ -72,7 +72,7 @@ public:
 	void		sendAgc		(uint8_t);
 private	slots:
 	void		sendGain	(int);
-	void		setOffset	(int);
+//	void		setOffset	(int);
 	void		readData	(void);
 	void		readControl	(void);
 	void		toBuffer	(QByteArray);

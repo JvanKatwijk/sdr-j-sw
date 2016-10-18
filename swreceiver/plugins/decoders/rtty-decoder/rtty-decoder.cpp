@@ -453,7 +453,7 @@ uint8_t	res	= 0;
 }
 
 static
-uint8_t letters[32] = {
+char letters [32] = {
 	'\0',	'E',	'\n',	'A',	' ',	'S',	'I',	'U',
 	'\r',	'D',	'R',	'J',	'N',	'F',	'C',	'K',
 	'T',	'Z',	'L',	'W',	'H',	'Y',	'P',	'Q',
@@ -482,7 +482,7 @@ uint8_t letters[32] = {
  * A mix of the two. This is what seems to be what people actually use.
  */
 static
-uint8_t figures[32] = {
+char figures [32] = {
 	'\0',	'3',	'\n',	'-',	' ',	'\'',	'8',	'7',
 	'\r',	'$',	'4',	'\a',	',',	'!',	':',	'(',
 	'5',	'+',	')',	'2',	'H',	'6',	'0',	'1',

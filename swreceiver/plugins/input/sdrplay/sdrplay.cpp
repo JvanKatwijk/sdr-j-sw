@@ -164,10 +164,12 @@ ULONG APIkeyValue_length = 255;
         setExternalGain (gainSlider     -> value ());
         connect (gainSlider, SIGNAL (valueChanged (int)),
                  this, SLOT (setExternalGain (int)));
-        connect (agcControl, SIGNAL (stateChanged (int)),
-                 this, SLOT (agcControl_toggled (int)));
         connect (ppmControl, SIGNAL (valueChanged (int)),
                  this, SLOT (set_ppmControl (int)));
+	connect (rateSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (set_rateSelector (const QString &)));
+        connect (agcControl, SIGNAL (stateChanged (int)),
+                 this, SLOT (agcControl_toggled (int)));
         connect (debugBox, SIGNAL (stateChanged (int)),
                  this, SLOT (set_debugBox (int)));
         running         = false;
@@ -291,13 +293,12 @@ mir_sdr_ErrT    err;
                                     agcMode, // useGrAltMode,
                                     &samplesPerPacket,
 	                            mir_sdr_CHANGE_RF_FREQ);
-	   fprintf (stderr, "err = %d\n", err);
-	   vfoFrequency	= newFrequency;
-	   return;
 	}
 	else
 	   my_mir_sdr_SetRf (newFrequency, 1, 0);
-	vfoFrequency = newFrequency;
+
+	vfoFrequency	= newFrequency;
+        my_mir_sdr_SetPpm (float (ppmControl -> value ()));
 }
 
 int32_t	sdrplay::getVFOFrequency	(void) {
@@ -358,7 +359,7 @@ void	sdrplay::stopReader	(void) {
 	if (!running)
            return;
 
-        my_mir_sdr_Uninit       ();
+        my_mir_sdr_StreamUninit       ();
 	msleep (1);		// cooling off period
         running         = false;
 }
@@ -432,7 +433,7 @@ static
 	mir_sdr_BW_8_000
 };
 
-int16_t	i;
+uint16_t	i;
 	for (i = 1; i < sizeof (validWidths) / sizeof (mir_sdr_Bw_MHzT); i ++)
 	   if (rate / Khz (1) < (int)(validWidths [i]) &&
 	       rate / Khz (1) >= (int)(validWidths [i - 1]))
@@ -452,31 +453,20 @@ int32_t	temp;
 }
 //
 //	Note that we set the outputRate
+//	The protocol is that the main program will
+//	stop the reader, change the rate and restart
+//	so all we have to do is to set a new filter
+//	and the new rate
 void	sdrplay::set_rateSelector (const QString &s) {
 int32_t	newRate	= s. toInt ();
-int     gRdBSystem;
-int     samplesPerPacket;
-mir_sdr_ErrT    err;
 
 	if (newRate == outputRate)
 	   return;
+
+	stopReader ();
 	outputRate	= newRate;
 	inputRate	= getInputRate (outputRate);
-	err = my_mir_sdr_Reinit (&currentGain,
-	                         float (inputRate) / (MHz (1)),
-	                         float (vfoFrequency) / Mhz (1),
-	                         getBandwidth (outputRate),
-                                 mir_sdr_IF_Zero,
-	                         mir_sdr_LO_Undefined,
-                                 0,     // lnaEnable do not know yet
-                                 &gRdBSystem,
-                                 agcMode, // useGrAltMode,
-                                 &samplesPerPacket,
-	                         mir_sdr_ReasonForReinitT (
-	                             mir_sdr_CHANGE_FS_FREQ |
-	                             mir_sdr_CHANGE_BW_TYPE)
-	                         );
-	fprintf (stderr, "err = %d\n", err);
+	decimationFactor	= inputRate / outputRate;
 	delete	d_filter;
 	d_filter	= new DecimatingFIR (decimationFactor * 5,
 	                                     - outputRate / 2,
@@ -495,17 +485,23 @@ int16_t	sdrplay::bitDepth	(void) {
 }
 
 void    sdrplay::agcControl_toggled (int agcMode) {
+	fprintf (stderr, "agcMode = %d, toggled = %d\n", agcMode,
+	                                        agcControl -> isChecked ());
+	(void)agcMode;
         this    -> agcMode      = agcControl -> isChecked ();
-        my_mir_sdr_AgcControl (this -> agcMode, 70, 0, 0, 0, 1, 0);
+	fprintf (stderr, "Gain reduction set to %d\n", -currentGain);
+        my_mir_sdr_AgcControl (this -> agcMode, -currentGain, 0, 0, 0, 1, 0);
 	my_mir_sdr_SetGr (currentGain, 1, 0);
 }
 
 void    sdrplay::set_debugBox   (int debugMode) {
+	(void)debugMode;
         my_mir_sdr_DebugEnable (debugBox        -> isChecked ());
 }
 
 void    sdrplay::set_ppmControl (int ppm) {
-        my_mir_sdr_SetPpm ((float)ppm);
+        my_mir_sdr_SetPpm (float (ppm));
+	my_mir_sdr_SetRf  (float (vfoFrequency), 1, 0);
 }
 
 bool	sdrplay::loadFunctions	(void) {
@@ -518,11 +514,11 @@ bool	sdrplay::loadFunctions	(void) {
 	   return false;
 	}
 
-	my_mir_sdr_Uninit	= (pfn_mir_sdr_Uninit)
+	my_mir_sdr_StreamUninit	= (pfn_mir_sdr_StreamUninit)
 	                    GETPROCADDRESS (this -> Handle,
-	                                    "mir_sdr_Uninit");
-	if (my_mir_sdr_Uninit == NULL) {
-	   fprintf (stderr, "Could not find mir_sdr_Uninit\n");
+	                                    "mir_sdr_StreamUninit");
+	if (my_mir_sdr_StreamUninit == NULL) {
+	   fprintf (stderr, "Could not find mir_sdr_StreamUninit\n");
 	   return false;
 	}
 

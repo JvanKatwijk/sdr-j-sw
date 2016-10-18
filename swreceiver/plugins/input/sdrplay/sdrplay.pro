@@ -25,7 +25,6 @@ win32 {
 DESTDIR     = ../../../../../../windows-bin-sw/input-plugins-sw
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH	+= /usr/i686-mingw32/sys-root/mingw/include
-HEADERS		+= mir_sdr-windows.h
 LIBS		+= -lole32
 LIBS		+= -lwinmm
 LIBS		+= -lusb-1.0

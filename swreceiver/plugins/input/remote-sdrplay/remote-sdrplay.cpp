@@ -289,8 +289,6 @@ int32_t	remote::Samples	(void) {
 }
 
 //
-//	bitDepth is required in the forthcoming 6.1 release
-//	In 6.0 it is not called
 //	It is used to set the scale for the spectrum
 int16_t	remote::bitDepth	(void) {
 	return 14;
@@ -355,7 +353,7 @@ int16_t	i = 0;
 	ii = (i0 << 8) | i1;
 	qq = (q0 << 8) | q1;
 
-	return  DSPCOMPLEX ((float (ii)) / 4096.0, (float (qq)) / 4096.0);
+	return  DSPCOMPLEX ((float (ii)) / 2048.0, (float (qq)) / 2048.0);
 }
 
 //	we get in 16 bits int16_t, packed in unsigned bytes.
@@ -374,6 +372,7 @@ int	size	= 0;
 	   buffer [i] = makeSample (&lbuf [0]);
 	   size ++;
 	}
+
 	_I_Buffer -> putDataIntoBuffer (buffer, size);
 	if (_I_Buffer -> GetRingBufferReadAvailable () >
 	                                  uint32_t (theRate / 10))

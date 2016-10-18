@@ -16,8 +16,8 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
+     <x>10</x>
+     <y>10</y>
      <width>211</width>
      <height>231</height>
     </rect>
@@ -103,7 +103,7 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>140</y>
+      <y>120</y>
       <width>51</width>
       <height>25</height>
      </rect>
@@ -128,24 +128,11 @@
      <number>200</number>
     </property>
    </widget>
-   <widget class="QCheckBox" name="debugBox">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>140</y>
-      <width>91</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>CheckBox</string>
-    </property>
-   </widget>
    <widget class="QComboBox" name="rateSelector">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>170</y>
+      <x>0</x>
+      <y>150</y>
       <width>151</width>
       <height>21</height>
      </rect>
@@ -184,8 +171,8 @@
    <widget class="QLCDNumber" name="rateDisplay">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>190</y>
+      <x>0</x>
+      <y>200</y>
       <width>151</width>
       <height>23</height>
      </rect>
@@ -198,6 +185,19 @@
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="debugBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>91</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>debug</string>
     </property>
    </widget>
   </widget>

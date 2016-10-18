@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>180</height>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,6 +55,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -67,6 +70,9 @@
       <width>41</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -133,8 +139,8 @@
    <widget class="QLabel" name="modeIndicator">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>100</y>
+      <x>40</x>
+      <y>110</y>
       <width>31</width>
       <height>21</height>
      </rect>
@@ -179,8 +185,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>150</y>
-      <width>111</width>
+      <y>140</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -188,7 +194,7 @@
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="lineWidth">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="text">
      <string/>
@@ -197,9 +203,9 @@
    <widget class="QLabel" name="audioModelabel">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>131</y>
-      <width>64</width>
+      <x>70</x>
+      <y>110</y>
+      <width>71</width>
       <height>20</height>
      </rect>
     </property>
@@ -236,10 +242,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>110</y>
       <width>31</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
      <string/>
@@ -306,6 +315,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -318,6 +330,9 @@
       <width>41</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -332,6 +347,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -344,6 +362,9 @@
       <width>41</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -368,11 +389,14 @@
    <widget class="QLabel" name="messageLabel">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>150</y>
-      <width>421</width>
+      <x>150</x>
+      <y>140</y>
+      <width>451</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
      <string/>
@@ -381,7 +405,7 @@
    <widget class="QLabel" name="pictureLabel">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>210</x>
       <y>10</y>
       <width>161</width>
       <height>161</height>
