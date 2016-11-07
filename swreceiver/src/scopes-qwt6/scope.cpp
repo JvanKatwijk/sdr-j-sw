@@ -181,14 +181,6 @@ void	Scope::setBitDepth	(int16_t b) {
 }
 
 	SpectrumViewer::~SpectrumViewer () {
-	disconnect (lm_picker,
-	            SIGNAL (selected (const QPointF &)),
-	            this,
-	            SLOT (leftMouseClick (const QPointF &)));
-	disconnect (rm_picker,
-	            SIGNAL (selected (const QPointF &)),
-	            this,
-	            SLOT (rightMouseClick (const QPointF &)));
 	plotgrid	-> enableAxis (QwtPlot::yLeft, false);
 	Marker		-> detach ();
 	SpectrumCurve	-> detach ();
@@ -197,7 +189,6 @@ void	Scope::setBitDepth	(int16_t b) {
 	delete		SpectrumCurve;
 	delete		grid;
 	delete		lm_picker;
-	delete		rm_picker;
 }
 
 void	SpectrumViewer::leftMouseClick (const QPointF &point) {
@@ -221,7 +212,7 @@ uint16_t	i;
 				         X_axis [Displaysize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) +2 * amp);
+				         get_db (0), get_db (0) + 2 * amp);
 
 	for (i = 0; i < Displaysize; i ++) 
 	   Y1_value [i] = get_db (Y1_value [i]); 

@@ -526,14 +526,7 @@ int32_t	newWorkingRate	= (int32_t)(s. toInt ());
 	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(theDevice -> bitDepth ());
 	set_LFplotterView	(LFplotterView	-> currentText ());
-//
-//	and we need a new if bandfilter!!!
-	delete	lfFilter;
-	lfFilter		= new fftFilter (FILTER_SIZE,
-	                                         FILTER_STRENGTH);
-	lfFilter	-> setBand (getBand_lowend (),
-	                            getBand_highend (),
-	                            workingRate);
+	set_quickBand(quickbandSelect -> currentText ());
 }
 ////////////////////////////////////////////////////////////////
 //	lots of local settings
