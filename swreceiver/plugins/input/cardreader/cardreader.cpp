@@ -41,7 +41,7 @@ QWidget	*cardReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	         this, SLOT (set_streamSelector (int)));
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_rateSelector (const QString &)));
-	connect (gainSlider, SIGNAL (valeChanged (int)),
+	connect (gainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gainValue (int)));
 	connect (myReader, SIGNAL (samplesAvailable (int)),
 	         this, SIGNAL (samplesAvailable (int)));
@@ -112,7 +112,7 @@ int32_t	n;
 
 int32_t	cardReader::getSamples	(DSPCOMPLEX *b, int32_t a, uint8_t m) {
 int32_t i, n;
-DSPCOMPLEX temp [m];
+DSPCOMPLEX temp [a];
 
 	readerOwner. lock ();
 	n =  myReader -> getSamples (temp, a, m);

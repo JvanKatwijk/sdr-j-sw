@@ -21,7 +21,7 @@ TARGET      = $$qtLibraryTarget(device_dabstick)
 FORMS	+= ./widget.ui
 
 win32 {
-DESTDIR     = ../../../../../../windows-bin-sw/input-plugins-sw
+DESTDIR     = ../../../../../../windows-bin/input-plugins
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

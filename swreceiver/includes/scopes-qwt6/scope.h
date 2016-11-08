@@ -62,7 +62,7 @@ class Scope: public QObject {
 Q_OBJECT
 public:
 	Scope (QwtPlot *, uint16_t, uint16_t);
-	~Scope (void);
+virtual	~Scope (void);
 void	Display 	(double *, double *, double, int32_t);
 void	SelectView	(uint8_t);
 void	setBitDepth	(int16_t);
@@ -91,6 +91,7 @@ Q_OBJECT
 public:
 	WaterfallViewer		(QwtPlot *, uint16_t, uint16_t);
 	~WaterfallViewer	();
+void	setBitDepth		(int16_t);
 void	ViewWaterfall 		(double *,
 	                         double *,
 	                         double,

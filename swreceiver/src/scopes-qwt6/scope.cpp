@@ -39,15 +39,18 @@
 	Displaysize		= displaysize;
 	Rastersize		= rastersize;
 	bitDepth		= 24;
-	Spectrum		= NULL;
-	Waterfall		= new WaterfallViewer (Plotter,
-	                                               Displaysize,
-	                                               Rastersize);
-	CurrentWidget		= WATERFALL_MODE;
-	connect (Waterfall,
-	         SIGNAL (leftClicked (int)),
-	         this,
-	         SLOT (leftClicked (int)));
+	Waterfall		= NULL;
+	   Spectrum	= new SpectrumViewer  (Plotter,
+	                                       Displaysize);
+	   connect (Spectrum,
+	            SIGNAL (leftClicked (int)),
+	            this,
+	            SLOT (leftClicked (int)));
+	   connect (Spectrum,
+	            SIGNAL (rightClicked (int)),
+	            this,
+	            SLOT (rightClicked (int)));
+	   CurrentWidget = SPECTRUM_MODE;
 }
 
 	Scope::~Scope (void) {
@@ -66,6 +69,7 @@ void	Scope::rightClicked (int n) {
 }
 
 void	Scope::SelectView (uint8_t n) {
+	return;
 	if (CurrentWidget == n)
 	   return;
 
@@ -128,8 +132,8 @@ void	Scope::setBitDepth	(int16_t b) {
 /*
  *	The spectrumDisplay
  */
-	SpectrumViewer::SpectrumViewer (QwtPlot *plot, uint16_t displaysize) {
-
+	SpectrumViewer::SpectrumViewer (QwtPlot *plot,
+	                                uint16_t displaysize) {
 	plotgrid		= plot;
 	this	-> Displaysize	= displaysize;
 	plotgrid-> setCanvasBackground (Qt::blue);
@@ -249,10 +253,10 @@ void	SpectrumViewer::setBitDepth	(int16_t d) {
 
 	if (d < 0 || d >= 32)
 	   d = 24;
-
 	normalizer	= 1;
-	while (-- d > 0) 
+	while (-- d > 0) {
 	   normalizer <<= 1;
+	}
 }
 
 /*
@@ -328,6 +332,10 @@ int	i, j;
 	plotgrid	-> enableAxis (QwtPlot::xBottom, false);
 	plotgrid	-> enableAxis (QwtPlot::yLeft, false);
 	this		-> detach ();
+}
+
+
+void	WaterfallViewer::setBitDepth	(int16_t b) {
 }
 
 void	WaterfallViewer::leftMouseClick (const QPointF &point) {

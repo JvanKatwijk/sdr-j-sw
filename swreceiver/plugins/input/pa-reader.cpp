@@ -171,13 +171,12 @@ PaError	err;
 
 	if (readerRunning ||!Pa_IsStreamStopped (istream))
 	   return true;
-	readerRunning	= false;	// superfluous
-	paCallbackReturn = paContinue;
+	paCallbackReturn	= paContinue;
 	err = Pa_StartStream (istream);
 	if (err == paNoError)
 	   readerRunning	= true;
-	if (err != paNoError) {
-	   const char *s = Pa_GetErrorText (err);
+	else {
+	   const char *s	= Pa_GetErrorText (err);
 	   fprintf (stderr, "Error %s\n", s);
 	}
 	return readerRunning;

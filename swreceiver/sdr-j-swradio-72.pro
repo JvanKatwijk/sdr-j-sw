@@ -86,7 +86,7 @@ SOURCES += ./src/main.cpp \
 
 #for 32 bits windows, choose
 win32 {
-DESTDIR		= ../../windows-bin-sw
+DESTDIR		= ../../../windows-bin-sw
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

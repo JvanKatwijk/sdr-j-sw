@@ -81,7 +81,6 @@ QString h;
 int32_t	k;
 
 // 	the setup for the generated part of the ui
-	fprintf (stderr, "going to setup\n");
 	setupUi (this);
 	this	-> mainSettings	= sI;
 	if (mainSettings == NULL) {
@@ -122,7 +121,6 @@ int32_t	k;
 	setup_soundcards	();
 //	... and restore restore GUI settings 
 	restoreGUIsettings	(mainSettings);
-
 //	lfScope setup
 	lfScope			= new fft_scope (lfscope,
 	                                         displaySize,
@@ -132,6 +130,7 @@ int32_t	k;
 	                                         workingRate,
 	                                         10);
 	LFviewMode		= SPECTRUM_MODE;
+
 	lfScope			-> SelectView (SPECTRUM_MODE);
 	lfScope			-> setNeedles (0);
 	lfScope			-> setBitDepth	(bitDepth);
