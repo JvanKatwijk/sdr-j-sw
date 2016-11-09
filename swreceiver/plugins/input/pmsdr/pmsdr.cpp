@@ -44,11 +44,13 @@
 #define I2C_SLA_SI570     0x55
 #endif
  
-QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
+bool	pmsdr::createPluginWindow (int32_t	rate,
+	                           QFrame	*myFrame,
+	                           QSettings	*s) {
 	(void)rate;
+	this	-> myFrame	= myFrame;
 	this	-> pmsdrSettings	= s;
 
-	myFrame			= new QFrame;
 	setupUi	(myFrame);
 	myReader		= NULL;
 	defaultFreq		= -1;	// definitely illegal
@@ -70,7 +72,7 @@ QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
 	setup_device ();
 	if (pmsdrDevice == NULL) {	// something failed
 	   statusLabel	-> setText ("No valid Device");
-	   return myFrame;
+	   return false;
 	}
 //
 //	Initial settings
@@ -107,7 +109,7 @@ QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
 	         this, SLOT (set_offset_KHz (int)));
 	statusLabel	-> setText ("pmsdr ready");
 	radioOK		= true;
-	return myFrame;
+	return true;
 }
 
 	rigInterface::~rigInterface	(void) {
@@ -127,7 +129,6 @@ QWidget	*pmsdr::createPluginWindow (int32_t rate, QSettings *s) {
 	pmsdrSettings	-> beginGroup ("pmsdr");
 	pmsdrSettings	-> setValue ("pmsdr-vfoOffset", vfoOffset);
 	pmsdrSettings	-> endGroup ();
-	delete	myFrame;
 }
 
 int32_t	pmsdr::getRate		(void) {

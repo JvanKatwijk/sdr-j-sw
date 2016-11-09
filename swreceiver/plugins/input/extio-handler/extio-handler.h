@@ -189,7 +189,7 @@ Q_PLUGIN_METADATA (IID "ExtioHandler")
 Q_INTERFACES (rigInterface)
 
 public:
-	QWidget		*createPluginWindow	(int32_t, QSettings *);
+	bool		createPluginWindow	(int32_t, QFrame *, QSettings *);
 			~ExtioHandler		(void);
 	int32_t		getRate			(void);
 	void		setVFOFrequency		(int32_t);

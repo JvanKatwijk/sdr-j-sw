@@ -49,7 +49,7 @@ Q_PLUGIN_METADATA (IID "remote")
 #endif
 Q_INTERFACES (rigInterface)
 public:
-	QWidget		*createPluginWindow (int32_t, QSettings *);
+	bool	createPluginWindow (int32_t, QFrame *, QSettings *);
 			~remote		(void);
 	int32_t		getRate		(void);
 	bool		legalFrequency	(int32_t);
@@ -85,7 +85,7 @@ private	slots:
 private:
 	bool		isvalidRate	(int32_t);
 	QSettings	*remoteSettings;
-	QFrame		*theFrame;
+	QFrame		*myFrame;
 	int32_t		vfoOffset;
 	int32_t		theRate;
 	int32_t		vfoFrequency;

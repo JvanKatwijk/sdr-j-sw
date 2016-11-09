@@ -41,15 +41,16 @@
 #include	"sdrplay-loader.h"	// funtion loader
 //
 //	Currently, we do not have lots of settings
-QWidget	*sdrplay::createPluginWindow (int32_t rate, QSettings *s) {
+bool	sdrplay::createPluginWindow (int32_t rate,
+	                             QFrame *myFrame, QSettings *s) {
 int	err;
 float	ver;
 bool	success;
 
 	(void)rate;
+	this	-> myFrame	= myFrame;
 	this	-> sdrplaySettings	= s;
 	deviceOK		= false;
-	myFrame			= new QFrame;
 	setupUi (myFrame);
 	_I_Buffer		= NULL;
 	theLoader		= NULL;
@@ -61,7 +62,7 @@ bool	success;
 //	loaded indirectly through the dll
 	if (libusb_init (NULL) < 0) {
 	   fprintf (stderr, "libusb problem\n");	// should not happen
-	   return myFrame;
+	   return false;
 	}
 	libusb_exit (NULL);
 
@@ -71,7 +72,7 @@ bool	success;
 	   statusLabel	-> setText ("no SDRplay lib");
 	   delete theLoader;
 	   theLoader = NULL;
-	   return myFrame;
+	   return false;
 	}
 
 	err			= theLoader -> mir_sdr_ApiVersion (&ver);
@@ -101,7 +102,7 @@ bool	success;
 	connect (rateSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_rateSelector (const QString &)));
 	deviceOK	= true;
-	return myFrame;
+	return true;
 }
 //
 //	just a dummy

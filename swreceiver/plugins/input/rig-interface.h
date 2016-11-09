@@ -21,10 +21,9 @@ QT_END_NAMESPACE
 //	Rig implementations should implement ALL of the
 //	abstract functions of this interface
 class	rigInterface : public QThread {
-//class	rigInterface :public QObject {
 Q_OBJECT
 public:
-virtual	QWidget	*createPluginWindow	(int32_t, QSettings *)	= 0;
+virtual	bool createPluginWindow	(int32_t, QFrame *, QSettings *)	= 0;
 virtual		~rigInterface		(void)		= 0;
 
 virtual	int32_t	getRate			(void)		= 0;

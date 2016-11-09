@@ -1126,20 +1126,24 @@ QString	deviceBase;
 //	Note that all interface functions are handled by
 //	the GUI thread, so while we are busy here, no other
 void	RadioInterface::set_deviceSelect (const QString &s) {
-
 	theDevice	-> exit ();
 	mySoundcardOut	-> stopWriter	();
 	runMode	= IDLE;		// will ensure that we have to push "start"
 //
 //	We started with a dummy device, so there is always
 //	a device to unload
+	fprintf (stderr, "going to unload a device");
 	my_deviceLoader		-> unloadDevice ();
+	fprintf (stderr, "device is unloaded, ready for the next one");
 	theDevice		= my_deviceLoader -> loadDevice (s, inputRate);
 	if (!theDevice	-> isOK ()) {
+	   fprintf (stderr, "sorry, loading failed\n");
 	   my_deviceLoader	-> unloadDevice ();
 	   theDevice = my_deviceLoader -> loadDevice ("no rig", 96000);
 	}
-
+	else
+	   fprintf (stderr, "loading succeeded\n");
+	
 //	We do not know anything about the rig, other than that
 //	it implements the abstract interface.
 //	The cardreader based interfaces might use "set_changeRate",
@@ -1165,8 +1169,11 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 	         this, SLOT (sampleHandler (int)));
 //
 	set_inputRate (theDevice	-> getRate ());
+	fprintf (stderr, "a1\n");
 	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
+	fprintf (stderr, "a2\n");
 	lfScope		-> setBitDepth	(theDevice -> bitDepth ());
+	fprintf (stderr, "a3\n");
 }
 //
 /////////////////////////////////////////////////////////////////////////

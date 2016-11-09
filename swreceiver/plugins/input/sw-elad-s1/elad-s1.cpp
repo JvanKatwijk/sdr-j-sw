@@ -74,13 +74,14 @@ int32_t validRate	(int32_t r) {
 
 //	Currently, we do not have lots of settings,
 //	it just might change suddenly, but not today
-QWidget	*elad_s1::createPluginWindow (int32_t r, QSettings *s) {
+bool	elad_s1::createPluginWindow (int32_t r,
+	                             QFrame *myFrame, QSettings *s) {
 int16_t	success;
 
 	(void)r;
+	this	-> myFrame	= myFrame;
 	this	-> eladSettings	= s;
 	deviceOK		= false;
-	myFrame			= new QFrame;
 	setupUi (myFrame);
 	_I_Buffer		= NULL;
 	theLoader		= NULL;
@@ -101,7 +102,7 @@ int16_t	success;
 //	loaded indirectly through the dll
 	if (libusb_init (NULL) < 0) {
 	   fprintf (stderr, "libusb problem\n");	// should not happen
-	   return myFrame;
+	   return false;
 	}
 	libusb_exit (NULL);
 	theLoader	= new eladLoader (theRate, &success);
@@ -125,7 +126,7 @@ int16_t	success;
 	   statusLabel -> setText ("not functioning");
 	   delete theLoader;
 	   theLoader	= NULL;
-	   return myFrame;
+	   return false;
 	}
 //
 //	Note (10.10.2014: 
@@ -149,7 +150,7 @@ int16_t	success;
 	         this, SLOT (setGainReduction (void)));
 	connect (filter, SIGNAL (clicked (void)),
 	         this, SLOT (setFilter (void)));
-	return myFrame;
+	return true;
 }
 //
 //	just a dummy

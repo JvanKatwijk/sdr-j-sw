@@ -35,11 +35,12 @@
 //
 #define	DEFAULT_FREQUENCY	(Khz (14070))
 
-QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
+bool	remote::createPluginWindow (int32_t rate,
+	                            QFrame *myFrame, QSettings *s) {
 	(void)rate;		// not used here (starting at 6.0)
+	this	-> myFrame	= myFrame;
 	remoteSettings		= s;
-	theFrame		= new QFrame (NULL);
-	setupUi (theFrame);
+	setupUi (myFrame);
 
     //	setting the defaults and constants
 	remoteSettings	-> beginGroup ("remote-sdrPlay");
@@ -75,7 +76,8 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
                  this, SLOT (set_ppmControl (int)));
 
 	state	-> setText ("waiting to start");
-	return theFrame;
+	fprintf (stderr, "wachtend op start\n");
+	return true;
 }
 //
 //	just a dummy, needed since the rigInterface is abstract
@@ -96,11 +98,12 @@ QWidget	*remote::createPluginWindow (int32_t rate, QSettings *s) {
 	   datagram [0] = 0125;
 	   toServer. write (datagram. data (), datagram. size ());
 	   toServer. waitForBytesWritten ();
+	   toServer. close ();
 	}
+
 	remoteSettings -> setValue ("remote-gain", theGain);
 	remoteSettings -> setValue ("remote-ppm", ppmControl -> value ());
 	remoteSettings -> endGroup ();
-	toServer. close ();
 	delete	_I_Buffer;
 }
 //
@@ -150,7 +153,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	            this, SLOT (setConnection (void)));
 	toServer. connectToHost (serverAddress, basePort);
 	if (!toServer. waitForConnected (2000)) {
-	   QMessageBox::warning (theFrame, tr ("sdr"),
+	   QMessageBox::warning (myFrame, tr ("sdr"),
 	                                   tr ("connection failed\n"));
 	   return;
 	}
@@ -159,7 +162,7 @@ QHostAddress theAddress	= QHostAddress (s);
 //	The streamer will provide us with the raw data
 	streamer. connectToHost (serverAddress, basePort + 10);
 	if (!streamer. waitForConnected (2000)) {
-	   QMessageBox::warning (theFrame, tr ("sdr"),
+	   QMessageBox::warning (myFrame, tr ("sdr"),
 	                                   tr ("setting up stream failed\n"));
 	   toServer. disconnectFromHost ();
 	   return;

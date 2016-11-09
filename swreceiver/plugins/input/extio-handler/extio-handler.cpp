@@ -93,7 +93,9 @@ int	extioCallback (int cnt, int status, float IQoffs, void *IQData) {
 //	We assume that if there are settings possible, they
 //	are dealt with by the producer of the extio, so here 
 //	no frame whatsoever.
-QWidget	*ExtioHandler::createPluginWindow (int32_t rate, QSettings *s) {
+	bool  ExtioHandler::createPluginWindow (int32_t rate,
+	                                        QFrame * myFrame,
+	                                        QSettings *s) {
 #ifdef	__MINGW32__
 char	temp [256];
 wchar_t	*windowsName;
@@ -108,7 +110,7 @@ int16_t	wchars_num;
 	base_32		= s -> value ("base_32", 32767 * 32768). toInt ();
 	isStarted	= false;
 	theReader	= NULL;
-	myFrame		= new QFrame;
+	this -> myFrame		= myFrame;
 	setupUi (myFrame);
 	theSelector	-> hide ();
 	myContext	= (ExtioHandler *)this;
@@ -131,7 +133,7 @@ int16_t	wchars_num;
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("incorrect filename\n"));
 	   status	-> setText ("no filename");
-	   return myFrame;
+	   return false;
 	}
 
 #ifdef	__MINGW32__
@@ -152,14 +154,14 @@ int16_t	wchars_num;
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("loading dll failed\n"));
 	   status	-> setText ("incorrect dll?");
-	   return myFrame;
+	   return false;
 	}
 
 	if (!loadFunctions ()) {
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("loading functions failed\n"));
 	   status	-> setText ("could not load all functions");
-	   return myFrame;
+	   return false;
 	}
 
 //	apparently, the library is open, so record that
@@ -172,7 +174,7 @@ int16_t	wchars_num;
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("init failed\n"));
 	   status	-> setText ("could not init device");
-	   return myFrame;
+	   return false;
 	}
 
 	theBuffer	= new RingBuffer<DSPCOMPLEX>(1024 * 1024);
@@ -187,7 +189,7 @@ int16_t	wchars_num;
 	      QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("device not supported\n"));
 	      status	-> setText ("unsupported device");
-	      return myFrame;
+	      return false;
 
 	   case exthwSCdata:
 	      theSelector -> show ();
@@ -197,7 +199,7 @@ int16_t	wchars_num;
 	         QMessageBox::warning (NULL, tr ("sdr"),
 	                                     tr ("cannot handle soundcard"));
 	         status	-> setText ("soundcard problem");
-	         return myFrame;
+	         return false;
 	      }
 	      connect (theSelector, SIGNAL (activated (int)),
 	               this, SLOT (set_streamSelector (int)));
@@ -225,7 +227,7 @@ int16_t	wchars_num;
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("Opening hardware failed\n"));
 	   status	-> setText ("Opening hardware failed");
-	   return myFrame;
+	   return false;
 	}
 
 	status	-> setText ("It seems we are running");
@@ -234,7 +236,7 @@ int16_t	wchars_num;
 	ShowGUI ();
 	fprintf (stderr, "Hw open successful\n");
 	start ();
-	return myFrame;
+	return true;
 }
 
 	rigInterface::~rigInterface	(void) {

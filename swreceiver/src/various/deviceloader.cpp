@@ -30,9 +30,11 @@
 #include	<QSettings>
 #include	<QStringList>
 #include	<QComboBox>
+#include	<QMessageBox>
 #include	"deviceloader.h"
 #include	"no-rig.h"
-#
+//
+//	
 	deviceLoader::deviceLoader (QComboBox	*box,
 	                            QString 	searchPath,
 	                            QSettings *s) {
@@ -40,7 +42,7 @@
 	this	-> searchPath	= searchPath;
 	this	-> mySettings	= s;
 	theRig			= NULL;
-	rigWindow		= NULL;
+	rigFrame		= NULL;
 	myLoader		= NULL;
 	somethingLoaded		= false;
 }
@@ -55,26 +57,26 @@ void	deviceLoader::unloadDevice	(void) {
 	   fprintf (stderr, "Unloading NOTHING\n");
 	   return;
 	}
-//	first: ensure that previous incarnation(s) are terminated
-	if (theRig != NULL) 
-	   theRig	-> stopReader ();
 
-//	first: get rid of the frame of a previous decoder
-	if (rigWindow != NULL) {
-	   rigWindow	-> deleteLater ();
-	   rigWindow	= NULL;
+	if (theRig != NULL) {
+	   theRig	-> stopReader ();
+	   delete theRig;
+	   theRig	= NULL;
+	}
+//	get rid of the frame of a previous decoder
+	if (rigFrame != NULL) {
+	   delete rigFrame;
+	   rigFrame	= NULL;
 	}
 
-	if (theRig != NULL)
-	   delete theRig;
-	theRig	= NULL;
-//
+	fprintf (stderr, "starting unloading the loader\n");
 //	if there is an existing loader, try to unload
 	if ((myLoader != NULL) &&
 	    (myLoader -> isLoaded ())) {
 	   myLoader -> unload ();
 	   delete myLoader;
 	}
+
 	myLoader	= NULL;
 	somethingLoaded	= false;
 }
@@ -83,9 +85,12 @@ void	deviceLoader::unloadDevice	(void) {
 rigInterface	*deviceLoader::loadDevice (QString s, int32_t rate) {
 QObject	*plugin;
 QString	fileName;
+QFrame	*myFrame;
 
 	if (s == "no rig") {	// 
+	   fprintf (stderr, "going to load a no rig\n");
 	   theRig	= new_noRig ();
+	   fprintf (stderr, "loaded a no rig\n");
 	   goto L2;
 	}
 
@@ -106,7 +111,9 @@ QString	fileName;
 //	But, be careful. Having loaded the plugin does not imply
 //	that the plugin is working correctly. After all, it
 //	might have failed to load libraries for the device!!!
+	fprintf (stderr, "going to instantiate pluginloader\n");
 	myLoader	= new QPluginLoader (fileName);
+	fprintf (stderr, "going to instantiate plugin\n");
 	plugin		= myLoader	-> instance ();
 	if (plugin == NULL) {
 	   fprintf (stderr, "loading plugin for %s failed\n",
@@ -118,10 +125,20 @@ QString	fileName;
 	else
 	   theRig	=
 	      qobject_cast<rigInterface *> (plugin);
-L2:	rigWindow	= theRig	-> createPluginWindow (rate,
+L2:	rigFrame	= new QFrame (NULL);
+	bool success	= theRig	-> createPluginWindow (rate,
+	                                                       rigFrame,
 	                                                       mySettings);
-	rigWindow	-> show ();
-	somethingLoaded	= true;
+	if (success) {
+	   rigFrame	-> show ();
+	   somethingLoaded	= true;
+	}
+	else {
+	   QMessageBox::warning (NULL, tr ("sdr"),
+	                               tr ("Loading device failed\n"));
+	   delete rigFrame;
+	   rigFrame = NULL;
+	}
 	return theRig;
 }
 

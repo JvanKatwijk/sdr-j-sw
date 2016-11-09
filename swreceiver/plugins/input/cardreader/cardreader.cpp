@@ -29,10 +29,11 @@
 #include	<QSettings>
 #include	<QMessageBox>
 
-QWidget	*cardReader::createPluginWindow	(int32_t rate, QSettings *s) {
+bool	cardReader::createPluginWindow	(int32_t rate,
+	                                 QFrame *myFrame, QSettings *s) {
 	(void)rate;
+	this	-> myFrame	= myFrame;
 	(void)s;
-	myFrame		= new QFrame;
 	setupUi (myFrame);
 	inputRate	= rateSelector -> currentText (). toInt ();
 	gainValue	= gainSlider	-> value ();
@@ -45,7 +46,7 @@ QWidget	*cardReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	         this, SLOT (set_gainValue (int)));
 	connect (myReader, SIGNAL (samplesAvailable (int)),
 	         this, SIGNAL (samplesAvailable (int)));
-	return myFrame;
+	return true;
 }
 
 	rigInterface::~rigInterface	(void) {
@@ -57,7 +58,6 @@ QWidget	*cardReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	delete myReader;
 	myReader	= NULL;
 	readerOwner. unlock ();
-	delete myFrame;
 }
 
 int32_t	cardReader::getRate		(void) {

@@ -71,17 +71,20 @@ void	myGainChangeCallback (uint32_t	gRdB,
 	(void)cbContext;
 }
 
-QWidget	*sdrplay::createPluginWindow (int32_t rate, QSettings *s) {
+bool	sdrplay::createPluginWindow (int32_t rate,
+	                             QFrame *myFrame, QSettings *s) {
 int	err;
 float	ver;
 bool	success;
 
 	(void)rate;
+	this	-> myFrame		= myFrame;
 	this	-> sdrplaySettings	= s;
 	deviceOK		= false;
-	myFrame			= new QFrame;
 	setupUi (myFrame);
 	_I_Buffer		= NULL;
+	Handle			= NULL;
+	libraryLoaded		= false;
 	outputRate		= rateSelector -> currentText (). toInt ();
 	inputRate		= getInputRate (outputRate);
 	decimationFactor	= inputRate / outputRate;
@@ -102,7 +105,7 @@ ULONG APIkeyValue_length = 255;
           fprintf (stderr,
 	           "failed to locate API registry entry, error = %d\n",
 	           (int)GetLastError());
-	   return;
+	   return false;
 	}
 	RegQueryValueEx (APIkey,
 	                 (wchar_t *)L"Install_Dir",
@@ -115,12 +118,12 @@ ULONG APIkeyValue_length = 255;
 //	wchar_t *x = wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
 //	fprintf (stderr, "Length of APIkeyValue = %d\n", APIkeyValue_length);
 //	wprintf (L"API registry entry: %s\n", APIkeyValue);
-	RegCloseKey(APIkey);
+	RegCloseKey (APIkey);
 
 	Handle	= LoadLibrary (x);
 	if (Handle == NULL) {
 	  fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
-	  return;
+	  return false;
 	}
 #else
 //	Ǹote that under Ubuntu, the Mirics shared object does not seem to be
@@ -133,7 +136,7 @@ ULONG APIkeyValue_length = 255;
 
 	if (Handle == NULL) {
 	   fprintf (stderr, "error report %s\n", dlerror ());
-	   return NULL;
+	   return false;
 	}
 #endif
 	libraryLoaded	= true;
@@ -141,7 +144,7 @@ ULONG APIkeyValue_length = 255;
 	success = loadFunctions ();
 	if (!(success)) {
 	   fprintf (stderr, " No success in loading sdrplay lib\n");
-	   return NULL;
+	   return false;
 	}
 
 	err			= my_mir_sdr_ApiVersion (&ver);
@@ -176,7 +179,7 @@ ULONG APIkeyValue_length = 255;
 
 	deviceOK	= true;
 	agcMode		= 0;
-	return myFrame;
+	return true;
 }
 //
 //	just a dummy
@@ -195,6 +198,18 @@ ULONG APIkeyValue_length = 255;
 	
 	if (_I_Buffer != NULL)
 	   delete _I_Buffer;
+
+	if (libraryLoaded)
+#ifdef __MINGW32__
+	   FreeLibrary (Handle);
+#else
+	   dlclose (Handle);
+#endif
+	if (_I_Buffer != NULL)
+	   delete _I_Buffer;
+	if (d_filter != NULL)
+	   delete d_filter;
+	d_filter	= NULL;
 }
 
 int32_t	sdrplay::getRate	(void) {

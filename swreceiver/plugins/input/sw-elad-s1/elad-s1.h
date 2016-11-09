@@ -49,7 +49,7 @@ Q_PLUGIN_METADATA (IID "elad-s1")
 Q_INTERFACES (rigInterface)
 
 public:
-	QWidget	*createPluginWindow	(int32_t, QSettings *);
+	bool	createPluginWindow	(int32_t, QFrame *, QSettings *);
 		~elad_s1		(void);
 	void	setVFOFrequency		(int32_t);
 	int32_t	getVFOFrequency		(void);

@@ -38,7 +38,7 @@
 class	paReader;
 class	no_rig: public rigInterface {
 public:
-	QWidget	*createPluginWindow	(int32_t, QSettings *);
+	bool createPluginWindow	(int32_t, QFrame *, QSettings *);
 		~no_rig			(void);
 	int32_t	getRate			(void);
 	void	setVFOFrequency		(int32_t);
@@ -53,7 +53,6 @@ public:
 	void	exit			(void);
 	bool	isOK			(void);
 private:
-	QFrame		*myFrame;
 	int32_t		myFrequency;
 	int32_t		inputRate;
 	paReader	*myReader;

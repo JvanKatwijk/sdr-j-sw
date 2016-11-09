@@ -86,11 +86,12 @@ void	dll_driver::run (void) {
 #include	<QHBoxLayout>
 #include	<QLabel>
 
-QWidget	*dabStick::createPluginWindow (int32_t rate,
-	                               QSettings *s) {
+bool	dabStick::createPluginWindow (int32_t rate,
+	                              QFrame	*myFrame,
+	                              QSettings *s) {
 	(void)rate;
+	this	-> myFrame	= myFrame;
 	this	-> dabSettings	= s;
-	myFrame			= new QFrame;
 	setupUi	(myFrame);
 
 	outputRate		= rateSelector -> currentText (). toInt ();
@@ -100,7 +101,7 @@ QWidget	*dabStick::createPluginWindow (int32_t rate,
 	setupDevice (inputRate, outputRate);
 //	The device itself generates the data, so the reader is
 //	just doing nothing
-	return myFrame;
+	return true;
 }
 
 	rigInterface::~rigInterface	(void) {

@@ -119,7 +119,7 @@ LIBS	+= -lwinmm
 #}
 
 unix {
-DESTDIR		= ../linux-bin
+DESTDIR		= ../../systems/linux-bin
 INCLUDEPATH	+= /usr/include/qt5/qwt
 LIBS		+= -L/usr/lib64
 LIBS		+= -L/usr/lib/x86_84-linux-gnu

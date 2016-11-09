@@ -30,11 +30,13 @@
 #include	"filehulp.h"
 #include	"filereader.h"
 
-QWidget	*fileReader::createPluginWindow	(int32_t rate, QSettings *s) {
-	this	-> rate		= rate;
+bool	fileReader::createPluginWindow	(int32_t rate,
+	                                 QFrame  *myFrame,
+	                                 QSettings *s) {
+	(void)rate;
+	this	-> myFrame	= myFrame;
 	this	-> rate		= 96000;	// default
 	(void)s;
-	myFrame		= new QFrame;
 	setupUi		(myFrame);
 	myReader	= NULL;
 	nameofFile	-> setText (QString ("no file"));
@@ -45,7 +47,7 @@ QWidget	*fileReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	         this, SLOT (reset (void)));
 	connect (progressBar, SIGNAL (sliderMoved (int)),
 	         this, SLOT (handle_progressBar (int)));
-	return myFrame;
+	return true;
 }
 //
 //	just a dummy to have ~fileReader executed
@@ -56,7 +58,6 @@ QWidget	*fileReader::createPluginWindow	(int32_t rate, QSettings *s) {
 	if (myReader != NULL)
 	   delete myReader;
 	myReader	= NULL;
-	delete	myFrame;
 }
 
 int32_t	fileReader::getRate		(void) {

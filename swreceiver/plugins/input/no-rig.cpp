@@ -29,16 +29,17 @@
 #include	"pa-reader.h"
 #include	"no-rig.h"
 
-QWidget	*no_rig::createPluginWindow	(int32_t rate, QSettings *s) {
+	bool no_rig::createPluginWindow	(int32_t rate,
+	                                 QFrame * myFrame, QSettings *s) {
 	inputRate	= rate;
 	(void)s;
-	myFrame		= new QFrame;
 	QLabel	*myLabel	= new QLabel (myFrame);
 	myLabel	-> setText ("NO RIG");
 	QHBoxLayout *myLayout	= new QHBoxLayout (myFrame);
 	myLayout	-> addWidget (myLabel);
 	myFrame		-> setLayout (myLayout);
-	return myFrame;
+	fprintf (stderr, "creating a no_rig\n");
+	return true;
 }
 
 	rigInterface::~rigInterface	(void) {
@@ -46,7 +47,6 @@ QWidget	*no_rig::createPluginWindow	(int32_t rate, QSettings *s) {
 
 	no_rig::~no_rig			(void) {
 	fprintf (stderr, "\"no-rig\" will be deleted now\n");
-	delete	myFrame;
 }
 
 int32_t	no_rig::getRate			(void) {

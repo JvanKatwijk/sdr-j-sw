@@ -35,11 +35,13 @@
 //
 #define	DEFAULT_FREQUENCY	(Khz (14070))
 
-QWidget	*remoteDabstick::createPluginWindow (int32_t rate, QSettings *s) {
+bool	remoteDabstick::createPluginWindow (int32_t	rate,
+	                                    QFrame	*myFrame,
+	                                    QSettings	*s) {
 	(void)rate;		// not used here (starting at 6.0)
+	this	-> myFrame	= myFrame;
 	remoteSettings		= s;
-	theFrame		= new QFrame;
-	setupUi (theFrame);
+	setupUi (myFrame);
 
     //	setting the defaults and constants
 	vfoOffset	= 0;
@@ -68,7 +70,7 @@ QWidget	*remoteDabstick::createPluginWindow (int32_t rate, QSettings *s) {
 	connect (checkAgc, SIGNAL (stateChanged (int)),
 	         this, SLOT (setAgc (int)));
 	state	-> setText ("waiting to start");
-	return theFrame;
+	return true;
 }
 //
 //	just a dummy, needed since the rigInterface is abstract
@@ -89,10 +91,10 @@ QWidget	*remoteDabstick::createPluginWindow (int32_t rate, QSettings *s) {
 	   datagram [0] = 0125;
 	   toServer. write (datagram. data (), datagram. size ());
 	   toServer. waitForBytesWritten ();
+	   toServer. close ();
 	}
 	remoteSettings -> setValue ("remote-gain", theGain);
 	remoteSettings -> endGroup ();
-	toServer. close ();
 	delete	_I_Buffer;
 }
 //
@@ -142,7 +144,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	            this, SLOT (setConnection (void)));
 	toServer. connectToHost (serverAddress, basePort);
 	if (!toServer. waitForConnected (2000)) {
-	   QMessageBox::warning (theFrame, tr ("sdr"),
+	   QMessageBox::warning (myFrame, tr ("sdr"),
 	                                   tr ("connection failed\n"));
 	   return;
 	}
@@ -151,7 +153,7 @@ QHostAddress theAddress	= QHostAddress (s);
 //	The streamer will provide us with the raw data
 	streamer. connectToHost (serverAddress, basePort + 10);
 	if (!streamer. waitForConnected (2000)) {
-	   QMessageBox::warning (theFrame, tr ("sdr"),
+	   QMessageBox::warning (myFrame, tr ("sdr"),
 	                                   tr ("setting up stream failed\n"));
 	   toServer. disconnectFromHost ();
 	   return;

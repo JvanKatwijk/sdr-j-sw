@@ -59,7 +59,7 @@ private:
 	QSettings	*mySettings;
 
 	QHBoxLayout	*myLayout;
-	QWidget		*rigWindow;
+	QFrame		*rigFrame;
 	rigInterface	*theRig;
 	QPluginLoader	*myLoader;
 	QComboBox	*box;
