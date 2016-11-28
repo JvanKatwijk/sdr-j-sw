@@ -101,7 +101,7 @@ int32_t	k;
 	}
 //
 //	defaults
-	this	-> rasterSize	= 50;
+	this	-> rasterSize	= 100;
 	this	-> bitDepth	= 24;	// effective from the EMU 202
 //
 //	workingrate - if set in the ini file - should match a value
@@ -162,6 +162,7 @@ int32_t	k;
 	QString Version		= QString ("sdrJ-SW-V");
 	Version. append (QString(CURRENT_VERSION));
 	systemindicator		-> setText (Version);
+	systemindicator		-> setToolTip ("The sdr-j software is subject to the GPL V2 license\nComments and suggestions to: J.vanKatwijk\@gmail.com");
 	lcd_SampleRate		-> display (inputRate);
 	ClearPanel		();
 /*
@@ -1169,11 +1170,8 @@ void	RadioInterface::set_deviceSelect (const QString &s) {
 	         this, SLOT (sampleHandler (int)));
 //
 	set_inputRate (theDevice	-> getRate ());
-	fprintf (stderr, "a1\n");
 	hfScope		-> setBitDepth	(theDevice -> bitDepth ());
-	fprintf (stderr, "a2\n");
 	lfScope		-> setBitDepth	(theDevice -> bitDepth ());
-	fprintf (stderr, "a3\n");
 }
 //
 /////////////////////////////////////////////////////////////////////////

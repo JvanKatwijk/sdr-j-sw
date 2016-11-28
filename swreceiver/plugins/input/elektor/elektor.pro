@@ -27,7 +27,7 @@ LIBS	  	+=  -lftdi1
 }
 
 win32 {
-DESTDIR     = ../../../../../../windows-bin-sw/input-plugins
+DESTDIR     = ../../../../../../windows-bin/input-plugins
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include/qwt

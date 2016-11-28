@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>568</width>
-    <height>166</height>
+    <height>137</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>661</width>
-     <height>161</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -31,7 +31,7 @@
    <widget class="QLCDNumber" name="metricsDisplay">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>100</x>
       <y>20</y>
       <width>64</width>
       <height>23</height>
@@ -44,8 +44,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>130</y>
+      <x>430</x>
+      <y>20</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -57,7 +57,7 @@
    <widget class="QComboBox" name="hell_modeSelector">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>20</y>
       <width>85</width>
       <height>21</height>
@@ -110,7 +110,7 @@
       <x>30</x>
       <y>60</y>
       <width>521</width>
-      <height>71</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="widgetResizable">
@@ -121,8 +121,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>519</width>
-       <height>69</height>
+       <width>517</width>
+       <height>57</height>
       </rect>
      </property>
     </widget>
@@ -130,7 +130,7 @@
    <widget class="QPushButton" name="hell_switchBlackback">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>160</x>
       <y>20</y>
       <width>95</width>
       <height>21</height>
@@ -143,7 +143,7 @@
    <widget class="QPushButton" name="hell_switchWidth">
     <property name="geometry">
      <rect>
-      <x>300</x>
+      <x>260</x>
       <y>20</y>
       <width>95</width>
       <height>21</height>
@@ -156,7 +156,7 @@
    <widget class="QSpinBox" name="hell_rateCorrector">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>360</x>
       <y>20</y>
       <width>59</width>
       <height>21</height>

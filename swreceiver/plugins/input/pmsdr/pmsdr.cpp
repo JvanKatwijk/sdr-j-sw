@@ -112,9 +112,6 @@ bool	pmsdr::createPluginWindow (int32_t	rate,
 	return true;
 }
 
-	rigInterface::~rigInterface	(void) {
-}
-
 	pmsdr::~pmsdr (void) {
 	if (pmsdrDevice != NULL) {
 	   store_hwlo (LOfreq);

@@ -80,11 +80,6 @@ bool	remote::createPluginWindow (int32_t rate,
 	return true;
 }
 //
-//	just a dummy, needed since the rigInterface is abstract
-//	and we need to terminate properly
-	rigInterface::~rigInterface	(void) {
-}
-
 	remote::~remote	(void) {
 	remoteSettings ->  beginGroup ("remote-sdrPlay");
 	if (connected) {		// close previous connection

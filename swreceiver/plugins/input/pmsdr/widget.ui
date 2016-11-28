@@ -37,6 +37,9 @@
       <height>31</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Buttons for selecting the bandfilter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>1</string>
     </property>
@@ -102,6 +105,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto band select. If this is active, a the band, appropriate for the selected frequency will be chosen automatically. Pushing the button when autoselection is on, or selecting one of the bands, turns off auto band selection.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>auto</string>
     </property>
@@ -127,6 +133,9 @@
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter range. The range of the selected filter will be displayed here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::Panel</enum>
@@ -202,6 +211,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Offset selection. If you have e.g. a downconverter, converting higher frequencies to lower frequencies, you can specify the amount of downconversion. In the SW software you can then use the original frequencies.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="minimum">
      <number>-100000</number>
     </property>
@@ -218,6 +230,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Card selector. Note that the PMsdr needs a cardreader as an AD converter. Select the device here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
    </widget>
    <widget class="QComboBox" name="rateSelector">
     <property name="geometry">
@@ -227,6 +242,9 @@
       <width>83</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected rate for the cardreader. Note that changing the rate requires restarting the SW by pushing the Start button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">

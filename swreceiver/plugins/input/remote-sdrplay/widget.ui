@@ -50,6 +50,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ppm control. Choose here the values for the correction of the oscillator in the device, expressed in Parts per Million.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="minimum">
      <number>-99</number>
     </property>
@@ -65,6 +68,9 @@
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Output samplerate, i.e. the samplerate with which the samples are send to the SW software. Note that the handler will determine an appropriate samplerate for the device, do filtering and decimation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -119,6 +125,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The connect button indicates that you are willing to give an IP address. Note that the connection will only be made after terminating the IP address with a return.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>connect</string>
     </property>
@@ -131,6 +140,9 @@
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pushing the Disconnect button will - not surprising - terminate the connection.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>disconnect</string>
@@ -163,6 +175,9 @@
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The IP address of the server. Note that the connection will only be made after terminating the IP address with a return.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
    </widget>
    <widget class="QSlider" name="gainSlider">
     <property name="geometry">
@@ -172,6 +187,9 @@
       <width>18</width>
       <height>160</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gain slider. Note that the higher the value the more attenuation is applied, so a better name is an attenuation slider.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>
@@ -201,6 +219,9 @@
       <width>51</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Agc setting for the device at the server side.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>agc</string>

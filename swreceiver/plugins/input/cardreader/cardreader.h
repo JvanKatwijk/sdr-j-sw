@@ -40,25 +40,23 @@
 class	paReader;
 class	cardReader: public rigInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "cardReader")
-#endif
 Q_INTERFACES (rigInterface)
 public:
 	bool createPluginWindow	(int32_t, QFrame *, QSettings *);
 		~cardReader		(void);
-	int32_t	getRate			(void);
-	void	setVFOFrequency		(int32_t);
-	int32_t	getVFOFrequency		(void);
-	bool	legalFrequency		(int32_t);
-	int32_t	defaultFrequency	(void);
-	bool	restartReader		(void);
-	void	stopReader		(void);
-	int32_t	Samples			(void);
-	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t);
-	int16_t	bitDepth		(void);
-	void	exit			(void);
-	bool	isOK			(void);
+	int32_t	getRate			(void)	Q_DECL_OVERRIDE;
+	void	setVFOFrequency		(int32_t)	Q_DECL_OVERRIDE;
+	int32_t	getVFOFrequency		(void)	Q_DECL_OVERRIDE;
+	bool	legalFrequency		(int32_t)	Q_DECL_OVERRIDE;
+	int32_t	defaultFrequency	(void)	Q_DECL_OVERRIDE;
+	bool	restartReader		(void)	Q_DECL_OVERRIDE;
+	void	stopReader		(void)	Q_DECL_OVERRIDE;
+	int32_t	Samples			(void)	Q_DECL_OVERRIDE;
+	int32_t	getSamples		(DSPCOMPLEX *, int32_t, uint8_t)	Q_DECL_OVERRIDE;
+	int16_t	bitDepth		(void)	Q_DECL_OVERRIDE;
+	void	exit			(void)	Q_DECL_OVERRIDE;
+	bool	isOK			(void)	Q_DECL_OVERRIDE;
 private:
 	QFrame		*myFrame;
 	int32_t		myFrequency;

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>jan</author>
- <class>SDR</class>
- <widget class="QDialog" name="SDR">
+ <class>sw_software</class>
+ <widget class="QDialog" name="sw_software">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>882</width>
-    <height>646</height>
+    <height>652</height>
    </rect>
   </property>
   <property name="palette">
@@ -436,6 +436,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:400;&quot;&gt;Selecting a frequency expressed in Hz is ny terminating a sequence of typed digits by pushing on the Hz button.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>Hz</string>
    </property>
@@ -462,10 +465,10 @@
   <widget class="QSlider" name="LFspectrumamplitudeSlider">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>220</y>
+     <x>240</x>
+     <y>230</y>
      <width>20</width>
-     <height>121</height>
+     <height>151</height>
     </rect>
    </property>
    <property name="palette">
@@ -528,7 +531,7 @@
    <property name="geometry">
     <rect>
      <x>710</x>
-     <y>360</y>
+     <y>430</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -538,6 +541,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Change the spectrumview into a waterfall or back. This applies to the decoder window.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -618,9 +624,9 @@
   <widget class="QComboBox" name="streamOutSelector">
    <property name="geometry">
     <rect>
-     <x>610</x>
-     <y>420</y>
-     <width>261</width>
+     <x>20</x>
+     <y>410</y>
+     <width>221</width>
      <height>31</height>
     </rect>
    </property>
@@ -632,6 +638,9 @@
      <bold>false</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-style:normal;&quot;&gt;Select the outputdevice.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <item>
     <property name="text">
      <string>select output</string>
@@ -641,8 +650,8 @@
   <widget class="QLCDNumber" name="IQBalanceDisplay">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>370</y>
+     <x>10</x>
+     <y>250</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -731,9 +740,9 @@
    <property name="geometry">
     <rect>
      <x>790</x>
-     <y>380</y>
+     <y>450</y>
      <width>81</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="palette">
@@ -828,6 +837,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:400;&quot;&gt;Selecting a frequency, expressed in kHz, is by terminating a sequence of types numbers by pushing on the kHz button.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>khz</string>
    </property>
@@ -840,6 +852,9 @@
      <width>841</width>
      <height>231</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HF Spectrum. The spectrum of the signal, as delivered by the device, is depicted here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="autoFillBackground">
     <bool>false</bool>
@@ -866,11 +881,14 @@
   <widget class="QwtPlot" name="lfscope">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>260</x>
      <y>230</y>
-     <width>841</width>
-     <height>131</height>
+     <width>611</width>
+     <height>201</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The decoder window. The signal with a decimated samplerate is passed on to the decoder. The spectrum of that signal is shown here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::Panel</enum>
@@ -895,7 +913,7 @@
    <property name="geometry">
     <rect>
      <x>590</x>
-     <y>360</y>
+     <y>430</y>
      <width>121</width>
      <height>21</height>
     </rect>
@@ -905,6 +923,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;fallChange the spectrumview into a waterfall or back. This applies to the spectrum in the main window.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -921,9 +942,9 @@
    <property name="geometry">
     <rect>
      <x>740</x>
-     <y>380</y>
+     <y>450</y>
      <width>51</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="palette">
@@ -969,6 +990,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:400;&quot;&gt;Guess what this button is doing.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="autoFillBackground">
     <bool>true</bool>
    </property>
@@ -980,7 +1004,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>400</y>
+     <y>270</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -1072,7 +1096,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>430</y>
+     <y>290</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -1191,9 +1215,9 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>450</y>
+     <y>480</y>
      <width>631</width>
-     <height>191</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -1210,9 +1234,9 @@
    <property name="geometry">
     <rect>
      <x>610</x>
-     <y>380</y>
+     <y>450</y>
      <width>61</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -1220,6 +1244,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Shift the window such that the selected frequency - i.e. where the red needle stands - is in the middle of the right half of the window.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>middle</string>
@@ -1229,7 +1256,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>360</y>
+     <y>430</y>
      <width>81</width>
      <height>21</height>
     </rect>
@@ -1239,6 +1266,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Select I and Q. Select both, one of them or both interchanged.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -1270,10 +1300,13 @@
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>370</y>
+     <y>250</y>
      <width>171</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;balance slider, control the balance between the I and Q part of the incoming samples.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="minimum">
     <number>-40</number>
@@ -1289,10 +1322,13 @@
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>400</y>
+     <y>270</y>
      <width>171</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bandwidth slider, control the bandwidth for the decoding. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="maximum">
     <number>1000</number>
@@ -1304,11 +1340,14 @@
   <widget class="QSlider" name="bandoffsetSlider">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>430</y>
-     <width>181</width>
+     <x>50</x>
+     <y>290</y>
+     <width>171</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bandoffset slider. Control the middle of the selected band for decoding. As an example, selecting USB as bandwidth sets the bandwidth to 2500 Hz and the bandoffset to 1250.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="minimum">
     <number>-500</number>
@@ -1324,10 +1363,13 @@
    <property name="geometry">
     <rect>
      <x>540</x>
-     <y>380</y>
+     <y>450</y>
      <width>71</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Notch filter on or off.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>notch</string>
@@ -1337,9 +1379,9 @@
    <property name="geometry">
     <rect>
      <x>670</x>
-     <y>380</y>
+     <y>450</y>
      <width>71</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -1347,6 +1389,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Predefined bandwidth settings.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -1392,21 +1437,27 @@
   <widget class="QComboBox" name="decoderSelectButton">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>420</y>
+     <x>20</x>
+     <y>350</y>
      <width>121</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder select. On program start up, this combobox is filled with the names of the decoders that are available.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QComboBox" name="rigSelectButton">
    <property name="geometry">
     <rect>
-     <x>500</x>
-     <y>420</y>
-     <width>111</width>
+     <x>20</x>
+     <y>380</y>
+     <width>121</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device select. On program startup this combobox is filled with the names of the device handlers that are available.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="lcdFrequency">
@@ -1543,7 +1594,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>380</y>
+     <y>450</y>
      <width>81</width>
      <height>41</height>
     </rect>
@@ -1552,6 +1603,9 @@
     <font>
      <pointsize>12</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Signal Peak Indicator.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="digitCount">
     <number>2</number>
@@ -1563,8 +1617,8 @@
   <widget class="QLCDNumber" name="lcd_SampleRate">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>460</y>
+     <x>10</x>
+     <y>450</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -1652,9 +1706,9 @@
   <widget class="QLabel" name="timeDisplay">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>400</y>
-     <width>181</width>
+     <x>10</x>
+     <y>230</y>
+     <width>221</width>
      <height>21</height>
     </rect>
    </property>
@@ -1675,7 +1729,7 @@
    <property name="geometry">
     <rect>
      <x>820</x>
-     <y>360</y>
+     <y>430</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -1688,6 +1742,9 @@
      <bold>true</bold>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;Pause the execution. Push again to restart.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string>PAUSE</string>
    </property>
@@ -1695,11 +1752,14 @@
   <widget class="QPushButton" name="HFdumpButton">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>140</x>
      <y>380</y>
      <width>71</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HF dump. Save the incoming samples in a file. Pushing the button will cause a menu to appear with which a file(name) can be selected where the samples will be stored. Pushing the button while samples are being written onto a file, will cause the dump to stop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>hf dump</string>
@@ -1708,16 +1768,19 @@
   <widget class="QPushButton" name="LFdumpButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>380</y>
+     <x>140</x>
+     <y>350</y>
      <width>71</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <pointsize>10</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;LF dump. Select this button if you want to save your audio output. Pushing the button causes a menu to appear with which a file(name) can be selected. Pushing the button when audio is being written into a file, causes the dump to stop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>lf dump</string>
@@ -1726,11 +1789,14 @@
   <widget class="QSpinBox" name="mouseIncrementSlider">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>420</y>
+     <x>20</x>
+     <y>320</y>
      <width>71</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mouse increment. Increment (or decrement) the selected frequency with the amount of Hz indicated here, per click on the mousewheel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="keyboardTracking">
     <bool>false</bool>
@@ -1745,9 +1811,9 @@
   <widget class="QComboBox" name="workingrateSelect">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>420</y>
-     <width>71</width>
+     <x>90</x>
+     <y>320</y>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -1755,6 +1821,9 @@
     <font>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Select the IF, i.e. the samplerate for the decoding.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -1786,7 +1855,7 @@
    <property name="geometry">
     <rect>
      <x>490</x>
-     <y>360</y>
+     <y>430</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -1796,6 +1865,9 @@
      <family>Andale Mono</family>
      <pointsize>8</pointsize>
     </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Select the Agc.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <item>
     <property name="text">
@@ -1816,11 +1888,14 @@
   <widget class="QSpinBox" name="agc_ThresholdSlider">
    <property name="geometry">
     <rect>
-     <x>370</x>
-     <y>360</y>
-     <width>71</width>
+     <x>320</x>
+     <y>430</y>
+     <width>111</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Agc setting. Set the signal level where the Agc should be active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="minimum">
     <number>-150</number>
@@ -1836,7 +1911,7 @@
    <property name="geometry">
     <rect>
      <x>440</x>
-     <y>360</y>
+     <y>430</y>
      <width>51</width>
      <height>21</height>
     </rect>
@@ -1905,6 +1980,9 @@
      </disabled>
     </palette>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Agc gain. Displays the gain resulting from setting the Agc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
@@ -1927,11 +2005,14 @@
   <widget class="QSpinBox" name="symbol_shifter">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>360</y>
-     <width>51</width>
+     <x>360</x>
+     <y>450</y>
+     <width>71</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Symbol shifter. In some cases it is advised to create I/Q samples where the I or the Q is delayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="keyboardTracking">
     <bool>false</bool>
@@ -1947,10 +2028,13 @@
    <property name="geometry">
     <rect>
      <x>460</x>
-     <y>380</y>
+     <y>450</y>
      <width>81</width>
      <height>21</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency on which the notch filter - if activated - is set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>166</height>
+    <height>148</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>661</width>
-     <height>161</height>
+     <height>141</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -59,7 +59,7 @@
      <rect>
       <x>20</x>
       <y>30</y>
-      <width>85</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -99,7 +99,7 @@
      <rect>
       <x>20</x>
       <y>50</y>
-      <width>85</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -119,7 +119,7 @@
      <rect>
       <x>20</x>
       <y>70</y>
-      <width>85</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -139,7 +139,7 @@
      <rect>
       <x>20</x>
       <y>90</y>
-      <width>81</width>
+      <width>111</width>
       <height>21</height>
      </rect>
     </property>
@@ -147,8 +147,8 @@
    <widget class="QLabel" name="dominotextBox">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>130</y>
+      <x>20</x>
+      <y>110</y>
       <width>571</width>
       <height>21</height>
      </rect>
@@ -164,7 +164,7 @@
     <property name="geometry">
      <rect>
       <x>380</x>
-      <y>90</y>
+      <y>60</y>
       <width>201</width>
       <height>21</height>
      </rect>

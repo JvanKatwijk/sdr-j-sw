@@ -81,6 +81,7 @@ SOURCES += ./src/main.cpp \
 	   ./src/filters/notch-filters.cpp \
            ./src/scopes-qwt6/fft-scope.cpp \
 	   ./src/scopes-qwt6/scope.cpp \
+           ./plugins/input/rig-interface.cpp \
            ./plugins/input/pa-reader.cpp \	
 	   ./plugins/input/no-rig.cpp
 
@@ -100,33 +101,15 @@ LIBS	+= -lole32
 LIBS	+= -lwinmm
 }
 
-#It is - obviously - possible to generate a 64 bits version,
-#However, the dll handler will not work anymore
-#for 64 bits windows, choose
-#win32 {
-#DESTDIR	= ../../windows64-bin
-## includes in mingw differ from the includes in fedora linux
-#INCLUDEPATH += /usr/x86-w64-mingw32/sys-root/mingw/include
-#INCLUDEPATH += /usr/x86-w64-mingw32/sys-root/mingw/include/qwt
-#LIBS	+= -lfftw3f-3
-#LIBS	+= -lportaudio
-#LIBS	+= -lqwt
-#LIBS	+= -lusb-1.0
-#LIBS	+= -lsndfile
-#LIBS	+= -lsamplerate
-#LIBS	+= -lole32
-#LIBS	+= -lwinmm
-#}
-
 unix {
-DESTDIR		= ../../systems/linux-bin
+DESTDIR		= ../../linux-bin
 INCLUDEPATH	+= /usr/include/qt5/qwt
 LIBS		+= -L/usr/lib64
-LIBS		+= -L/usr/lib/x86_84-linux-gnu
+#LIBS		+= -L/usr/lib/x86_84-linux-gnu
 LIBS		+= -L/lib64
 # ubuntu 15.04
 #LIBS		+= -lqwt -lrt -lsndfile -lsamplerate -lportaudio -lusb-1.0 -lfftw3f 
-# fedora 21
+# fedora 25
 LIBS		+= -lqwt-qt5 -lrt -lsndfile -lsamplerate -lportaudio -lusb-1.0 -lfftw3f 
 }
 

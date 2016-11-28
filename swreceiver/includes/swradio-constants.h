@@ -28,7 +28,7 @@
 #ifndef __SWRADIO_CONSTANTS
 #define	__SWRADIO_CONSTANTS
 
-#define	QT_STATIC_CONST
+//#define	QT_STATIC_CONST
 
 #include	<math.h>
 #include	<complex>
@@ -41,17 +41,16 @@ using namespace std;
 #include	<malloc.h>
 
 #ifdef __MINGW32__
-#define	CURRENT_VERSION		"7.2:x32-Windows"
+#define	CURRENT_VERSION		"7.25:x32-Windows"
 #include	"windows.h"
 #else
 #include	"alloca.h"
-#define	CURRENT_VERSION		"7.2:x32-Linux"
+#define	CURRENT_VERSION		"7.25:x32-Linux"
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 #endif
 
-/*
- */
+
 typedef	float DSPFLOAT;
 
 typedef	std::complex<DSPFLOAT>	DSPCOMPLEX;
@@ -60,8 +59,6 @@ typedef	std::complex<DSPFLOAT>	DSPCOMPLEX;
 #define	BASE		getenv ("HOME");
 #define	DEFAULT_INI	".jsdr-sw.ini"
 
-/*
- */
 #define	MINIMUM(x, y)	((x) < (y) ? x : y)
 #define	MAXIMUM(x, y)	((x) > (y) ? x : y)
 
@@ -74,7 +71,7 @@ typedef	std::complex<DSPFLOAT>	DSPCOMPLEX;
 #define	KHz(x)	(Hz (x) * 1000)
 #define	Mhz(x)	(KHz (x) * 1000)
 #define	MHz(x)	(KHz (x) * 1000)
-//
+
 //	common, simple but useful, functions
 static inline
 bool	isIndeterminate (DSPFLOAT x) {

@@ -50,10 +50,6 @@ bool	fileReader::createPluginWindow	(int32_t rate,
 	return true;
 }
 //
-//	just a dummy to have ~fileReader executed
-	rigInterface::~rigInterface	(void) {
-}
-
 	fileReader::~fileReader	(void) {
 	if (myReader != NULL)
 	   delete myReader;

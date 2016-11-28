@@ -35,7 +35,7 @@
 #include	"fax-image.h"
 #include	"oscillator.h"
 
-#define		FAX_IF		1900
+#define		FAX_IF		1000
 #define		FILTER_DEFAULT	21
 
 faxParams _faxParams [] = {
@@ -113,12 +113,11 @@ faxParams *myfaxParameters 	=  getFaxParams (iocSetter -> currentText ());
 	numberofColums		= M_PI * fax_IOC;
 	faxColor		= myfaxParameters -> color ?
 	                                    FAX_COLOR: FAX_BLACKWHITE;
-	carrier			= FAX_IF;
+	carrier			= FAX_IF;	// default
 	phaseInvers		= false;
 	lastRow			= 100;	// will change
 	theImage		= new faxImage	(numberofColums, lastRow);
 	rawData. resize (1024 * 1024);
-	setDetectorMarker	(carrier);
 //
 	pointNeeded		= false;
 	faxState		= APTSTART;
@@ -139,6 +138,7 @@ faxParams *myfaxParameters 	=  getFaxParams (iocSetter -> currentText ());
 	fax_setstopFreq		(stopSetter		-> value ());
 	fax_setCarrier		(carrierSetter		-> value ());
 	fax_setDeviation	(deviationSetter	-> value ());
+	setDetectorMarker	(carrier);
 	showState	-> setText (QString ("APTSTART"));
 	theImage	-> clear	();
 	fax_displayImage	(theImage -> getImage ());

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>594</width>
-    <height>166</height>
+    <height>132</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>661</width>
-     <height>161</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -44,8 +44,8 @@
    <widget class="QLabel" name="mfsktextBox">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>130</y>
+      <x>10</x>
+      <y>100</y>
       <width>581</width>
       <height>21</height>
      </rect>
@@ -61,7 +61,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>100</y>
+      <y>70</y>
       <width>59</width>
       <height>21</height>
      </rect>

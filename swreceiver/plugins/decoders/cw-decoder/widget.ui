@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>599</width>
-    <height>169</height>
+    <height>147</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,10 +32,13 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
+      <y>90</y>
       <width>101</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;dots&amp;quot;, &amp;quot;dashes&amp;quot; and &amp;quot;spaces&amp;quot; in the current word.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
@@ -51,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>110</y>
       <width>571</width>
       <height>21</height>
      </rect>
@@ -72,6 +75,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Squelch level, signal strength below this level is assumed to be noise.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="value">
      <number>5</number>
     </property>
@@ -84,6 +90,9 @@
       <width>59</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Word length guess. Used to guess the length of &amp;quot;dots&amp;quot;, &amp;quot;dashed&amp;quot; and &amp;quot;spaces&amp;quot;. &lt;/p&gt;&lt;p&gt;Most amateur transmissions are synchronized on with the default selection of 30.&lt;/p&gt;&lt;p&gt;Fast transmissions - noted by the fact that everything becomes a &amp;quot;dot&amp;quot;, need a higher setting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="value">
      <number>30</number>
@@ -98,6 +107,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Order of the filter that is used to isolate the selected signal from the surrounding &amp;quot;noise&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="value">
      <number>12</number>
     </property>
@@ -110,6 +122,9 @@
       <width>64</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guess of the wordlength.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -150,6 +165,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Average noise Level.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -162,6 +180,9 @@
       <width>64</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Signal peak level.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -176,6 +197,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guess of the duration of a &amp;quot;space&amp;quot; (in samples).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -188,6 +212,9 @@
       <width>64</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Guess of the length of &amp;quot;dots&amp;quot; (in samples).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>

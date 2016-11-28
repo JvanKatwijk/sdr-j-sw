@@ -91,13 +91,16 @@ char		*defaultInit	= (char *)alloca (1024 * sizeof (char));
  *	... and the settings of the "environment"
  */
 	initFilename = defaultInit;
-fprintf (stderr, "The init staat %s\n", initFilename);
 	ISettings	= new QSettings (initFilename, QSettings::IniFormat);
 /*
  *	Before we connect control to the gui, we have to
  *	instantiate
  */
+//	qputenv("QT_DEBUG_PLUGINS", QByteArray("1"));
 	QApplication a (argc, argv);
+#if QT_VERSION >= 0x050600
+	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
+#endif
 	MyRadioInterface = new RadioInterface (ISettings,
 	                                       CardRate,
 	                                       OutputRate);

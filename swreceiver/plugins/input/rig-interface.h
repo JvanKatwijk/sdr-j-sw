@@ -9,29 +9,28 @@
 #include	<QtPlugin>
 #include	<QFrame>
 #include	<QThread>
-#include	<QObject>
 #include	"swradio-constants.h"
 
-QT_BEGIN_NAMESPACE
 class		QSettings;
 class 		QObject;
-class		QWidget;
-QT_END_NAMESPACE
-//
+
+//#include	<complex>
+//typedef std::complex<float>  DSPCOMPLEX;
+
 //	Rig implementations should implement ALL of the
 //	abstract functions of this interface
-class	rigInterface : public QThread {
+class	rigInterface : public QThread  {
 Q_OBJECT
 public:
-virtual	bool createPluginWindow	(int32_t, QFrame *, QSettings *)	= 0;
-virtual		~rigInterface		(void)		= 0;
+virtual		bool createPluginWindow	(int32_t, QFrame *, QSettings *)	= 0;
+virtual		~rigInterface		(void) {}
 
 virtual	int32_t	getRate			(void)		= 0;
 virtual	void	setVFOFrequency		(int32_t)	= 0;
 virtual	int32_t	getVFOFrequency		(void)		= 0;
 virtual	bool	legalFrequency		(int32_t)	= 0;
 virtual	int32_t	defaultFrequency	(void)		= 0;
-
+//
 virtual	bool	restartReader		(void)		= 0;
 virtual	void	stopReader		(void)		= 0;
 virtual	int32_t	Samples			(void)		= 0;
@@ -53,8 +52,6 @@ signals:
 	void	samplesAvailable	(int);
 };
 
-QT_BEGIN_NAMESPACE
 Q_DECLARE_INTERFACE(rigInterface, "sw radio/1.0")
-QT_END_NAMESPACE
 #endif
 

@@ -58,7 +58,7 @@ class	attenuator;
  */
 
 class RadioInterface: public QDialog,
-		      private Ui_SDR {
+		      private Ui_sw_software {
 Q_OBJECT
 public:
 	enum Decoder {

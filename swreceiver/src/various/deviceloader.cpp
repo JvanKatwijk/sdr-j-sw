@@ -68,8 +68,6 @@ void	deviceLoader::unloadDevice	(void) {
 	   delete rigFrame;
 	   rigFrame	= NULL;
 	}
-
-	fprintf (stderr, "starting unloading the loader\n");
 //	if there is an existing loader, try to unload
 	if ((myLoader != NULL) &&
 	    (myLoader -> isLoaded ())) {
@@ -111,9 +109,9 @@ QFrame	*myFrame;
 //	But, be careful. Having loaded the plugin does not imply
 //	that the plugin is working correctly. After all, it
 //	might have failed to load libraries for the device!!!
-	fprintf (stderr, "going to instantiate pluginloader\n");
 	myLoader	= new QPluginLoader (fileName);
-	fprintf (stderr, "going to instantiate plugin\n");
+	if (!myLoader -> isLoaded ())
+	   fprintf (stderr, "Loading failed\n");
 	plugin		= myLoader	-> instance ();
 	if (plugin == NULL) {
 	   fprintf (stderr, "loading plugin for %s failed\n",

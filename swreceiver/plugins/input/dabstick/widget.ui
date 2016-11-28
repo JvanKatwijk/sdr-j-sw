@@ -32,7 +32,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>130</y>
       <width>67</width>
       <height>21</height>
      </rect>
@@ -45,10 +45,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>30</y>
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the ppm.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="minimum">
      <number>-100</number>
@@ -61,10 +64,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>50</y>
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the frequency offset expressed in kHz. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="maximum">
      <number>1000000</number>
@@ -74,10 +80,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
+      <y>70</y>
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the small part of the frequency offset, expressed in Hz. Note that the total offset is the sum of the kHz offset and the Hz offset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="maximum">
      <number>999</number>
@@ -86,8 +95,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>60</y>
+      <x>100</x>
+      <y>70</y>
       <width>31</width>
       <height>21</height>
      </rect>
@@ -100,7 +109,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>40</y>
+      <y>50</y>
       <width>31</width>
       <height>21</height>
      </rect>
@@ -113,7 +122,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>20</y>
+      <y>30</y>
       <width>31</width>
       <height>21</height>
      </rect>
@@ -139,10 +148,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>80</y>
+      <y>90</y>
       <width>101</width>
       <height>29</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Output frequency. Note that setting the output frequency to a different value requires pushing the startbutton of the SW software to continue.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -179,6 +191,9 @@
       <height>26</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch the Agc on or off.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>agc</string>
     </property>
@@ -207,6 +222,9 @@
       <width>20</width>
       <height>141</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gain slider for the dabstick.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>

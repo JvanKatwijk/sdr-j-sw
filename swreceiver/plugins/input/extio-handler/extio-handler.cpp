@@ -239,9 +239,6 @@ int16_t	wchars_num;
 	return true;
 }
 
-	rigInterface::~rigInterface	(void) {
-}
-
 	ExtioHandler::~ExtioHandler	(void) {
 	if (dll_open) {
 	   HideGUI ();

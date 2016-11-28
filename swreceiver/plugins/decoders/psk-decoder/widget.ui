@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>595</width>
-    <height>180</height>
+    <height>140</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>591</width>
-     <height>181</height>
+     <height>141</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -32,10 +32,13 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
-      <width>121</width>
-      <height>121</height>
+      <y>0</y>
+      <width>131</width>
+      <height>111</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Phase difference. In a PSK31 signal, the phase difference between successive encoded bits is either 0 or 180 degrees. For QPSK phase differences may be a multiple of 90 degrees. The &amp;quot;meter&amp;quot; here shows (some) phasedifferences, that can be used to interpret the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="lineWidth">
      <number>4</number>
@@ -50,6 +53,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;pskIF display. Normally 800, if the AFc is set, this will vary. Can be used to finetune to the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -63,6 +69,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality indicator. basically: the higher the number the better the quality of the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -75,6 +84,9 @@
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Afc on or off. Note that the Agc only functions when there is a - reasonable - psk signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -96,6 +108,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Normal or reverse bit ordering in the psk &amp;quot;words&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <item>
      <property name="text">
       <string>normal</string>
@@ -115,6 +130,9 @@
       <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the psk &amp;quot;mode&amp;quot; here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -156,6 +174,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Squelch level. I.e. below this level it is assumed there is no signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="minimum">
      <number>3</number>
     </property>
@@ -169,6 +190,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Smallband filter. The order of the filter used to isolate the psk signal from the surrounding &amp;quot;noise&amp;quot;. Note that too high orders affect the signal in a negative way.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="minimum">
      <number>10</number>
     </property>
@@ -179,9 +203,9 @@
    <widget class="QLabel" name="psktextBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>140</y>
-      <width>561</width>
+      <x>0</x>
+      <y>110</y>
+      <width>591</width>
       <height>21</height>
      </rect>
     </property>
@@ -195,11 +219,16 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>420</x>
       <y>20</y>
-      <width>91</width>
-      <height>21</height>
+      <width>161</width>
+      <height>41</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>psk decoder</string>

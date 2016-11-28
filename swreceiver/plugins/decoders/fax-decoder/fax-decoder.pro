@@ -48,7 +48,7 @@ LIBS	+= -lwinmm
 }
 
 unix {
-DESTDIR	= ../../../../linux-bin/decoder-plugins
+DESTDIR	= ../../../../../linux-bin/decoder-plugins
 INCLUDEPATH	+= /usr/include/qt5/qwt
 }
 

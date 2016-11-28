@@ -20,7 +20,7 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with JSDR; if not, write to the Free Software
+ *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -42,9 +42,7 @@ class	localScope;
  */
 class drmDecoder: public decoderInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "drmDecoder")
-#endif
 Q_INTERFACES (decoderInterface)
 
 public:

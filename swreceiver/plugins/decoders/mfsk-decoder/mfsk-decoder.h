@@ -49,9 +49,7 @@ class	Cache;
 
 class mfskDecoder: public decoderInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "mfskDecoder")
-#endif
 Q_INTERFACES (decoderInterface)
 
 public:

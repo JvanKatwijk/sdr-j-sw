@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>606</width>
-    <height>184</height>
+    <height>167</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>661</width>
-     <height>181</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -31,15 +31,15 @@
    <widget class="QLabel" name="drmName">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>10</y>
-      <width>101</width>
-      <height>21</height>
+      <x>130</x>
+      <y>20</y>
+      <width>201</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>10</pointsize>
+      <pointsize>13</pointsize>
      </font>
     </property>
     <property name="text">
@@ -49,11 +49,14 @@
    <widget class="QLCDNumber" name="show_int_offset">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>80</x>
       <y>10</y>
       <width>41</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;Coarse frequency offset as measured by the software&amp;quot;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -65,11 +68,14 @@
    <widget class="QLCDNumber" name="show_small_offset">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>80</x>
       <y>30</y>
       <width>41</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fine frequency offset as measured by the software (i.e. the offset to the nearest carrier).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -86,6 +92,9 @@
       <width>31</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time sync label, green means time synchronization is OK.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
@@ -115,6 +124,9 @@
       <width>31</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;FAC sync label, Green means that FAC's could be decoded (easy, often 4QAM).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
@@ -161,6 +173,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SDC sync label, green means SDC's could be decoded (usually 16 QAM).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
     </property>
@@ -184,8 +199,8 @@
    <widget class="QLabel" name="stationLabel">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>140</y>
+      <x>130</x>
+      <y>50</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -219,11 +234,14 @@
    <widget class="QLCDNumber" name="snrDisplay">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>70</x>
       <y>70</y>
       <width>51</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Estimate of the SNR of the DRM signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -262,6 +280,9 @@
       <width>41</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Visibility of the button suggests the availability of a DRM channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string/>
@@ -315,6 +336,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time offset display, i.e. the &amp;quot;fine&amp;quot; time error.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
     </property>
@@ -330,6 +354,9 @@
       <width>41</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Estimate of the clock offset (measured between successive frames).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -347,6 +374,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time delay, i.e. a measure of the timing error.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
     </property>
@@ -357,11 +387,14 @@
    <widget class="QLCDNumber" name="angleDisplay">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>80</x>
       <y>50</y>
       <width>41</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Phase angle of the error.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -379,6 +412,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Faad sync label. Green means that the AAC decoder could decode audio.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="frameShape">
      <enum>QFrame::Box</enum>
     </property>
@@ -390,7 +426,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>140</y>
+      <y>130</y>
       <width>451</width>
       <height>21</height>
      </rect>
@@ -405,10 +441,10 @@
    <widget class="QLabel" name="pictureLabel">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>300</x>
       <y>10</y>
-      <width>161</width>
-      <height>161</height>
+      <width>131</width>
+      <height>101</height>
      </rect>
     </property>
     <property name="text">

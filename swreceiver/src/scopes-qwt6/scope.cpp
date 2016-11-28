@@ -39,18 +39,16 @@
 	Displaysize		= displaysize;
 	Rastersize		= rastersize;
 	bitDepth		= 24;
-	Waterfall		= NULL;
-	   Spectrum	= new SpectrumViewer  (Plotter,
-	                                       Displaysize);
-	   connect (Spectrum,
-	            SIGNAL (leftClicked (int)),
-	            this,
-	            SLOT (leftClicked (int)));
-	   connect (Spectrum,
-	            SIGNAL (rightClicked (int)),
-	            this,
-	            SLOT (rightClicked (int)));
-	   CurrentWidget = SPECTRUM_MODE;
+	Spectrum		= NULL;
+	Waterfall		= new WaterfallViewer (Plotter,
+	                                               Displaysize,
+	                                               Rastersize);
+        CurrentWidget   	= WATERFALL_MODE;
+        connect (Waterfall,
+                 SIGNAL (leftClicked (int)),
+                 this,
+                 SLOT (leftClicked (int)));
+
 }
 
 	Scope::~Scope (void) {
@@ -69,7 +67,6 @@ void	Scope::rightClicked (int n) {
 }
 
 void	Scope::SelectView (uint8_t n) {
-	return;
 	if (CurrentWidget == n)
 	   return;
 

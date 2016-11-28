@@ -49,9 +49,6 @@ bool	cardReader::createPluginWindow	(int32_t rate,
 	return true;
 }
 
-	rigInterface::~rigInterface	(void) {
-}
-
 	cardReader::~cardReader		(void) {
 	fprintf (stderr, "\"cardReader\" will be deleted now\n");
 	readerOwner. lock ();

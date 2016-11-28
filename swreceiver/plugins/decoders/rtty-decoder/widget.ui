@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>596</width>
-    <height>166</height>
+    <height>139</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>661</width>
-     <height>161</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -37,6 +37,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IF offset. The software tries to guess the offset of the tuned frequency.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -49,6 +52,9 @@
       <width>64</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency correction as applied if the Agc is on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -63,6 +69,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selected baudrate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -76,6 +85,9 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Baudrate as guessed by the software.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
     </property>
@@ -83,9 +95,9 @@
    <widget class="QLabel" name="rttytextBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>130</y>
-      <width>571</width>
+      <x>0</x>
+      <y>100</y>
+      <width>591</width>
       <height>21</height>
      </rect>
     </property>
@@ -324,11 +336,16 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>430</x>
       <y>10</y>
-      <width>111</width>
-      <height>21</height>
+      <width>151</width>
+      <height>51</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>rtty decoder</string>

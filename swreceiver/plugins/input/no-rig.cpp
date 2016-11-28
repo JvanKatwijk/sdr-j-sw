@@ -42,8 +42,8 @@
 	return true;
 }
 
-	rigInterface::~rigInterface	(void) {
-}
+//	rigInterface::~rigInterface	(void) {
+//}
 
 	no_rig::~no_rig			(void) {
 	fprintf (stderr, "\"no-rig\" will be deleted now\n");

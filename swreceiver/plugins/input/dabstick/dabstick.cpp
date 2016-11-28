@@ -104,9 +104,6 @@ bool	dabStick::createPluginWindow (int32_t rate,
 	return true;
 }
 
-	rigInterface::~rigInterface	(void) {
-}
-
 	dabStick::~dabStick	(void) {
 	if (open && libraryLoaded && dabSettings != NULL) {
 	   dabSettings	-> beginGroup ("dabstick");

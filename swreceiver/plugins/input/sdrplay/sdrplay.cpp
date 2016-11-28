@@ -182,11 +182,7 @@ ULONG APIkeyValue_length = 255;
 	return true;
 }
 //
-//	just a dummy
-	rigInterface::~rigInterface	(void) {
-}
-//
-//	that will allow a decent destructor
+
 	sdrplay::~sdrplay	(void) {
 	stopReader ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
@@ -205,8 +201,6 @@ ULONG APIkeyValue_length = 255;
 #else
 	   dlclose (Handle);
 #endif
-	if (_I_Buffer != NULL)
-	   delete _I_Buffer;
 	if (d_filter != NULL)
 	   delete d_filter;
 	d_filter	= NULL;
@@ -504,8 +498,8 @@ void    sdrplay::agcControl_toggled (int agcMode) {
 	                                        agcControl -> isChecked ());
 	(void)agcMode;
         this    -> agcMode      = agcControl -> isChecked ();
-	fprintf (stderr, "Gain reduction set to %d\n", -currentGain);
-        my_mir_sdr_AgcControl (this -> agcMode, -currentGain, 0, 0, 0, 1, 0);
+	fprintf (stderr, "Gain reduction set (%d) to %d\n", this -> agcMode, -currentGain);
+        my_mir_sdr_AgcControl (this -> agcMode, -currentGain, 0, 0, 0, 0, 0);
 	my_mir_sdr_SetGr (currentGain, 1, 0);
 }
 

@@ -44,9 +44,7 @@
 
 class	remoteDabstick: public rigInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "remote")
-#endif
 Q_INTERFACES (rigInterface)
 public:
 	bool	createPluginWindow (int32_t, QFrame *,  QSettings *);
