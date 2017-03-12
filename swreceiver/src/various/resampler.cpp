@@ -49,10 +49,11 @@
 int32_t	resampler::resample	(DSPCOMPLEX *inVec, DSPCOMPLEX *outVec) {
 int32_t	i;
 int32_t	n;
+float *data_in = (float*)data.data_in;
 
 	for (i = 0; i < size; i ++) {
-	   data. data_in [2 * i]	= real (inVec [i]);
-	   data. data_in [2 * i + 1]	= imag (inVec [i]);
+	   data_in [2 * i]	= real (inVec [i]);
+	   data_in [2 * i + 1]	= imag (inVec [i]);
 	}
 
 	n = src_simple (&data, SRC_LINEAR, 2);
@@ -65,9 +66,10 @@ int32_t	n;
 bool	resampler::doResample	(DSPCOMPLEX v,
 	                         DSPCOMPLEX *outVec, int16_t *amount) {
 int16_t i, n;
+float *data_in = (float*)data.data_in;
 
-	data. data_in [2 * cnt]		= real (v);
-	data. data_in [2 * cnt + 1]	= imag (v);
+	data_in [2 * cnt]		= real (v);
+	data_in [2 * cnt + 1]	= imag (v);
 	if (++cnt < size)
 	   return false;
 
