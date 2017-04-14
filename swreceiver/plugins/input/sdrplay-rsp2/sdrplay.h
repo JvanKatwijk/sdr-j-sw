@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SDRPLAY__
-#define	__SDRPLAY__
+#ifndef __SDRPLAY_RSP2__
+#define	__SDRPLAY_RSP2__
 
 #include	<QObject>
 #include	<QFrame>
@@ -88,7 +88,7 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_GetHwVersion) (unsigned char *);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_RSPII_AntennaControl) (mir_sdr_RSPII_AntennaSelectT);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
-
+typedef mir_sdr_ErrT (*pfn_mir_sdr_AmPortSelect)(int);
 
 class	sdrplay: public rigInterface, public Ui_sdrplayWidget {
 Q_OBJECT
@@ -147,6 +147,8 @@ private:
 	pfn_mir_sdr_RSPII_AntennaControl my_mir_sdr_RSPII_AntennaControl;
         pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
         pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
+	pfn_mir_sdr_AmPortSelect my_mir_sdr_AmPortSelect;
+
         int16_t         hwVersion;
         uint32_t        numofDevs;
         int16_t         deviceIndex;
@@ -173,7 +175,6 @@ private slots:
 	void		agcControl_toggled	(int);
 	void		set_ppmControl		(int);
 	void		set_debugBox		(int);
-	void            set_antennaControl      (const QString &);
 };
 #endif
 

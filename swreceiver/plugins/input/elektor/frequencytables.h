@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2008, 2009, 2010
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
@@ -27,12 +26,13 @@
  * 	we have a single and simple object, managing the
  * 	frequency tables
  */
-#ifndef	__FREQUENCYTABLES
-#define	__FREQUENCYTABLES
+#ifndef	__FREQUENCYTABLES__
+#define	__FREQUENCYTABLES__
 
 #include	"band.h"
 #include	<stdio.h>
 #include	<stdint.h>
+
 class frequencytables {
 public:
 		frequencytables		(const char *);

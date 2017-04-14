@@ -5,9 +5,6 @@
  *    Lazy Chair Programming
  *
  *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    SDR-J is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -87,7 +84,6 @@ sdrplaySelect   *sdrplaySelector;
 	this	-> sdrplaySettings	= s;
 	deviceOK		= false;
 	setupUi (myFrame);
-	antennaSelector         -> hide ();
 	_I_Buffer		= NULL;
 	Handle			= NULL;
 	libraryLoaded		= false;
@@ -213,14 +209,16 @@ ULONG APIkeyValue_length = 255;
 	serialNumber -> setText (devDesc [deviceIndex]. SerNo);
 	hwVersion = devDesc [deviceIndex]. hwVer;
         fprintf (stderr, "hwVer = %d\n", hwVersion);
-	my_mir_sdr_SetDeviceIdx (deviceIndex);
 
-	if (hwVersion >= 2) {
-	   antennaSelector -> show ();
-	   connect (antennaSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (set_antennaControl (const QString &)));
+	if (hwVersion < 2) {
+	   fprintf (stderr, "Sorry, we need an RSP II for this option\n");
+	   return false;
 	}
-	   
+
+	int a = my_mir_sdr_SetDeviceIdx (deviceIndex);
+	fprintf (stderr, "setDeviceIdx (%d) gives %d\n", deviceIndex, a);
+	a = my_mir_sdr_AmPortSelect (1);
+	fprintf (stderr, "port selection gives %d\n", a);
 	unsigned char text;
 	(void)my_mir_sdr_GetHwVersion (&text);
 
@@ -261,63 +259,8 @@ int32_t	sdrplay::getRate	(void) {
 	return outputRate;
 }
 
-static inline
-int16_t	bankFor_dongle (int32_t freq) {
-	if (freq < 60 * MHz (1))
-	   return -1;
-	if (freq < 120 * MHz (1))
-	   return 1;
-	if (freq < 245 * MHz (1))
-	   return 2;
-	if (freq < 420 * MHz (1))
-	   return -1;
-	if (freq < 1000 * MHz (1))
-	   return 3;
-	return -1;
-}
-
-static inline
-int16_t bankFor_sdr (int32_t freq) {
-	if (freq < 100 * Khz (1))
-	   return -1;
-	if (MIR_SDR_API_VERSION < 2.0) {
-	   if (freq < 12 * Mhz (1))
-	      return 1;
-	   if (freq < 30 * Mhz (1))
-	      return 2;
-	   if (freq < 60 * Mhz (1))
-	      return 3;
-	   if (freq < 120 * Mhz (1))
-	      return 4;
-	   if (freq < 250 * Mhz (1))
-	      return 5;
-	   if (freq < 420 * Mhz (1))
-	      return 6;
-	   if (freq < 1000 * Mhz (1))
-	      return 7;
-	   if (freq < 2000 * Mhz (1))
-	      return 8;
-	   return - 1;
-	}
-	else {   
-	   if (freq < 60 * MHz (1))
-	      return 1;
-	   if (freq < 120 * MHz (1))
-	      return 2;
-	   if (freq < 250 * MHz (1))
-	      return 3;
-	   if (freq < 420 * MHz (1))
-	      return 4;
-	   if (freq < 1000 * MHz (1))
-	      return 5;
-	   if (freq < 2000 * MHz (1))
-	      return 6;
-	   return -1;
-	}
-}
-
 bool	sdrplay::legalFrequency (int32_t f) {
-	return bankFor_sdr (f) != -1;
+	return f < Mhz (60);
 }
 
 int32_t	sdrplay::defaultFrequency	(void) {
@@ -338,21 +281,7 @@ int localGred	= currentGred;
 	   return;
 	}
 
-	if (bankFor_sdr (newFrequency) != bankFor_sdr (vfoFrequency)) {
-	   err = my_mir_sdr_Reinit (&localGred,
-	                            float (inputRate) / (MHz (1)),
-	                            float (newFrequency) / Mhz (1),
-	                            getBandwidth (outputRate),
-                                    mir_sdr_IF_Zero,
-	                            mir_sdr_LO_Undefined,
-                                    0,     // lnaEnable do not know yet
-                                    &gRdBSystem,
-                                    agcMode, // useGrAltMode,
-                                    &samplesPerPacket,
-	                            mir_sdr_CHANGE_RF_FREQ);
-	}
-	else
-	   my_mir_sdr_SetRf (newFrequency, 1, 0);
+	my_mir_sdr_SetRf (newFrequency, 1, 0);
 
 	vfoFrequency	= newFrequency;
         my_mir_sdr_SetPpm (float (ppmControl -> value ()));
@@ -371,7 +300,8 @@ void	sdrplay::setExternalGain	(int newGain) {
 	   return;
 
 	currentGred = maxGain () - newGain;
-	my_mir_sdr_SetGr (currentGred, 1, 0);
+	int a = my_mir_sdr_SetGr (currentGred, 1, 0);
+	fprintf (stderr, "gain set (%d) -> %d\n", maxGain () - newGain, a);
 	gainDisplay -> display (newGain);
 }
 
@@ -728,23 +658,18 @@ bool	sdrplay::loadFunctions	(void) {
 	   return false;
 	}
 
+	my_mir_sdr_AmPortSelect	= (pfn_mir_sdr_AmPortSelect)
+	                GETPROCADDRESS (Handle, "mir_sdr_AmPortSelect");
+	if (my_mir_sdr_AmPortSelect == NULL) {
+	   fprintf (stderr, "Could not find mir_sdr_AmPortSelect");
+	   return false;
+	}
+
 	return true;
 }
 
 void	sdrplay::sendSignal (void) {
 	emit samplesAvailable (10);
-}
-
-void	sdrplay::set_antennaControl (const QString &s) {
-mir_sdr_ErrT err;
-
-	if (hwVersion < 2)	// should not happen
-	   return;
-
-	if (s == "Antenna A")
-	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
-	else
-	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_B);
 }
 
 #if QT_VERSION < 0x050000

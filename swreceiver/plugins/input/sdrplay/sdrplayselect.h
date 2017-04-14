@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2008, 2009
+ *    Copyright (C) 2010, 2011, 2012
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -24,33 +24,32 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#
+#ifndef	__SDRPLAY_SELECT__
+#define	__SDRPLAY_SELECT__
+#
+#include	<QDialog>
+#include	<QLabel>
+#include	<QListView>
+#include	<QStringListModel>
+#include	<QStringList>
+#include	<stdint.h>
 
-//
-//	very simple class for recording the mappings for the
-//	elektor preselector.
-class	band {
-private:
-	int	amount;
-	int	upperBound;
-	int	lowerBound;
-	int	*FreqTable;
-	int	*VoltageTable;
-	int	bandNumber;
+class	sdrplaySelect: public QDialog {
+Q_OBJECT
 public:
-		band 		(int n, int m);
-		~band		(void);
-	int	getBandNumber	(void);
-	void	setBandNumber	(int b);
-	int	getAmount	(void);
-	void	setAmount	(int);
-	int	getLowerBound	(void);
-	void	setLowerBound	(int b);
-	int	getUpperBound	(void);
-	void	setUpperBound	(int b);
-	int	getFrequency	(int n);
-	void	setFrequency	(int n, int v);
-	int	getVoltage	(int n);
-	void	setVoltage	(int n, int v);
-	void	sortBand	(void);
+			sdrplaySelect	(void);
+			~sdrplaySelect	(void);
+	void		addtoList	(const char *);
+private:
+	QLabel		*toptext;
+	QListView	*selectorDisplay;
+	QStringListModel deviceList;
+	QStringList	Devices;
+	int16_t		selectedItem;
+private slots:
+void	select_rsp	(QModelIndex);
 };
+
+#endif
 

@@ -28,8 +28,8 @@
 //	We use a straightforward class "eladLoader"  both as
 //	loader and as container	for the dll functions.
 
-#ifndef	__ELAD_LOADER
-#define	__ELAD_LOADER
+#ifndef	__ELAD_LOADER__
+#define	__ELAD_LOADER__
 #include	"swradio-constants.h"
 #include	<stdint.h>
 #include	<libusb-1.0/libusb.h>

@@ -109,7 +109,7 @@ int	rc;
 	   *success = -3;
 	   return;
 	}
-	rc = OpenHW (dev_handle, 192000);
+	rc = OpenHW (dev_handle, theRate);
 	fprintf (stderr, "Hardware opened %s\n", rc == 1 ? "good" : "failed");
 	hardware_OK	= rc == 1;
 	if (!hardware_OK) {

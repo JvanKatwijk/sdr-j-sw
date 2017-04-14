@@ -13,9 +13,11 @@ INCLUDEPATH += . \
 HEADERS     = ../rig-interface.h \
 	      ../../../includes/swradio-constants.h \
 	      ./sdrplay.h \
+	      ./sdrplayselect.h \
 	      ../../../includes/filters/fir-filters.h \
 	      ../../../includes/various/ringbuffer.h
 SOURCES     =  ./sdrplay.cpp \
+	       ./sdrplayselect.cpp \
 	       ../../../src/filters/fir-filters.cpp
 TARGET      = $$qtLibraryTarget(device_sdrPlay)
 FORMS	+= ./sdrplay-widget.ui

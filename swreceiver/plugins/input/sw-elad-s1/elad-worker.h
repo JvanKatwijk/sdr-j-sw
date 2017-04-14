@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __ELAD_WORKER
-#define	__ELAD_WORKER
+#ifndef __ELAD_WORKER__
+#define	__ELAD_WORKER__
 
 #include	<stdlib.h>
 #include	<stdio.h>
@@ -38,6 +38,7 @@
 #include	"elad-loader.h"
 
 #define		IQ_SIZE		8
+
 class	eladWorker: public QThread {
 Q_OBJECT
 public:

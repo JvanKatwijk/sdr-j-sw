@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef __ELEKTOR507
-#define	__ELEKTOR507
+#ifndef __ELEKTOR507__
+#define	__ELEKTOR507__
 
 #include	<QWidget>
 #include	<QFrame>
@@ -123,9 +123,9 @@ struct priv_data {
  */
 class	elektor: public rigInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
+if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "elektor")
-#endif
+endif
 Q_INTERFACES (rigInterface)
 public:
 	QWidget		*createPluginWindow	(int32_t, QSettings *);

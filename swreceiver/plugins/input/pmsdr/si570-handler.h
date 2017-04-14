@@ -29,8 +29,8 @@
  *	All rights acknowledged
  */
 
-#ifndef	__SI570_HANDLER
-#define	__SI570_HANDLER
+#ifndef	__SI570_HANDLER__
+#define	__SI570_HANDLER__
 
 #include	"pmsdr_comm.h"
 

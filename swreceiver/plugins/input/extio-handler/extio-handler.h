@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __EXTIO_HANDLER
-#define	__EXTIO_HANDLER
+#ifndef __EXTIO_HANDLER__
+#define	__EXTIO_HANDLER__
 
 #include	"rig-interface.h"
 #include	<QWidget>
@@ -183,9 +183,9 @@ typedef enum {
 
 class	ExtioHandler:public rigInterface, public Ui_extioWidget {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
+if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "ExtioHandler")
-#endif
+endif
 Q_INTERFACES (rigInterface)
 
 public:

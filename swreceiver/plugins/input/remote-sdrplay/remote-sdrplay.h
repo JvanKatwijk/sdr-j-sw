@@ -25,8 +25,8 @@
  *
  */
 
-#ifndef	__REMOTE_SDRPLAY
-#define	__REMOTE_SDRPLAY
+#ifndef	__REMOTE_SDRPLAY__
+#define	__REMOTE_SDRPLAY__
 #include	<QtNetwork>
 #include	<QSettings>
 #include	<QLabel>
@@ -45,9 +45,10 @@
 class	remote: public rigInterface, public Ui_Form {
 Q_OBJECT
 Q_INTERFACES (rigInterface)
-//#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "remote")
-//#endif
+#endif
+
 public:
 	bool	createPluginWindow (int32_t, QFrame *, QSettings *);
 			~remote		(void);

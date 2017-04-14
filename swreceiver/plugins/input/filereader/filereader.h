@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __FILEREADER
-#define	__FILEREADER
+#ifndef __FILEREADER__
+#define	__FILEREADER__
 
 #include	"rig-interface.h"
 #include	<QWidget>
@@ -40,10 +40,11 @@ class	fileHulp;
  */
 class	fileReader: public rigInterface, public Ui_Form {
 Q_OBJECT
-//#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "fileReader")
-//#endif
+#endif
 Q_INTERFACES (rigInterface)
+
 public:
 	bool	createPluginWindow	(int32_t, QFrame *, QSettings *);
 		~fileReader		(void);

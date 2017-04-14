@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PA_READER
-#define	__PA_READER
+#ifndef __PA_READER__
+#define	__PA_READER__
 
 #include	<QObject>
 #include	<portaudio.h>

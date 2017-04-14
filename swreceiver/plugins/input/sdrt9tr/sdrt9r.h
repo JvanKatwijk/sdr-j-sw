@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef	__SDRT9R
-#define	__SDRT9R
+#ifndef	__SDRT9R__
+#define	__SDRT9R__
 #include	<QtNetwork>
 #include	<QSettings>
 #include	<QLabel>
@@ -24,7 +24,11 @@
 
 class	sdrt9r: public rigInterface, public Ui_Form {
 Q_OBJECT
+#if QT_VERSION >= 0x050000
+Q_PLUGIN_METADATA (IID "sdrt9r")
+#endif
 Q_INTERFACES (rigInterface)
+
 public:
 	QWidget		*createPluginWindow (int32_t, QSettings *);
 			~sdrt9r		(void);

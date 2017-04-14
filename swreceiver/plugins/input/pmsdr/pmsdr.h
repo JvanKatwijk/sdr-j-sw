@@ -25,7 +25,7 @@
  *
  *	This is a rewrite of the code for
  *	Library for
- *	MSDR command line manager (experimental)
+ *	PMSDR command line manager (experimental)
  *	control a PMSDR hardware on Linux
  *	Modified to comply to firmware version 2.1.x
  *
@@ -45,8 +45,8 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef	__PMSDR
-#define	__PMSDR
+#ifndef	__PMSDR__
+#define	__PMSDR__
 
 #include	<QtGlobal>
 #include	<QFrame>
@@ -73,7 +73,9 @@ const static QsdBiasFilterIfGain qsdBfigDefault = {
 
 class	pmsdr: public rigInterface, public Ui_Form {
 Q_OBJECT
+#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "pmsdr-2")
+#endif
 Q_INTERFACES (rigInterface)
 
 public:

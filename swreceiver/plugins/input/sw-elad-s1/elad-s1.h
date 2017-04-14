@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __ELAD_S1
-#define	__ELAD_S1
+#ifndef __ELAD_S1__
+#define	__ELAD_S1__
 
 #include	<QObject>
 #include	<QFrame>
@@ -43,9 +43,9 @@ typedef	DSPCOMPLEX(*makeSampleP)(uint8_t *);
 
 class	elad_s1: public rigInterface, public Ui_Form {
 Q_OBJECT
-#if QT_VERSION >= 0x050000
+if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "elad-s1")
-#endif
+endif
 Q_INTERFACES (rigInterface)
 
 public:

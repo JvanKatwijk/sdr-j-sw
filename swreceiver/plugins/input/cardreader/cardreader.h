@@ -24,8 +24,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __CARDREADER
-#define	__CARDREADER
+#ifndef __CARDREADER__
+#define	__CARDREADER__
 
 #include	<QWidget>
 #include	<QFrame>
@@ -40,7 +40,9 @@
 class	paReader;
 class	cardReader: public rigInterface, public Ui_Form {
 Q_OBJECT
+#if QT_VERSION >= 0x050000
 Q_PLUGIN_METADATA (IID "cardReader")
+#endif
 Q_INTERFACES (rigInterface)
 public:
 	bool createPluginWindow	(int32_t, QFrame *, QSettings *);

@@ -47,8 +47,8 @@
  *	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef	__PMSDR_USB
-#define __PMSDR_USB
+#ifndef	__PMSDR_USB__
+#define __PMSDR_USB__
 
 #include	<stdlib.h>
 #include	<string.h>

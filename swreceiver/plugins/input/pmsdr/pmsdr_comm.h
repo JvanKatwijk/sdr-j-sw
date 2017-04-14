@@ -22,11 +22,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-#ifndef	__PMSDR_COMM
-#define	__PMSDR_COMM
+#ifndef	__PMSDR_COMM__
+#define	__PMSDR_COMM__
 
 #include	<stdio.h>
 #include	<string.h>
